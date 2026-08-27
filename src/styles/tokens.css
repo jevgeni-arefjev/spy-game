@@ -1,0 +1,215 @@
+/**
+ * The single source of visual truth.
+ *
+ * Nothing outside this file may contain a raw hex colour, a magic pixel value
+ * or a font stack. Components reference `var(--token-name)` only.
+ *
+ * Layers:
+ *   1. `--palette-*` — the raw ramps. Never used directly by a component.
+ *   2. `--color-*`   — semantic roles built from the ramps. This is what
+ *                      components use, and the only layer a theme overrides.
+ *   3. everything else — spacing, type, radii, shadows, motion, layout.
+ */
+
+:root {
+  /* ── 1. Raw palette ─────────────────────────────────────────────── */
+  --palette-white: #ffffff;
+  --palette-black: #000000;
+
+  --palette-slate-50: #f7f8fb;
+  --palette-slate-100: #eef0f5;
+  --palette-slate-200: #dde1ea;
+  --palette-slate-300: #bcc3d2;
+  --palette-slate-400: #8d97ac;
+  --palette-slate-500: #667089;
+  --palette-slate-600: #4d566c;
+  --palette-slate-700: #3a4256;
+  --palette-slate-800: #232a3a;
+  --palette-slate-900: #161c28;
+  --palette-slate-950: #0c1018;
+
+  --palette-indigo-200: #c7d0fe;
+  --palette-indigo-300: #a5b4fc;
+  --palette-indigo-400: #818cf8;
+  --palette-indigo-500: #5b63e8;
+  --palette-indigo-600: #4a4fd4;
+  --palette-indigo-700: #3b3fae;
+
+  --palette-amber-200: #fde68a;
+  --palette-amber-300: #fcd34d;
+  --palette-amber-400: #fbbf24;
+  --palette-amber-500: #e39a0c;
+
+  --palette-red-300: #fca5a5;
+  --palette-red-400: #f87171;
+  --palette-red-500: #dc4446;
+  --palette-red-600: #bf3033;
+
+  /* ── 2. Semantic colours — light theme ──────────────────────────── */
+  --color-bg: var(--palette-slate-100);
+  --color-bg-gradient-top: var(--palette-slate-50);
+  --color-surface: var(--palette-white);
+  --color-surface-muted: var(--palette-slate-100);
+  --color-border: var(--palette-slate-200);
+  --color-border-strong: var(--palette-slate-300);
+
+  --color-text: var(--palette-slate-900);
+  --color-text-muted: var(--palette-slate-500);
+  --color-text-inverse: var(--palette-white);
+
+  --color-accent: var(--palette-indigo-500);
+  --color-accent-strong: var(--palette-indigo-600);
+  --color-accent-soft: var(--palette-indigo-200);
+  --color-accent-contrast: var(--palette-white);
+
+  --color-danger: var(--palette-red-500);
+  --color-danger-strong: var(--palette-red-600);
+  --color-danger-contrast: var(--palette-white);
+
+  /* The spy's card gets its own role so a theme can restyle it alone. */
+  --color-spy: var(--palette-amber-500);
+  --color-spy-surface: var(--palette-slate-900);
+  --color-spy-text: var(--palette-amber-300);
+
+  --color-card-back: var(--palette-slate-800);
+  --color-card-back-pattern: var(--palette-slate-700);
+  --color-card-back-text: var(--palette-slate-100);
+  --color-card-face: var(--palette-white);
+
+  --color-focus-ring: var(--palette-indigo-500);
+  --color-scrim: rgb(12 16 24 / 55%);
+  --color-shadow: rgb(22 28 40 / 12%);
+  --color-shadow-strong: rgb(22 28 40 / 22%);
+
+  /* ── 3a. Spacing scale ──────────────────────────────────────────── */
+  --space-0: 0rem;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* ── 3b. Radii and borders ──────────────────────────────────────── */
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-pill: 62.5rem;
+
+  --border-width-hairline: 1px;
+  --border-width-thick: 2px;
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
+
+  /* ── 3c. Typography ─────────────────────────────────────────────── */
+  --font-family-base: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
+  --font-family-display: var(--font-family-base);
+  --font-family-numeric: ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, Consolas,
+    'Liberation Mono', monospace;
+
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.375rem;
+  --font-size-2xl: 1.75rem;
+  --font-size-3xl: 2.25rem;
+  --font-size-4xl: 3rem;
+  --font-size-5xl: 3.75rem;
+
+  --line-height-tight: 1.1;
+  --line-height-snug: 1.3;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.65;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --letter-spacing-tight: -0.02em;
+  --letter-spacing-normal: 0em;
+  --letter-spacing-wide: 0.08em;
+
+  /* ── 3d. Elevation ──────────────────────────────────────────────── */
+  --shadow-none: none;
+  --shadow-sm: 0 1px 2px var(--color-shadow);
+  --shadow-md: 0 4px 12px var(--color-shadow);
+  --shadow-lg: 0 12px 32px var(--color-shadow-strong);
+
+  /* ── 3e. Layers ─────────────────────────────────────────────────── */
+  --z-base: 0;
+  --z-raised: 1;
+  --z-card: 10;
+  --z-overlay: 100;
+  --z-toast: 1000;
+
+  /* ── 3f. Motion ─────────────────────────────────────────────────── */
+  --duration-instant: 80ms;
+  --duration-fast: 140ms;
+  --duration-base: 220ms;
+  --duration-slow: 340ms;
+  --duration-flip: 520ms;
+
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+
+  /* ── 3g. Layout ─────────────────────────────────────────────────── */
+  --layout-max-width: 30rem;
+  --layout-gutter: var(--space-5);
+  --size-touch-target: 2.75rem; /* 44px at a 16px root — minimum tap size */
+  --size-card-max-width: 19rem;
+  --card-aspect-ratio: 3 / 4;
+  --card-perspective: 75rem;
+}
+
+/**
+ * Dark theme. Only the semantic layer is redefined — a future theme (or a
+ * user-selectable one driven by a `[data-theme]` attribute) needs exactly
+ * one block like this and nothing else.
+ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: var(--palette-slate-950);
+    --color-bg-gradient-top: var(--palette-slate-900);
+    --color-surface: var(--palette-slate-900);
+    --color-surface-muted: var(--palette-slate-800);
+    --color-border: var(--palette-slate-800);
+    --color-border-strong: var(--palette-slate-700);
+
+    --color-text: var(--palette-slate-50);
+    --color-text-muted: var(--palette-slate-400);
+    --color-text-inverse: var(--palette-slate-950);
+
+    --color-accent: var(--palette-indigo-400);
+    --color-accent-strong: var(--palette-indigo-300);
+    --color-accent-soft: var(--palette-indigo-700);
+    --color-accent-contrast: var(--palette-slate-950);
+
+    --color-danger: var(--palette-red-400);
+    --color-danger-strong: var(--palette-red-300);
+    --color-danger-contrast: var(--palette-slate-950);
+
+    --color-spy: var(--palette-amber-400);
+    --color-spy-surface: var(--palette-slate-800);
+    --color-spy-text: var(--palette-amber-200);
+
+    --color-card-back: var(--palette-slate-800);
+    --color-card-back-pattern: var(--palette-slate-700);
+    --color-card-back-text: var(--palette-slate-100);
+    --color-card-face: var(--palette-slate-800);
+
+    --color-focus-ring: var(--palette-indigo-400);
+    --color-scrim: rgb(0 0 0 / 65%);
+    --color-shadow: rgb(0 0 0 / 40%);
+    --color-shadow-strong: rgb(0 0 0 / 55%);
+  }
+}

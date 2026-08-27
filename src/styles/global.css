@@ -1,0 +1,95 @@
+@import './tokens.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* Fill the visual viewport without the iOS 100vh overshoot. */
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background-color: var(--color-bg);
+  background-image: linear-gradient(
+    to bottom,
+    var(--color-bg-gradient-top),
+    var(--color-bg)
+  );
+  background-attachment: fixed;
+  color: var(--color-text);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* No 300ms tap delay, no double-tap zoom. */
+  touch-action: manipulation;
+  overscroll-behavior-y: none;
+}
+
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: var(--space-0);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-family-display);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  font-weight: var(--font-weight-bold);
+}
+
+ul {
+  margin: var(--space-0);
+  padding: var(--space-0);
+  list-style: none;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  touch-action: manipulation;
+}
+
+:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Anyone who asks for less motion gets none of the flourishes. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: var(--duration-instant) !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: var(--duration-instant) !important;
+    scroll-behavior: auto !important;
+  }
+}
