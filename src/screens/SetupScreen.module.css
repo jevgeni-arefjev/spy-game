@@ -1,0 +1,148 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.title {
+  font-size: var(--font-size-4xl);
+}
+
+.subtitle {
+  font-size: var(--font-size-md);
+  color: var(--color-text-muted);
+  text-wrap: balance;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.inputRow {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.input {
+  flex: 1;
+  min-width: var(--space-0);
+  min-height: var(--size-touch-target);
+  padding-inline: var(--space-4);
+  border: var(--border-width-hairline) solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  font-size: var(--font-size-md);
+}
+
+.input::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* Reserved line: showing an error must not shove the roster down. */
+.error {
+  min-height: var(--font-size-2xl);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-snug);
+  color: var(--color-danger);
+}
+
+.roster {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.rosterHeading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.count {
+  font-family: var(--font-family-numeric);
+  font-variant-numeric: tabular-nums;
+}
+
+.empty {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-inline: var(--space-4) var(--space-2);
+  min-height: var(--size-touch-target);
+  border: var(--border-width-hairline) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.playerName {
+  font-weight: var(--font-weight-medium);
+  overflow-wrap: anywhere;
+}
+
+.remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--size-touch-target);
+  height: var(--size-touch-target);
+  padding: var(--space-0);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xl);
+  line-height: var(--line-height-tight);
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.remove:hover {
+  color: var(--color-danger);
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-block-start: auto;
+}
+
+.hint {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.srOnly {
+  position: absolute;
+  width: var(--border-width-hairline);
+  height: var(--border-width-hairline);
+  padding: var(--space-0);
+  margin: calc(var(--border-width-hairline) * -1);
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

@@ -1,0 +1,29 @@
+.progress {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.handoff,
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.passTo {
+  font-size: var(--font-size-3xl);
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.hint {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  /* Held steady so swapping the hint text never nudges the button. */
+  min-height: var(--font-size-xl);
+}

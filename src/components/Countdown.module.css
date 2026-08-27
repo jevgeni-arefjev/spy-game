@@ -1,0 +1,12 @@
+.clock {
+  display: block;
+  font-family: var(--font-family-numeric);
+  font-size: var(--font-size-5xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  /* Fixed-width digits so the layout never jitters between seconds. */
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+  color: var(--color-text);
+}

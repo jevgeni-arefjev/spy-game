@@ -1,0 +1,144 @@
+.card {
+  display: block;
+  width: 100%;
+  max-width: var(--size-card-max-width);
+  margin-inline: auto;
+  aspect-ratio: var(--card-aspect-ratio);
+  padding: var(--space-0);
+  border: none;
+  background: none;
+  perspective: var(--card-perspective);
+  cursor: pointer;
+  /* The card is the one surface people paw at — no text selection, no zoom. */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  z-index: var(--z-card);
+}
+
+.card:disabled {
+  cursor: default;
+}
+
+.inner {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform var(--duration-flip) var(--ease-out);
+}
+
+.card:active:not(:disabled) .inner {
+  transform: scale(0.98);
+}
+
+.revealed .inner {
+  transform: rotateY(180deg);
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  text-align: center;
+  overflow: hidden;
+}
+
+.back {
+  background-color: var(--color-card-back);
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--color-card-back-pattern) var(--space-0),
+    var(--color-card-back-pattern) var(--space-1),
+    transparent var(--space-1),
+    transparent var(--space-3)
+  );
+  color: var(--color-card-back-text);
+}
+
+.backName {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  overflow-wrap: anywhere;
+}
+
+.backHint {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.front {
+  transform: rotateY(180deg);
+  background-color: var(--color-card-face);
+  border: var(--border-width-hairline) solid var(--color-border);
+  color: var(--color-text);
+}
+
+.spyFace {
+  background-color: var(--color-spy-surface);
+  border-color: var(--color-spy);
+  color: var(--color-spy-text);
+}
+
+.frontLabel {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.spyFace .frontLabel {
+  font-size: var(--font-size-2xl);
+  letter-spacing: var(--letter-spacing-tight);
+  text-transform: none;
+  color: var(--color-spy);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+}
+
+.word {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  overflow-wrap: anywhere;
+}
+
+.frontHint {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-muted);
+}
+
+.spyFace .frontHint {
+  color: var(--color-spy-text);
+  opacity: 0.8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card:active:not(:disabled) .inner {
+    transform: none;
+  }
+
+  .revealed .inner {
+    /* Still flipped, just without the sweep. */
+    transform: rotateY(180deg);
+  }
+}

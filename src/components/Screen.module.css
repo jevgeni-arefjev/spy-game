@@ -1,0 +1,25 @@
+.screen {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  min-height: 100dvh;
+  padding-block: calc(var(--space-6) + env(safe-area-inset-top))
+    calc(var(--space-6) + env(safe-area-inset-bottom));
+  padding-inline: calc(var(--layout-gutter) + env(safe-area-inset-left))
+    calc(var(--layout-gutter) + env(safe-area-inset-right));
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  width: 100%;
+  max-width: var(--layout-max-width);
+}
+
+.centered {
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+}

@@ -1,35 +1,37 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useGame } from './game/useGame'
+import { syncThemeColor } from './lib/themeColor'
+import { DiscussionScreen } from './screens/DiscussionScreen'
+import { EndedScreen } from './screens/EndedScreen'
+import { RevealScreen } from './screens/RevealScreen'
+import { SetupScreen } from './screens/SetupScreen'
 
+/**
+ * The whole app is one state machine. There is no router on purpose: phase
+ * drives what renders, which keeps this working from a `file://` webview when
+ * it gets wrapped in a native shell.
+ */
 function App() {
-  const [count, setCount] = useState(0)
+  const { t } = useTranslation()
+  const { state } = useGame()
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+  useEffect(() => {
+    document.title = t('app.title')
+  }, [t])
+
+  useEffect(syncThemeColor, [])
+
+  switch (state.phase) {
+    case 'setup':
+      return <SetupScreen />
+    case 'reveal':
+      return <RevealScreen />
+    case 'discussion':
+      return <DiscussionScreen />
+    case 'ended':
+      return <EndedScreen />
+  }
 }
 
 export default App

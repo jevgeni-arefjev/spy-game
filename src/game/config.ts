@@ -21,6 +21,9 @@ export const MIN_PLAYERS = 3
 /** Most players a round can hold. */
 export const MAX_PLAYERS = 12
 
+/** Longest player name the setup input accepts. */
+export const PLAYER_NAME_MAX_LENGTH = 24
+
 /** Shape version of the persisted session. Bump on any breaking state change. */
 export const STATE_VERSION = 1
 
