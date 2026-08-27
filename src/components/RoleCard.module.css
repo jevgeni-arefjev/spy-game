@@ -31,7 +31,7 @@
 }
 
 .card:active:not(:disabled) .inner {
-  transform: scale(0.98);
+  transform: scale(var(--scale-press-card));
 }
 
 .revealed .inner {
@@ -80,7 +80,7 @@
   font-weight: var(--font-weight-medium);
   letter-spacing: var(--letter-spacing-wide);
   text-transform: uppercase;
-  opacity: 0.75;
+  opacity: var(--opacity-subtle);
 }
 
 .front {
@@ -129,7 +129,7 @@
 
 .spyFace .frontHint {
   color: var(--color-spy-text);
-  opacity: 0.8;
+  opacity: var(--opacity-soft);
 }
 
 @media (prefers-reduced-motion: reduce) {

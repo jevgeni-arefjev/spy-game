@@ -138,31 +138,39 @@
   --letter-spacing-normal: 0em;
   --letter-spacing-wide: 0.08em;
 
-  /* ── 3d. Elevation ──────────────────────────────────────────────── */
+  /* ── 3d. Opacity ────────────────────────────────────────────────── */
+  --opacity-disabled: 0.45;
+  --opacity-subtle: 0.75;
+  --opacity-soft: 0.8;
+
+  /* ── 3e. Elevation ──────────────────────────────────────────────── */
   --shadow-none: none;
   --shadow-sm: 0 1px 2px var(--color-shadow);
   --shadow-md: 0 4px 12px var(--color-shadow);
   --shadow-lg: 0 12px 32px var(--color-shadow-strong);
 
-  /* ── 3e. Layers ─────────────────────────────────────────────────── */
+  /* ── 3f. Layers ─────────────────────────────────────────────────── */
   --z-base: 0;
   --z-raised: 1;
   --z-card: 10;
   --z-overlay: 100;
   --z-toast: 1000;
 
-  /* ── 3f. Motion ─────────────────────────────────────────────────── */
+  /* ── 3g. Motion ─────────────────────────────────────────────────── */
   --duration-instant: 80ms;
   --duration-fast: 140ms;
   --duration-base: 220ms;
   --duration-slow: 340ms;
   --duration-flip: 520ms;
 
+  --scale-press: 0.97;
+  --scale-press-card: 0.98;
+
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in: cubic-bezier(0.4, 0, 1, 1);
 
-  /* ── 3g. Layout ─────────────────────────────────────────────────── */
+  /* ── 3h. Layout ─────────────────────────────────────────────────── */
   --layout-max-width: 30rem;
   --layout-gutter: var(--space-5);
   --size-touch-target: 2.75rem; /* 44px at a 16px root — minimum tap size */

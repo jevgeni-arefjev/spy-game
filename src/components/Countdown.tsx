@@ -1,21 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TICK_INTERVAL_MS } from '../game/config'
+import { msLeft } from '../game/timer'
+import type { TimerState } from '../game/types'
 import styles from './Countdown.module.css'
 
 type CountdownProps = {
-  /** Absolute deadline while running; null while paused. */
-  endsAt: number | null
-  /** Milliseconds left; authoritative while paused. */
-  remainingMs: number
-  running: boolean
+  timer: TimerState
   /** Called once the clock reaches zero. Must be referentially stable. */
   onExpire: () => void
-}
-
-function currentMs(endsAt: number | null, remainingMs: number, running: boolean): number {
-  if (!running || endsAt === null) return Math.max(0, remainingMs)
-  return Math.max(0, endsAt - Date.now())
 }
 
 function pad(value: number): string {
@@ -25,22 +18,19 @@ function pad(value: number): string {
 /**
  * The only component that re-renders on every tick.
  *
- * It never accumulates ticks: each frame reads `Date.now()` against the stored
+ * It never accumulates ticks: each tick reads `Date.now()` against the stored
  * deadline, so backgrounding the browser, locking the phone or reloading the
  * page all resolve to the same remaining time.
  */
-export function Countdown({ endsAt, remainingMs, running, onExpire }: CountdownProps) {
+export function Countdown({ timer, onExpire }: CountdownProps) {
   const { t } = useTranslation()
-  const [ms, setMs] = useState(() => currentMs(endsAt, remainingMs, running))
+  const [ms, setMs] = useState(() => msLeft(timer, Date.now()))
 
   useEffect(() => {
-    if (!running || endsAt === null) {
-      setMs(Math.max(0, remainingMs))
-      return
-    }
-
-    const tick = () => setMs(Math.max(0, endsAt - Date.now()))
+    const tick = () => setMs(msLeft(timer, Date.now()))
     tick()
+
+    if (!timer.running) return
 
     const handle = window.setInterval(tick, TICK_INTERVAL_MS)
     // A backgrounded tab throttles intervals; resync the instant we're back.
@@ -53,7 +43,7 @@ export function Countdown({ endsAt, remainingMs, running, onExpire }: CountdownP
       window.clearInterval(handle)
       document.removeEventListener('visibilitychange', resync)
     }
-  }, [endsAt, remainingMs, running])
+  }, [timer])
 
   useEffect(() => {
     if (ms <= 0) onExpire()

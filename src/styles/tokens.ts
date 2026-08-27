@@ -104,6 +104,12 @@ export const letterSpacing = {
   wide: 'var(--letter-spacing-wide)',
 } as const
 
+export const opacity = {
+  disabled: 'var(--opacity-disabled)',
+  subtle: 'var(--opacity-subtle)',
+  soft: 'var(--opacity-soft)',
+} as const
+
 export const shadow = {
   none: 'var(--shadow-none)',
   sm: 'var(--shadow-sm)',
@@ -125,6 +131,11 @@ export const duration = {
   base: 'var(--duration-base)',
   slow: 'var(--duration-slow)',
   flip: 'var(--duration-flip)',
+} as const
+
+export const scale = {
+  press: 'var(--scale-press)',
+  pressCard: 'var(--scale-press-card)',
 } as const
 
 export const easing = {
@@ -152,9 +163,11 @@ export const tokens = {
   lineHeight,
   fontWeight,
   letterSpacing,
+  opacity,
   shadow,
   zIndex,
   duration,
+  scale,
   easing,
   layout,
 } as const

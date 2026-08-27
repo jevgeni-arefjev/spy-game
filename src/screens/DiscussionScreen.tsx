@@ -28,12 +28,7 @@ export function DiscussionScreen() {
         <p className={styles.label}>
           {timer.running ? t('discussion.timeLeft') : t('discussion.paused')}
         </p>
-        <Countdown
-          endsAt={timer.endsAt}
-          remainingMs={timer.remainingMs}
-          running={timer.running}
-          onExpire={handleExpire}
-        />
+        <Countdown timer={timer} onExpire={handleExpire} />
       </div>
 
       <p className={styles.hint}>{t('discussion.hint')}</p>

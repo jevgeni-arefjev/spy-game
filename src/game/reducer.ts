@@ -1,4 +1,5 @@
 import { DISCUSSION_SECONDS, MIN_PLAYERS, STATE_VERSION } from './config'
+import { msLeft } from './timer'
 import type { Action, GameState, RoundSetup } from './types'
 
 const DISCUSSION_MS = DISCUSSION_SECONDS * 1000
@@ -29,13 +30,6 @@ function beginReveal(state: GameState, round: RoundSetup): GameState {
 
 export function canStart(state: GameState): boolean {
   return state.players.length >= MIN_PLAYERS
-}
-
-/** Milliseconds left on the clock right now, whether running or paused. */
-export function remainingMs(state: GameState, now: number): number {
-  const { endsAt, remainingMs: paused, running } = state.timer
-  if (!running || endsAt === null) return Math.max(0, paused)
-  return Math.max(0, endsAt - now)
 }
 
 export function reducer(state: GameState, action: Action): GameState {
@@ -92,7 +86,7 @@ export function reducer(state: GameState, action: Action): GameState {
         ...state,
         timer: {
           endsAt: null,
-          remainingMs: remainingMs(state, action.now),
+          remainingMs: msLeft(state.timer, action.now),
           running: false,
         },
       }
