@@ -1,0 +1,64 @@
+{
+  "app": {
+    "title": "Spy",
+    "tagline": "One phone. One spy."
+  },
+  "setup": {
+    "title": "Spy",
+    "subtitle": "Pass the phone around. One of you is the spy.",
+    "nameLabel": "Player name",
+    "namePlaceholder": "Add a player",
+    "addPlayer": "Add",
+    "playersHeading": "Players",
+    "playerCount": "{{current}} / {{max}}",
+    "removePlayer": "Remove {{name}}",
+    "emptyRoster": "No players yet.",
+    "needMore_one": "Add {{count}} more player to start.",
+    "needMore_other": "Add {{count}} more players to start.",
+    "spyHint_one": "{{count}} of you will secretly be the spy.",
+    "spyHint_other": "{{count}} of you will secretly be spies.",
+    "start": "Start game",
+    "errors": {
+      "empty": "Type a name first.",
+      "duplicate": "Someone already has that name.",
+      "full": "That's the maximum of {{count}} players."
+    }
+  },
+  "reveal": {
+    "progress": "Player {{current}} of {{total}}",
+    "passTo": "Pass the phone to {{name}}",
+    "passHint": "Everyone else, look away.",
+    "confirm": "I'm {{name}}",
+    "cardLabel": "{{name}}'s card — tap to reveal",
+    "cardName": "{{name}}",
+    "tapToReveal": "Tap to reveal",
+    "keepItSecret": "Keep it to yourself.",
+    "gotIt": "Got it"
+  },
+  "role": {
+    "civilian": {
+      "title": "Your word",
+      "hint": "Talk about it without saying it."
+    },
+    "spy": {
+      "title": "You are the spy",
+      "hint": "You don't know the word. Blend in and work it out."
+    }
+  },
+  "discussion": {
+    "title": "Discussion",
+    "timeLeft": "Time left",
+    "clock": "{{minutes}}:{{seconds}}",
+    "paused": "Paused",
+    "pause": "Pause",
+    "resume": "Resume",
+    "endRound": "End round",
+    "hint": "Take turns describing the word. Find the spy."
+  },
+  "ended": {
+    "title": "Time's up",
+    "subtitle": "Decide together who the spy was.",
+    "playAgain": "Play again with same players",
+    "newGame": "New game"
+  }
+}
