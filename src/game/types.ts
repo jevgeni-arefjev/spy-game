@@ -21,7 +21,8 @@ export type GameState = {
   version: typeof STATE_VERSION
   phase: Phase
   players: Player[]
-  spyId: string | null
+  /** Ids of the players who are spies this round. Empty until a round starts. */
+  spyIds: string[]
   /** Key into the word list, never the translated string. */
   wordId: string | null
   /** Index of the player currently revealing. */
@@ -35,7 +36,7 @@ export type GameState = {
  * reducer itself stays pure (and safe under StrictMode's double-invoke).
  */
 export type RoundSetup = {
-  spyId: string
+  spyIds: string[]
   wordId: string
 }
 

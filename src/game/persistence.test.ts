@@ -6,7 +6,12 @@ import {
   saveState,
 } from './persistence'
 import { initialState } from './reducer'
-import { DISCUSSION_SECONDS, STATE_VERSION, STORAGE_KEY } from './config'
+import {
+  DISCUSSION_SECONDS,
+  SPY_COUNT,
+  STATE_VERSION,
+  STORAGE_KEY,
+} from './config'
 import { WORDS } from './words'
 import type { GameState } from './types'
 
@@ -17,11 +22,16 @@ function players(n: number) {
   return Array.from({ length: n }, (_, i) => ({ id: `p${i + 1}`, name: `P${i + 1}` }))
 }
 
+// Fixtures stay valid for whatever SPY_COUNT config ships: enough players to
+// hold the spies plus a civilian, and exactly SPY_COUNT spy ids from the roster.
+const ROUND_ROSTER = Math.max(3, SPY_COUNT + 2)
+const SPY_IDS = Array.from({ length: SPY_COUNT }, (_, i) => `p${i + 1}`)
+
 const validSetup: GameState = {
   version: STATE_VERSION,
   phase: 'setup',
   players: players(2),
-  spyId: null,
+  spyIds: [],
   wordId: null,
   revealIndex: 0,
   revealStep: 'handoff',
@@ -31,8 +41,8 @@ const validSetup: GameState = {
 const validReveal: GameState = {
   ...validSetup,
   phase: 'reveal',
-  players: players(3),
-  spyId: 'p2',
+  players: players(ROUND_ROSTER),
+  spyIds: SPY_IDS,
   wordId: KNOWN_WORD,
   revealIndex: 1,
   revealStep: 'card',
@@ -160,11 +170,27 @@ describe('parseStoredState — rejects a malformed timer', () => {
   }
 })
 
-describe('parseStoredState — rejects malformed scalars', () => {
-  it('rejects a non-string, non-null spyId', () => {
-    expect(parseStoredState({ ...wire(validSetup), spyId: 3 })).toBeNull()
+describe('parseStoredState — rejects a malformed spy set', () => {
+  it('rejects a non-array spyIds', () => {
+    for (const bad of [null, undefined, 'p1', 3, { 0: 'p1' }]) {
+      expect(parseStoredState({ ...wire(validSetup), spyIds: bad })).toBeNull()
+    }
   })
 
+  it('rejects entries that are not non-empty strings', () => {
+    for (const bad of [['p1', 2], [''], [null], [{ id: 'p1' }]]) {
+      expect(parseStoredState({ ...wire(validSetup), spyIds: bad })).toBeNull()
+    }
+  })
+
+  it('rejects duplicate spy ids', () => {
+    expect(
+      parseStoredState({ ...wire(validReveal), spyIds: [SPY_IDS[0], SPY_IDS[0]] }),
+    ).toBeNull()
+  })
+})
+
+describe('parseStoredState — rejects malformed scalars', () => {
   it('rejects a non-string, non-null wordId', () => {
     expect(parseStoredState({ ...wire(validSetup), wordId: 3 })).toBeNull()
   })
@@ -177,9 +203,15 @@ describe('parseStoredState — rejects malformed scalars', () => {
 })
 
 describe('parseStoredState — cross-field consistency for in-progress rounds', () => {
-  it('rejects a missing or unknown spy once past setup', () => {
-    expect(parseStoredState({ ...wire(validReveal), spyId: null })).toBeNull()
-    expect(parseStoredState({ ...wire(validReveal), spyId: 'ghost' })).toBeNull()
+  it('rejects an empty or roster-foreign spy set once past setup', () => {
+    const foreign = SPY_IDS.map((id) => `${id}-gone`)
+    expect(parseStoredState({ ...wire(validReveal), spyIds: [] })).toBeNull()
+    expect(parseStoredState({ ...wire(validReveal), spyIds: foreign })).toBeNull()
+  })
+
+  it('rejects a stored spy count that no longer matches SPY_COUNT', () => {
+    const extra = Array.from({ length: SPY_COUNT + 1 }, (_, i) => `p${i + 1}`)
+    expect(parseStoredState({ ...wire(validReveal), spyIds: extra })).toBeNull()
   })
 
   it('rejects a missing or unknown word once past setup', () => {
@@ -188,8 +220,12 @@ describe('parseStoredState — cross-field consistency for in-progress rounds', 
   })
 
   it('rejects a revealIndex past the roster while revealing', () => {
-    expect(parseStoredState({ ...wire(validReveal), revealIndex: 3 })).toBeNull()
-    expect(parseStoredState({ ...wire(validReveal), revealIndex: 99 })).toBeNull()
+    expect(
+      parseStoredState({ ...wire(validReveal), revealIndex: ROUND_ROSTER }),
+    ).toBeNull()
+    expect(
+      parseStoredState({ ...wire(validReveal), revealIndex: ROUND_ROSTER + 50 }),
+    ).toBeNull()
   })
 
   it('tolerates a large revealIndex once past the reveal phase', () => {
@@ -197,8 +233,13 @@ describe('parseStoredState — cross-field consistency for in-progress rounds', 
     expect(parsed?.phase).toBe('discussion')
   })
 
-  it('still allows a null spy and word during setup', () => {
+  it('still allows an empty spy set and null word during setup', () => {
     expect(parseStoredState(wire(validSetup))).toEqual(validSetup)
+  })
+
+  it('discards a v1 session that still carries the old scalar spyId', () => {
+    const v1 = { ...wire(validReveal), version: 1, spyIds: undefined, spyId: 'p2' }
+    expect(parseStoredState(v1)).toBeNull()
   })
 })
 

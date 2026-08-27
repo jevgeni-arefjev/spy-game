@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { SPY_COUNT } from '../game/config'
 import { cx } from '../lib/classNames'
 import styles from './RoleCard.module.css'
 
@@ -42,7 +43,9 @@ export function RoleCard({
           {isSpy ? (
             <>
               <span className={styles.frontLabel}>{t('role.spy.title')}</span>
-              <span className={styles.frontHint}>{t('role.spy.hint')}</span>
+              <span className={styles.frontHint}>
+                {t('role.spy.hint', { count: SPY_COUNT })}
+              </span>
             </>
           ) : (
             <>

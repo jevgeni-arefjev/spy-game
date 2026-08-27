@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { createId, pickRandom } from './random'
+import { createId, pickRandom, pickSample } from './random'
 
 describe('createId', () => {
   it('returns a non-empty string', () => {
@@ -46,5 +46,53 @@ describe('pickRandom', () => {
     const copy = [...items]
     for (let i = 0; i < 100; i++) pickRandom(items)
     expect(items).toEqual(copy)
+  })
+})
+
+describe('pickSample', () => {
+  const pool = ['a', 'b', 'c', 'd', 'e']
+
+  it('returns exactly count distinct members of the pool', () => {
+    for (let i = 0; i < 500; i++) {
+      const drawn = pickSample(pool, 3)
+      expect(drawn).toHaveLength(3)
+      expect(new Set(drawn).size).toBe(3)
+      for (const item of drawn) expect(pool).toContain(item)
+    }
+  })
+
+  it('handles the degenerate ends: zero and the whole pool', () => {
+    expect(pickSample(pool, 0)).toEqual([])
+    const all = pickSample(pool, pool.length)
+    expect([...all].sort()).toEqual([...pool].sort())
+  })
+
+  it('throws when asked for more than the pool holds, or a negative count', () => {
+    expect(() => pickSample(pool, pool.length + 1)).toThrow()
+    expect(() => pickSample(pool, -1)).toThrow()
+    expect(() => pickSample([], 1)).toThrow()
+  })
+
+  it('does not mutate the source list', () => {
+    const copy = [...pool]
+    for (let i = 0; i < 200; i++) pickSample(pool, 2)
+    expect(pool).toEqual(copy)
+  })
+
+  it('can reach every member as part of a sample over enough draws', () => {
+    const seen = new Set<string>()
+    for (let i = 0; i < 1_000 && seen.size < pool.length; i++) {
+      for (const item of pickSample(pool, 2)) seen.add(item)
+    }
+    expect(seen.size).toBe(pool.length)
+  })
+
+  it('spreads pairs around rather than always drawing the same two', () => {
+    const pairs = new Set<string>()
+    for (let i = 0; i < 1_000; i++) {
+      pairs.add([...pickSample(pool, 2)].sort().join('-'))
+    }
+    // 5 choose 2 is 10; over 1000 draws we expect to see most of them.
+    expect(pairs.size).toBeGreaterThan(5)
   })
 })

@@ -4,11 +4,14 @@
  */
 
 /**
- * How many players are spies each round.
+ * How many players are spies each round. This is a real switch: the state
+ * models the spies as a set (`GameState.spyIds`) and every screen reads it
+ * through `includes`, so changing this number is all it takes.
  *
- * NOTE: the persisted state models exactly one spy (`GameState.spyId`).
- * Raising this above 1 also means widening that field to `spyIds: string[]`
- * and bumping `STATE_VERSION`. See CLAUDE.md.
+ * Keep it in `1 <= SPY_COUNT < MIN_PLAYERS` — a round with no civilians has
+ * nothing to discuss. `createRoundSetup` draws exactly this many spies and
+ * `parseStoredState` discards a stored session whose spy count no longer
+ * matches, so flipping this between builds is safe.
  */
 export const SPY_COUNT = 1
 
@@ -25,10 +28,10 @@ export const MAX_PLAYERS = 12
 export const PLAYER_NAME_MAX_LENGTH = 24
 
 /** Shape version of the persisted session. Bump on any breaking state change. */
-export const STATE_VERSION = 1
+export const STATE_VERSION = 2
 
 /** Single localStorage key holding the whole session. */
-export const STORAGE_KEY = 'spy:session:v1'
+export const STORAGE_KEY = 'spy:session:v2'
 
 /** How long to wait after the last state change before writing to storage. */
 export const PERSIST_DEBOUNCE_MS = 200

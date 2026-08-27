@@ -28,6 +28,19 @@ describe('msLeft while running', () => {
   it('falls back to remainingMs if endsAt is somehow null', () => {
     expect(msLeft({ endsAt: null, remainingMs: 12_345, running: true }, 0)).toBe(12_345)
   })
+
+  it('tracks the deadline exactly across a spread of now values', () => {
+    const endsAt = 1_000_000
+    for (const now of [0, 250, 999_000, 999_999, 1_000_000, 1_000_001, 2_000_000]) {
+      expect(msLeft(running(endsAt), now)).toBe(Math.max(0, endsAt - now))
+    }
+  })
+
+  it('never returns a negative number', () => {
+    for (const now of [1e6, 1e9, Number.MAX_SAFE_INTEGER]) {
+      expect(msLeft(running(500), now)).toBeGreaterThanOrEqual(0)
+    }
+  })
 })
 
 describe('msLeft while paused', () => {

@@ -9,7 +9,7 @@ function roster(n: number): Player[] {
   return Array.from({ length: n }, (_, i) => ({ id: `p${i + 1}`, name: `P${i + 1}` }))
 }
 
-const round = { spyId: 'p1', wordId: 'beach' }
+const round = { spyIds: ['p1'], wordId: 'beach' }
 
 function setup(overrides: Partial<GameState> = {}): GameState {
   return { ...initialState, players: roster(MIN_PLAYERS), ...overrides }
@@ -20,7 +20,7 @@ function reveal(overrides: Partial<GameState> = {}): GameState {
     ...initialState,
     phase: 'reveal',
     players: roster(3),
-    spyId: 'p1',
+    spyIds: ['p1'],
     wordId: 'beach',
     revealIndex: 0,
     revealStep: 'handoff',
@@ -33,7 +33,7 @@ function discussion(overrides: Partial<GameState> = {}): GameState {
     ...initialState,
     phase: 'discussion',
     players: roster(3),
-    spyId: 'p1',
+    spyIds: ['p1'],
     wordId: 'beach',
     timer: { endsAt: 10_000, remainingMs: DISCUSSION_MS, running: true },
     ...overrides,
@@ -54,7 +54,7 @@ describe('initialState', () => {
     expect(initialState.version).toBe(STATE_VERSION)
     expect(initialState.phase).toBe('setup')
     expect(initialState.players).toEqual([])
-    expect(initialState.spyId).toBeNull()
+    expect(initialState.spyIds).toEqual([])
     expect(initialState.wordId).toBeNull()
     expect(initialState.revealIndex).toBe(0)
     expect(initialState.revealStep).toBe('handoff')
@@ -129,11 +129,11 @@ describe('player/remove', () => {
 })
 
 describe('game/start', () => {
-  it('enters reveal from the top with the drawn spy, word and a reset timer', () => {
+  it('enters reveal from the top with the drawn spies, word and a reset timer', () => {
     const before = setup()
     const after = reducer(before, { type: 'game/start', round })
     expect(after.phase).toBe('reveal')
-    expect(after.spyId).toBe('p1')
+    expect(after.spyIds).toEqual(['p1'])
     expect(after.wordId).toBe('beach')
     expect(after.revealIndex).toBe(0)
     expect(after.revealStep).toBe('handoff')
@@ -154,6 +154,16 @@ describe('game/start', () => {
     for (const state of [reveal(), discussion(), ended()]) {
       expect(reducer(state, { type: 'game/start', round })).toBe(state)
     }
+  })
+
+  it('passes a multi-spy round straight through, spy-count agnostic', () => {
+    const before = setup({ players: roster(5) })
+    const after = reducer(before, {
+      type: 'game/start',
+      round: { spyIds: ['p2', 'p4'], wordId: 'school' },
+    })
+    expect(after.spyIds).toEqual(['p2', 'p4'])
+    expect(after.spyIds).not.toBe(before.spyIds)
   })
 })
 
@@ -303,10 +313,10 @@ describe('game/playAgain', () => {
     const state = ended({ revealIndex: 2, revealStep: 'card' })
     const after = reducer(state, {
       type: 'game/playAgain',
-      round: { spyId: 'p3', wordId: 'airport' },
+      round: { spyIds: ['p3'], wordId: 'airport' },
     })
     expect(after.phase).toBe('reveal')
-    expect(after.spyId).toBe('p3')
+    expect(after.spyIds).toEqual(['p3'])
     expect(after.wordId).toBe('airport')
     expect(after.revealIndex).toBe(0)
     expect(after.revealStep).toBe('handoff')
@@ -329,6 +339,39 @@ describe('game/reset', () => {
       expect(after).toEqual(initialState)
       expect(after).not.toBe(initialState)
     }
+  })
+})
+
+describe('unrelated fields survive a transition', () => {
+  it('keeps spies, word and roster identity when advancing a reveal', () => {
+    const before = reveal({
+      players: roster(3),
+      spyIds: ['p2'],
+      wordId: 'hospital',
+      revealIndex: 0,
+      revealStep: 'card',
+    })
+    const after = reducer(before, { type: 'reveal/done', now: 0 })
+    expect(after.spyIds).toBe(before.spyIds)
+    expect(after.wordId).toBe('hospital')
+    expect(after.players).toBe(before.players)
+    expect(after.version).toBe(before.version)
+  })
+
+  it('keeps spies and word when pausing and resuming', () => {
+    const before = discussion({ spyIds: ['p3'], wordId: 'airport' })
+    const paused = reducer(before, { type: 'timer/pause', now: 1_000 })
+    const resumed = reducer(paused, { type: 'timer/resume', now: 2_000 })
+    expect(paused.spyIds).toBe(before.spyIds)
+    expect(resumed.wordId).toBe('airport')
+    expect(resumed.players).toBe(before.players)
+  })
+
+  it('keeps spies and word when the round ends', () => {
+    const before = discussion({ spyIds: ['p1'], wordId: 'school' })
+    const after = reducer(before, { type: 'round/end' })
+    expect(after.spyIds).toBe(before.spyIds)
+    expect(after.wordId).toBe('school')
   })
 })
 

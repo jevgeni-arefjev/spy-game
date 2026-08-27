@@ -13,6 +13,7 @@ Built on React + TypeScript + Vite. No router, no state library, no UI kit.
 npm install
 npm run dev      # http://localhost:5173
 npm run build    # type-check + production build
+npm test         # vitest — unit suite for the game logic
 npm run preview  # serve the production build
 npm run lint
 ```
@@ -34,7 +35,7 @@ decides what renders.
 4. **Ended** — play again with the same players (new word, new spy), or start
    over.
 
-The whole session is written to `localStorage` under `spy:session:v1`, so
+The whole session is written to `localStorage` under `spy:session:v2`, so
 reloading mid-reveal or mid-timer puts the group back exactly where they were.
 The timer stores an absolute deadline rather than counting ticks, so
 backgrounding the browser or locking the phone doesn't lose time.
@@ -92,6 +93,11 @@ custom properties.
 `DISCUSSION_SECONDS`, `MIN_PLAYERS`, `MAX_PLAYERS` and the storage key. Changing
 the persisted shape means bumping `STATE_VERSION` — old sessions are then
 discarded on boot rather than migrated.
+
+`SPY_COUNT` is a live switch: the state stores the spies as a set and the copy
+has singular/plural forms, so setting it to `2` genuinely gives you two spies
+with no other change. Keep it below `MIN_PLAYERS` — a round needs civilians.
+Changing it discards any in-progress session on the next boot.
 
 ## Bundle size
 

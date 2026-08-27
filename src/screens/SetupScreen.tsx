@@ -49,7 +49,7 @@ export function SetupScreen() {
     <Screen>
       <header className={styles.header}>
         <h1 className={styles.title}>{t('setup.title')}</h1>
-        <p className={styles.subtitle}>{t('setup.subtitle')}</p>
+        <p className={styles.subtitle}>{t('setup.subtitle', { count: SPY_COUNT })}</p>
       </header>
 
       <form className={styles.form} onSubmit={handleSubmit} noValidate>

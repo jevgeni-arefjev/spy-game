@@ -36,7 +36,7 @@ export function RevealScreen() {
         <>
           <RoleCard
             playerName={player.name}
-            isSpy={player.id === state.spyId}
+            isSpy={state.spyIds.includes(player.id)}
             wordId={state.wordId}
             revealed={revealed}
             onReveal={() => setRevealedFor(player.id)}

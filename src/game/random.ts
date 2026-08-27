@@ -13,3 +13,20 @@ export function pickRandom<T>(items: readonly T[]): T {
   }
   return items[Math.floor(Math.random() * items.length)]
 }
+
+/**
+ * Pick `count` distinct items at random, order not significant. Throws if the
+ * pool is too small. A partial Fisher–Yates shuffle over a copy, so each subset
+ * is equally likely and the input is left untouched.
+ */
+export function pickSample<T>(items: readonly T[], count: number): T[] {
+  if (count < 0 || count > items.length) {
+    throw new Error(`pickSample: cannot draw ${count} from ${items.length}`)
+  }
+  const pool = [...items]
+  for (let i = 0; i < count; i++) {
+    const j = i + Math.floor(Math.random() * (pool.length - i))
+    ;[pool[i], pool[j]] = [pool[j], pool[i]]
+  }
+  return pool.slice(0, count)
+}

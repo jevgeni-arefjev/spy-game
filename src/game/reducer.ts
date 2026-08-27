@@ -8,7 +8,7 @@ export const initialState: GameState = {
   version: STATE_VERSION,
   phase: 'setup',
   players: [],
-  spyId: null,
+  spyIds: [],
   wordId: null,
   revealIndex: 0,
   revealStep: 'handoff',
@@ -20,7 +20,7 @@ function beginReveal(state: GameState, round: RoundSetup): GameState {
   return {
     ...state,
     phase: 'reveal',
-    spyId: round.spyId,
+    spyIds: round.spyIds,
     wordId: round.wordId,
     revealIndex: 0,
     revealStep: 'handoff',

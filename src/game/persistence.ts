@@ -1,4 +1,4 @@
-import { MAX_PLAYERS, STATE_VERSION, STORAGE_KEY } from './config'
+import { MAX_PLAYERS, SPY_COUNT, STATE_VERSION, STORAGE_KEY } from './config'
 import { initialState } from './reducer'
 import { isKnownWordId } from './words'
 import * as storage from '../lib/storage'
@@ -25,6 +25,18 @@ function parsePlayers(value: unknown): Player[] | null {
 
   const ids = new Set(players.map((player) => player.id))
   return ids.size === players.length ? players : null
+}
+
+function parseSpyIds(value: unknown): string[] | null {
+  if (!Array.isArray(value)) return null
+
+  const ids: string[] = []
+  for (const entry of value) {
+    if (typeof entry !== 'string' || entry.length === 0) return null
+    ids.push(entry)
+  }
+
+  return new Set(ids).size === ids.length ? ids : null
 }
 
 function parseTimer(value: unknown): TimerState | null {
@@ -63,8 +75,10 @@ export function parseStoredState(value: unknown): GameState | null {
   const timer = parseTimer(value.timer)
   if (timer === null) return null
 
-  const { spyId, wordId, revealIndex } = value
-  if (spyId !== null && typeof spyId !== 'string') return null
+  const spyIds = parseSpyIds(value.spyIds)
+  if (spyIds === null) return null
+
+  const { wordId, revealIndex } = value
   if (wordId !== null && typeof wordId !== 'string') return null
   if (typeof revealIndex !== 'number' || !Number.isInteger(revealIndex) || revealIndex < 0) {
     return null
@@ -72,7 +86,11 @@ export function parseStoredState(value: unknown): GameState | null {
 
   // Cross-field sanity: an in-progress round must still refer to real things.
   if (phase !== 'setup') {
-    if (spyId === null || !players.some((player) => player.id === spyId)) return null
+    // A stored spy count that no longer matches config is discarded, not
+    // resumed — same stance as a version bump for a shape change.
+    if (spyIds.length !== SPY_COUNT) return null
+    const roster = new Set(players.map((player) => player.id))
+    if (!spyIds.every((id) => roster.has(id))) return null
     if (wordId === null || !isKnownWordId(wordId)) return null
   }
   if (phase === 'reveal' && revealIndex >= players.length) return null
@@ -81,7 +99,7 @@ export function parseStoredState(value: unknown): GameState | null {
     version: STATE_VERSION,
     phase: phase as Phase,
     players,
-    spyId,
+    spyIds,
     wordId,
     revealIndex,
     revealStep: revealStep as RevealStep,

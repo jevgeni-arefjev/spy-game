@@ -1,11 +1,13 @@
 {
   "app": {
     "title": "Spy",
-    "tagline": "One phone. One spy."
+    "tagline_one": "One phone. One spy.",
+    "tagline_other": "One phone. {{count}} spies."
   },
   "setup": {
     "title": "Spy",
-    "subtitle": "Pass the phone around. One of you is the spy.",
+    "subtitle_one": "Pass the phone around. One of you is the spy.",
+    "subtitle_other": "Pass the phone around. {{count}} of you are spies.",
     "nameLabel": "Player name",
     "namePlaceholder": "Add a player",
     "addPlayer": "Add",
@@ -42,7 +44,8 @@
     },
     "spy": {
       "title": "You are the spy",
-      "hint": "You don't know the word. Blend in and work it out."
+      "hint_one": "You don't know the word. Blend in and work it out.",
+      "hint_other": "You don't know the word. Other players are spies too — blend in and work it out."
     }
   },
   "discussion": {
@@ -53,11 +56,13 @@
     "pause": "Pause",
     "resume": "Resume",
     "endRound": "End round",
-    "hint": "Take turns describing the word. Find the spy."
+    "hint_one": "Take turns describing the word. Find the spy.",
+    "hint_other": "Take turns describing the word. Find the spies."
   },
   "ended": {
     "title": "Time's up",
-    "subtitle": "Decide together who the spy was.",
+    "subtitle_one": "Decide together who the spy was.",
+    "subtitle_other": "Decide together who the spies were.",
     "playAgain": "Play again with same players",
     "newGame": "New game"
   }

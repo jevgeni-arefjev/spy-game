@@ -19,11 +19,15 @@ themes.
 npm run dev      # dev server
 npm run build    # tsc -b && vite build — this is the type-check
 npm run lint     # eslint
+npm test         # vitest run — the game/ and lib/ unit suite
 npm run preview  # serve dist/
 ```
 
-There is no test runner. `npm run build` is the only automated gate, so run
-both `build` and `lint` before calling anything done.
+`npm test`, `npm run build` and `npm run lint` are the three gates; run all
+three before calling anything done. Tests are `*.test.ts` files sitting next to
+the module they cover, under `src/game/` and `src/lib/`. They cover pure logic
+only — there are no component or DOM tests, so Vitest runs in the `node`
+environment with no jsdom.
 
 ## Layout
 
@@ -82,9 +86,10 @@ a native preferences plugin will be swapped in. No component may touch
 
 **Stored state is validated, never repaired.** `parseStoredState()` in
 `src/game/persistence.ts` checks the version, the shape *and* cross-field
-consistency (the spy is in the roster, the word id is known, `revealIndex` is
-in range). Anything off is discarded and the app boots clean. Changing the
-state shape means bumping `STATE_VERSION` and `STORAGE_KEY`'s suffix.
+consistency (every spy id is in the roster, there are exactly `SPY_COUNT` of
+them, the word id is known, `revealIndex` is in range). Anything off is
+discarded and the app boots clean. Changing the state shape means bumping
+`STATE_VERSION` and `STORAGE_KEY`'s suffix — currently `v2`.
 
 **Writes are debounced ~200ms**, with a flush on `pagehide` and
 `visibilitychange` — a backgrounded mobile browser may never run the timeout.
@@ -105,10 +110,15 @@ contains no hex colours, pixel values or font stacks — `public/favicon.svg` is
 the sole exception, since a standalone SVG asset can't read the page's custom
 properties.
 
-**`SPY_COUNT` is a config constant but the state models one spy** (`spyId:
-string | null`, as specified). Raising `SPY_COUNT` above 1 requires widening
-that field to `spyIds: string[]`, updating `persistence.ts`, and bumping
-`STATE_VERSION`. The constant is not a switch you can flip on its own.
+**`SPY_COUNT` is a real switch.** The state models the spies as a set
+(`spyIds: string[]`), `createRoundSetup` draws exactly `SPY_COUNT` of them with
+`pickSample`, and every screen asks `spyIds.includes(id)` — so changing the
+number is the whole change. Keep it in `1 <= SPY_COUNT < MIN_PLAYERS`.
+`parseStoredState` discards a stored session whose `spyIds.length` no longer
+equals `SPY_COUNT`, the same way a `STATE_VERSION` bump discards a stale shape,
+so flipping the constant between builds is safe. The `_one`/`_other` plural
+strings (`setup.subtitle`, `discussion.hint`, `ended.subtitle`, `role.spy.hint`,
+`app.tagline`) are selected by passing `{ count: SPY_COUNT }` at the call site.
 
 ## Gotchas
 
@@ -128,5 +138,6 @@ that field to `spyIds: string[]`, updating `persistence.ts`, and bumping
 
 ## Out of scope on purpose
 
-Voting, scoring, elimination, multiple spies, per-player word sets, network
-play, sound. Ask before adding any of them.
+Voting, scoring, elimination, per-player word sets, network play, sound. Ask
+before adding any of them. (Multiple spies used to be here; `SPY_COUNT` now
+covers it.)
