@@ -23,27 +23,32 @@ emulation and pick a phone.
 
 ## How a round works
 
-`setup → reveal → discussion → ended`, driven entirely by
+`home → topics → players → reveal → discussion → ended`, driven entirely by
 [`src/game/reducer.ts`](src/game/reducer.ts) — there is no router, the phase
 decides what renders.
 
-1. **Setup** — add at least three names.
-2. **Reveal** — for each player in turn: a handoff screen ("pass the phone
+1. **Home** — a single "Play Spy" button.
+2. **Topics** — include or exclude the word sets in play (at least one, up to
+   all). The word is drawn from the union of the included topics.
+3. **Players** — add at least three names.
+4. **Reveal** — for each player in turn: a handoff screen ("pass the phone
    to…"), then a face-down card they tap to see their role. "Got it" advances;
    a card can never be revealed twice.
-3. **Discussion** — a five-minute countdown with pause/resume and "End round".
-4. **Ended** — play again with the same players (new word, new spy), or start
-   over.
+5. **Discussion** — a five-minute countdown with pause/resume and "End round".
+6. **Ended** — "Play again" (back to the topics screen) or "Exit" (back home).
 
-The whole session is written to `localStorage` under `spy:session:v2`, so
-reloading mid-reveal or mid-timer puts the group back exactly where they were.
-The timer stores an absolute deadline rather than counting ticks, so
-backgrounding the browser or locking the phone doesn't lose time.
+The topic selection and the roster are remembered and stay editable between
+games; neither button wipes them. The whole session is written to
+`localStorage` under `spy:session:v3`, so reloading mid-reveal or mid-timer
+puts the group back exactly where they were. The timer stores an absolute
+deadline rather than counting ticks, so backgrounding the browser or locking
+the phone doesn't lose time.
 
 ## Adding a locale
 
 1. Copy `src/i18n/locales/en/` to `src/i18n/locales/<code>/` and translate
-   `common.json` (UI strings) and `words.json` (the word list).
+   `common.json` (UI strings), `topics.json` (topic names) and `words.json`
+   (the word list).
 2. That's it — `src/i18n/index.ts` discovers `locales/*/*.json` with
    `import.meta.glob`, so no wiring to update. `SUPPORTED_LOCALES` picks the new
    folder up automatically.
@@ -56,13 +61,20 @@ string, so switching mid-game is safe.
 Every user-facing string lives in the locale files. Nothing in the components
 contains display text.
 
-## Adding words
+## Adding words and topics
 
-1. Add `{ id: 'library' }` to `WORDS` in [`src/game/words.ts`](src/game/words.ts).
-2. Add `"library": "Library"` to `words.json` in **every** locale folder.
+Topics and words share one source of truth,
+[`src/game/topics.ts`](src/game/topics.ts).
 
-The id is what gets persisted, so ids must stay stable once a build ships. Word
-selection never repeats the previous round's word for a group playing again.
+- **A word:** add its id to a topic's `wordIds` in `TOPICS`, then add
+  `"id": "Display"` to `words.json` in **every** locale folder.
+- **A topic:** add a `{ id, wordIds }` entry to `TOPICS`, add `"id": "Name"` to
+  `topics.json` and every word to `words.json` — in every locale folder. No
+  other code changes; `WORD_IDS` and the topics screen pick it up.
+
+Word ids must be unique across topics and stay stable once a build ships (the
+id is what gets persisted). Word selection never repeats the previous round's
+word for a group playing again.
 
 ## Editing the theme
 

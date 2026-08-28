@@ -4,8 +4,19 @@
     "tagline_one": "One phone. One spy.",
     "tagline_other": "One phone. {{count}} spies."
   },
-  "setup": {
-    "title": "Spy",
+  "back": "Back",
+  "home": {
+    "play": "Play Spy"
+  },
+  "topics": {
+    "title": "Topics",
+    "subtitle": "Pick which sets of words can come up. Keep at least one.",
+    "heading": "Included",
+    "count": "{{current}} / {{total}}",
+    "continue": "Continue"
+  },
+  "players": {
+    "title": "Players",
     "subtitle_one": "Pass the phone around. One of you is the spy.",
     "subtitle_other": "Pass the phone around. {{count}} of you are spies.",
     "nameLabel": "Player name",
@@ -63,7 +74,7 @@
     "title": "Time's up",
     "subtitle_one": "Decide together who the spy was.",
     "subtitle_other": "Decide together who the spies were.",
-    "playAgain": "Play again with same players",
-    "newGame": "New game"
+    "playAgain": "Play again",
+    "exit": "Exit"
   }
 }

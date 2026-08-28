@@ -9,6 +9,9 @@ vi.mock('./config', async (importOriginal) => {
 
 const { createRoundSetup } = await import('./round')
 const { SPY_COUNT } = await import('./config')
+const { ALL_TOPIC_IDS } = await import('./topics')
+
+const ALL_TOPICS = [...ALL_TOPIC_IDS]
 
 function roster(n: number) {
   return Array.from({ length: n }, (_, i) => ({ id: `p${i + 1}`, name: `P${i + 1}` }))
@@ -23,7 +26,7 @@ describe('createRoundSetup with SPY_COUNT = 2', () => {
     const players = roster(5)
     const ids = new Set(players.map((p) => p.id))
     for (let i = 0; i < 300; i++) {
-      const { spyIds } = createRoundSetup(players, null)
+      const { spyIds } = createRoundSetup(players, ALL_TOPICS, null)
       expect(spyIds).toHaveLength(2)
       expect(new Set(spyIds).size).toBe(2)
       for (const id of spyIds) expect(ids.has(id)).toBe(true)
@@ -34,7 +37,7 @@ describe('createRoundSetup with SPY_COUNT = 2', () => {
     const players = roster(4)
     const seen = new Set<string>()
     for (let i = 0; i < 500 && seen.size < players.length; i++) {
-      for (const id of createRoundSetup(players, null).spyIds) seen.add(id)
+      for (const id of createRoundSetup(players, ALL_TOPICS, null).spyIds) seen.add(id)
     }
     expect(seen.size).toBe(players.length)
   })

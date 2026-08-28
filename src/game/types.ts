@@ -1,6 +1,12 @@
 import type { STATE_VERSION } from './config'
 
-export type Phase = 'setup' | 'reveal' | 'discussion' | 'ended'
+export type Phase =
+  | 'home'
+  | 'topics'
+  | 'players'
+  | 'reveal'
+  | 'discussion'
+  | 'ended'
 
 export type RevealStep = 'handoff' | 'card'
 
@@ -21,6 +27,8 @@ export type GameState = {
   version: typeof STATE_VERSION
   phase: Phase
   players: Player[]
+  /** Ids of the topics whose words are in play. Never empty. */
+  topicIds: string[]
   /** Ids of the players who are spies this round. Empty until a round starts. */
   spyIds: string[]
   /** Key into the word list, never the translated string. */
@@ -41,6 +49,11 @@ export type RoundSetup = {
 }
 
 export type Action =
+  | { type: 'game/open' }
+  | { type: 'topics/toggle'; id: string }
+  | { type: 'topics/confirm' }
+  | { type: 'topics/back' }
+  | { type: 'players/back' }
   | { type: 'player/add'; player: Player }
   | { type: 'player/remove'; id: string }
   | { type: 'game/start'; round: RoundSetup }
@@ -49,5 +62,5 @@ export type Action =
   | { type: 'timer/pause'; now: number }
   | { type: 'timer/resume'; now: number }
   | { type: 'round/end' }
-  | { type: 'game/playAgain'; round: RoundSetup }
-  | { type: 'game/reset' }
+  | { type: 'game/playAgain' }
+  | { type: 'game/exit' }

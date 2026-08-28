@@ -1,11 +1,22 @@
 import { MAX_PLAYERS, SPY_COUNT, STATE_VERSION, STORAGE_KEY } from './config'
 import { initialState } from './reducer'
+import { isKnownTopicId } from './topics'
 import { isKnownWordId } from './words'
 import * as storage from '../lib/storage'
 import type { GameState, Phase, Player, RevealStep, TimerState } from './types'
 
-const PHASES: readonly Phase[] = ['setup', 'reveal', 'discussion', 'ended']
+const PHASES: readonly Phase[] = [
+  'home',
+  'topics',
+  'players',
+  'reveal',
+  'discussion',
+  'ended',
+]
 const REVEAL_STEPS: readonly RevealStep[] = ['handoff', 'card']
+
+/** Phases where a round is live: spies, word and reveal index must all be real. */
+const IN_ROUND_PHASES: readonly Phase[] = ['reveal', 'discussion', 'ended']
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -25,6 +36,18 @@ function parsePlayers(value: unknown): Player[] | null {
 
   const ids = new Set(players.map((player) => player.id))
   return ids.size === players.length ? players : null
+}
+
+function parseTopicIds(value: unknown): string[] | null {
+  if (!Array.isArray(value) || value.length === 0) return null
+
+  const ids: string[] = []
+  for (const entry of value) {
+    if (typeof entry !== 'string' || !isKnownTopicId(entry)) return null
+    ids.push(entry)
+  }
+
+  return new Set(ids).size === ids.length ? ids : null
 }
 
 function parseSpyIds(value: unknown): string[] | null {
@@ -72,6 +95,9 @@ export function parseStoredState(value: unknown): GameState | null {
   const players = parsePlayers(value.players)
   if (players === null) return null
 
+  const topicIds = parseTopicIds(value.topicIds)
+  if (topicIds === null) return null
+
   const timer = parseTimer(value.timer)
   if (timer === null) return null
 
@@ -84,14 +110,19 @@ export function parseStoredState(value: unknown): GameState | null {
     return null
   }
 
-  // Cross-field sanity: an in-progress round must still refer to real things.
-  if (phase !== 'setup') {
+  // Cross-field sanity: an in-progress round must still refer to real things,
+  // and a pre-round phase must not carry a leftover spy set.
+  if (IN_ROUND_PHASES.includes(phase as Phase)) {
     // A stored spy count that no longer matches config is discarded, not
     // resumed — same stance as a version bump for a shape change.
     if (spyIds.length !== SPY_COUNT) return null
     const roster = new Set(players.map((player) => player.id))
     if (!spyIds.every((id) => roster.has(id))) return null
     if (wordId === null || !isKnownWordId(wordId)) return null
+  } else {
+    if (spyIds.length !== 0) return null
+    // A kept "last word" memo is fine, but it still has to be a real word.
+    if (wordId !== null && !isKnownWordId(wordId)) return null
   }
   if (phase === 'reveal' && revealIndex >= players.length) return null
 
@@ -99,6 +130,7 @@ export function parseStoredState(value: unknown): GameState | null {
     version: STATE_VERSION,
     phase: phase as Phase,
     players,
+    topicIds,
     spyIds,
     wordId,
     revealIndex,
@@ -114,8 +146,4 @@ export function loadState(): GameState {
 
 export function saveState(state: GameState): void {
   storage.set(STORAGE_KEY, state)
-}
-
-export function clearState(): void {
-  storage.clear(STORAGE_KEY)
 }

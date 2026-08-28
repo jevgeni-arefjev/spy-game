@@ -1,26 +1,16 @@
-import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react'
-import type { Dispatch, ReactNode } from 'react'
+import { useEffect, useMemo, useReducer, useRef } from 'react'
+import type { ReactNode } from 'react'
 import { PERSIST_DEBOUNCE_MS } from './config'
 import { GameContext } from './GameContext'
-import { clearState, loadState, saveState } from './persistence'
+import { loadState, saveState } from './persistence'
 import { reducer } from './reducer'
-import type { Action } from './types'
 
 type GameProviderProps = {
   children: ReactNode
 }
 
 export function GameProvider({ children }: GameProviderProps) {
-  const [state, baseDispatch] = useReducer(reducer, null, loadState)
-
-  // Wrapping dispatch keeps "new game clears the session" a single fact,
-  // rather than something every caller has to remember.
-  const dispatch = useCallback<Dispatch<Action>>((action) => {
-    if (action.type === 'game/reset') {
-      clearState()
-    }
-    baseDispatch(action)
-  }, [])
+  const [state, dispatch] = useReducer(reducer, null, loadState)
 
   const pendingState = useRef(state)
   pendingState.current = state

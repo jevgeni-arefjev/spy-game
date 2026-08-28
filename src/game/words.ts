@@ -1,28 +1,27 @@
 import { pickRandom } from './random'
+import { TOPICS } from './topics'
 
-export type WordEntry = {
-  /** Key into the `words` i18n namespace. The display string lives there. */
-  id: string
-}
-
-export const WORDS: readonly WordEntry[] = [
-  { id: 'beach' },
-  { id: 'hospital' },
-  { id: 'airport' },
-  { id: 'restaurant' },
-  { id: 'school' },
-]
+/**
+ * Every word id across every topic, in topic order. The display string for
+ * each lives in the `words` i18n namespace, keyed by id.
+ */
+export const WORD_IDS: readonly string[] = TOPICS.flatMap((topic) => [...topic.wordIds])
 
 export function isKnownWordId(id: string): boolean {
-  return WORDS.some((word) => word.id === id)
+  return WORD_IDS.includes(id)
 }
 
 /**
- * Pick a word, avoiding the previous round's word so a group playing again
- * never gets the same one twice in a row.
+ * Pick a word from `candidateIds`, avoiding `excludeId` so a group playing
+ * again never gets the same word twice in a row. If excluding would leave the
+ * pool empty (a single-word topic played back to back), fall back to the full
+ * candidate list.
  */
-export function pickWordId(excludeId: string | null): string {
-  const candidates = WORDS.filter((word) => word.id !== excludeId)
-  const pool = candidates.length > 0 ? candidates : WORDS
-  return pickRandom(pool).id
+export function pickWordId(
+  candidateIds: readonly string[],
+  excludeId: string | null,
+): string {
+  const pool = candidateIds.filter((id) => id !== excludeId)
+  const source = pool.length > 0 ? pool : candidateIds
+  return pickRandom(source)
 }

@@ -1,0 +1,24 @@
+.headline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-block: auto;
+}
+
+.title {
+  font-size: var(--font-size-4xl);
+}
+
+.tagline {
+  font-size: var(--font-size-md);
+  color: var(--color-text-muted);
+  text-wrap: balance;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+  margin-block-start: auto;
+}

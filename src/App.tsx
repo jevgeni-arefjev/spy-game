@@ -4,8 +4,10 @@ import { useGame } from './game/useGame'
 import { syncThemeColor } from './lib/themeColor'
 import { DiscussionScreen } from './screens/DiscussionScreen'
 import { EndedScreen } from './screens/EndedScreen'
+import { HomeScreen } from './screens/HomeScreen'
+import { PlayersScreen } from './screens/PlayersScreen'
 import { RevealScreen } from './screens/RevealScreen'
-import { SetupScreen } from './screens/SetupScreen'
+import { TopicsScreen } from './screens/TopicsScreen'
 
 /**
  * The whole app is one state machine. There is no router on purpose: phase
@@ -23,8 +25,12 @@ function App() {
   useEffect(syncThemeColor, [])
 
   switch (state.phase) {
-    case 'setup':
-      return <SetupScreen />
+    case 'home':
+      return <HomeScreen />
+    case 'topics':
+      return <TopicsScreen />
+    case 'players':
+      return <PlayersScreen />
     case 'reveal':
       return <RevealScreen />
     case 'discussion':

@@ -1,18 +1,25 @@
 import { DISCUSSION_SECONDS, MIN_PLAYERS, STATE_VERSION } from './config'
 import { msLeft } from './timer'
-import type { Action, GameState, RoundSetup } from './types'
+import { ALL_TOPIC_IDS, isKnownTopicId } from './topics'
+import type { Action, GameState, Phase, RoundSetup } from './types'
 
 const DISCUSSION_MS = DISCUSSION_SECONDS * 1000
 
+/** A fresh, stopped discussion timer — the state every non-round phase holds. */
+function resetTimer() {
+  return { endsAt: null, remainingMs: DISCUSSION_MS, running: false }
+}
+
 export const initialState: GameState = {
   version: STATE_VERSION,
-  phase: 'setup',
+  phase: 'home',
   players: [],
+  topicIds: [...ALL_TOPIC_IDS],
   spyIds: [],
   wordId: null,
   revealIndex: 0,
   revealStep: 'handoff',
-  timer: { endsAt: null, remainingMs: DISCUSSION_MS, running: false },
+  timer: resetTimer(),
 }
 
 /** Start the reveal run from the top with a fresh spy and word. */
@@ -24,7 +31,23 @@ function beginReveal(state: GameState, round: RoundSetup): GameState {
     wordId: round.wordId,
     revealIndex: 0,
     revealStep: 'handoff',
-    timer: { endsAt: null, remainingMs: DISCUSSION_MS, running: false },
+    timer: resetTimer(),
+  }
+}
+
+/**
+ * Drop everything round-specific, keeping the roster and topic choice so the
+ * next game can reuse (and edit) them. The last `wordId` is kept on purpose,
+ * purely so the next draw can avoid repeating it.
+ */
+function clearRound(state: GameState, phase: Phase): GameState {
+  return {
+    ...state,
+    phase,
+    spyIds: [],
+    revealIndex: 0,
+    revealStep: 'handoff',
+    timer: resetTimer(),
   }
 }
 
@@ -34,13 +57,54 @@ export function canStart(state: GameState): boolean {
 
 export function reducer(state: GameState, action: Action): GameState {
   switch (action.type) {
+    case 'game/open': {
+      if (state.phase !== 'home') return state
+      return { ...state, phase: 'topics' }
+    }
+
+    case 'topics/toggle': {
+      if (state.phase !== 'topics' || !isKnownTopicId(action.id)) return state
+
+      if (state.topicIds.includes(action.id)) {
+        // At least one topic must stay in play.
+        if (state.topicIds.length === 1) return state
+        return {
+          ...state,
+          topicIds: state.topicIds.filter((id) => id !== action.id),
+        }
+      }
+
+      // Re-add in canonical order so the selection reads the same everywhere.
+      return {
+        ...state,
+        topicIds: ALL_TOPIC_IDS.filter(
+          (id) => state.topicIds.includes(id) || id === action.id,
+        ),
+      }
+    }
+
+    case 'topics/confirm': {
+      if (state.phase !== 'topics') return state
+      return { ...state, phase: 'players' }
+    }
+
+    case 'topics/back': {
+      if (state.phase !== 'topics') return state
+      return { ...state, phase: 'home' }
+    }
+
+    case 'players/back': {
+      if (state.phase !== 'players') return state
+      return { ...state, phase: 'topics' }
+    }
+
     case 'player/add': {
-      if (state.phase !== 'setup') return state
+      if (state.phase !== 'players') return state
       return { ...state, players: [...state.players, action.player] }
     }
 
     case 'player/remove': {
-      if (state.phase !== 'setup') return state
+      if (state.phase !== 'players') return state
       return {
         ...state,
         players: state.players.filter((player) => player.id !== action.id),
@@ -48,7 +112,7 @@ export function reducer(state: GameState, action: Action): GameState {
     }
 
     case 'game/start': {
-      if (state.phase !== 'setup' || !canStart(state)) return state
+      if (state.phase !== 'players' || !canStart(state)) return state
       return beginReveal(state, action.round)
     }
 
@@ -116,11 +180,12 @@ export function reducer(state: GameState, action: Action): GameState {
 
     case 'game/playAgain': {
       if (state.phase !== 'ended') return state
-      return beginReveal(state, action.round)
+      return clearRound(state, 'topics')
     }
 
-    case 'game/reset': {
-      return { ...initialState }
+    case 'game/exit': {
+      if (state.phase !== 'ended') return state
+      return clearRound(state, 'home')
     }
   }
 }

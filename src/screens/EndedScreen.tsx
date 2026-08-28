@@ -2,20 +2,12 @@ import { useTranslation } from 'react-i18next'
 import { Button } from '../components/Button'
 import { Screen } from '../components/Screen'
 import { SPY_COUNT } from '../game/config'
-import { createRoundSetup } from '../game/round'
 import { useGame } from '../game/useGame'
 import styles from './EndedScreen.module.css'
 
 export function EndedScreen() {
   const { t } = useTranslation()
-  const { state, dispatch } = useGame()
-
-  const handlePlayAgain = () => {
-    dispatch({
-      type: 'game/playAgain',
-      round: createRoundSetup(state.players, state.wordId),
-    })
-  }
+  const { dispatch } = useGame()
 
   return (
     <Screen centered>
@@ -25,11 +17,11 @@ export function EndedScreen() {
       </div>
 
       <div className={styles.actions}>
-        <Button size="lg" fullWidth onClick={handlePlayAgain}>
+        <Button size="lg" fullWidth onClick={() => dispatch({ type: 'game/playAgain' })}>
           {t('ended.playAgain')}
         </Button>
-        <Button fullWidth variant="ghost" onClick={() => dispatch({ type: 'game/reset' })}>
-          {t('ended.newGame')}
+        <Button fullWidth variant="ghost" onClick={() => dispatch({ type: 'game/exit' })}>
+          {t('ended.exit')}
         </Button>
       </div>
     </Screen>

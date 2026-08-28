@@ -9,6 +9,12 @@ player is secretly the spy; everyone else sees the same word. Five minutes of
 discussion, then "Time's up". Voting, scoring and elimination are deliberately
 out of scope; the round ends at the timer.
 
+The flow is `home → topics → players → reveal → discussion → ended`. Topics are
+sets of words the group includes or excludes (at least one, up to all); the
+word is drawn from the union. The roster and the topic selection are remembered
+and stay editable between games — "Play again" returns to the topics screen,
+"Exit" returns home, and neither wipes them.
+
 Built on the Vite + React + TypeScript boilerplate that was already here. See
 [README.md](README.md) for how to run it and how to add locales, words and
 themes.
@@ -33,10 +39,10 @@ environment with no jsdom.
 
 ```
 src/
-  game/          domain: config, types, reducer, words, persistence, context
+  game/          domain: config, types, reducer, topics, words, persistence, context
   lib/           storage.ts, classNames.ts, themeColor.ts — no React, no game rules
   components/    reusable UI: Screen, Button, RoleCard, Countdown
-  screens/       one per phase: Setup, Reveal, Discussion, Ended
+  screens/       one per phase: Home, Topics, Players, Reveal, Discussion, Ended
   i18n/          i18next setup + locales/<locale>/<namespace>.json
   styles/        tokens.css (the visual source of truth), tokens.ts, global.css
 ```
@@ -57,8 +63,11 @@ are no path aliases.
 ## Decisions, and why
 
 **`useReducer` + context, no state library.** The whole app is one finite state
-machine over four phases. `src/game/reducer.ts` is the only place state
-changes.
+machine over six phases (`home`, `topics`, `players`, `reveal`, `discussion`,
+`ended`). `src/game/reducer.ts` is the only place state changes. Every action
+guards on the current phase and returns the state untouched if it doesn't
+apply. Leaving `ended` (`game/playAgain` → `topics`, `game/exit` → `home`)
+keeps `players` and `topicIds` and only clears the round.
 
 **The reducer is pure.** Randomness (spy, word) and `Date.now()` are drawn at
 the dispatch site and passed in the action payload — see
@@ -86,10 +95,13 @@ a native preferences plugin will be swapped in. No component may touch
 
 **Stored state is validated, never repaired.** `parseStoredState()` in
 `src/game/persistence.ts` checks the version, the shape *and* cross-field
-consistency (every spy id is in the roster, there are exactly `SPY_COUNT` of
-them, the word id is known, `revealIndex` is in range). Anything off is
-discarded and the app boots clean. Changing the state shape means bumping
-`STATE_VERSION` and `STORAGE_KEY`'s suffix — currently `v2`.
+consistency: `topicIds` is a non-empty set of known ids; in a live round
+(`reveal`/`discussion`/`ended`) every spy id is in the roster, there are
+exactly `SPY_COUNT` of them, and the word id is known; before the round starts
+`spyIds` is empty and `wordId` is null or a known "last word" memo;
+`revealIndex` is in range while revealing. Anything off is discarded and the
+app boots clean. Changing the state shape means bumping `STATE_VERSION` and
+`STORAGE_KEY`'s suffix — currently `v3`.
 
 **Writes are debounced ~200ms**, with a flush on `pagehide` and
 `visibilitychange` — a backgrounded mobile browser may never run the timeout.
@@ -99,9 +111,17 @@ player id (`revealedFor === player.id` in `RevealScreen`) rather than a boolean.
 Once the reducer advances, the id no longer matches and the next card is
 face-down by construction.
 
-**Every user-facing string goes through `t()`.** State stores a `wordId`, never
-a translated word, so a language switch mid-game is safe. Locales are
-discovered with `import.meta.glob`, so adding a language needs no code change.
+**Every user-facing string goes through `t()`.** State stores a `wordId` (and
+`topicIds`), never a translated word, so a language switch mid-game is safe.
+Namespaces are `common`, `words` and `topics`, one JSON file each per locale;
+locales are discovered with `import.meta.glob`, so adding a language needs no
+code change.
+
+**Topics and words share one source of truth: `src/game/topics.ts`.** `TOPICS`
+lists each topic's `wordIds`; `words.ts` derives its flat `WORD_IDS` pool by
+flattening them, and `createRoundSetup` draws from `wordIdsForTopics(topicIds)`.
+Word ids are unique across topics. Adding a topic is a `TOPICS` entry plus a
+`topics.json` line plus its `words.json` lines — no other code.
 
 **All visual constants live in `src/styles/tokens.css`**, split into a raw
 `--palette-*` ramp and a semantic `--color-*` layer. Only the semantic layer is
@@ -117,8 +137,9 @@ number is the whole change. Keep it in `1 <= SPY_COUNT < MIN_PLAYERS`.
 `parseStoredState` discards a stored session whose `spyIds.length` no longer
 equals `SPY_COUNT`, the same way a `STATE_VERSION` bump discards a stale shape,
 so flipping the constant between builds is safe. The `_one`/`_other` plural
-strings (`setup.subtitle`, `discussion.hint`, `ended.subtitle`, `role.spy.hint`,
-`app.tagline`) are selected by passing `{ count: SPY_COUNT }` at the call site.
+strings (`players.subtitle`, `discussion.hint`, `ended.subtitle`,
+`role.spy.hint`, `app.tagline`) are selected by passing `{ count: SPY_COUNT }`
+at the call site.
 
 ## Gotchas
 
@@ -126,7 +147,7 @@ strings (`setup.subtitle`, `discussion.hint`, `ended.subtitle`, `role.spy.hint`,
   re-subscribes every render. `DiscussionScreen` wraps it in `useCallback`.
 - Interpolating with a variable named `count` triggers i18next pluralisation.
   Use a different name (`current`, `total`) unless plural forms are wanted —
-  `setup.needMore` and `setup.spyHint` do want them and carry `_one`/`_other`.
+  `players.needMore` and `players.spyHint` do want them and carry `_one`/`_other`.
 - CSS uses `100dvh`, not `100vh`, and pads with `env(safe-area-inset-*)`;
   `index.html` sets `viewport-fit=cover` to make that meaningful.
 - Text that swaps in place (the reveal hint, the setup error line) has a

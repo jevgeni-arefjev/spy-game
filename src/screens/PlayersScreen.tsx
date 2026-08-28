@@ -15,9 +15,9 @@ import { createId } from '../game/random'
 import { canStart } from '../game/reducer'
 import { createRoundSetup } from '../game/round'
 import { useGame } from '../game/useGame'
-import styles from './SetupScreen.module.css'
+import styles from './PlayersScreen.module.css'
 
-export function SetupScreen() {
+export function PlayersScreen() {
   const { t } = useTranslation()
   const { state, dispatch } = useGame()
   const [name, setName] = useState('')
@@ -42,19 +42,22 @@ export function SetupScreen() {
   }
 
   const handleStart = () => {
-    dispatch({ type: 'game/start', round: createRoundSetup(players, state.wordId) })
+    dispatch({
+      type: 'game/start',
+      round: createRoundSetup(players, state.topicIds, state.wordId),
+    })
   }
 
   return (
     <Screen>
       <header className={styles.header}>
-        <h1 className={styles.title}>{t('setup.title')}</h1>
-        <p className={styles.subtitle}>{t('setup.subtitle', { count: SPY_COUNT })}</p>
+        <h1 className={styles.title}>{t('players.title')}</h1>
+        <p className={styles.subtitle}>{t('players.subtitle', { count: SPY_COUNT })}</p>
       </header>
 
       <form className={styles.form} onSubmit={handleSubmit} noValidate>
         <label className={styles.srOnly} htmlFor="player-name">
-          {t('setup.nameLabel')}
+          {t('players.nameLabel')}
         </label>
         <div className={styles.inputRow}>
           <input
@@ -65,7 +68,7 @@ export function SetupScreen() {
               setName(event.target.value)
               setError(null)
             }}
-            placeholder={t('setup.namePlaceholder')}
+            placeholder={t('players.namePlaceholder')}
             maxLength={PLAYER_NAME_MAX_LENGTH}
             autoComplete="off"
             autoCorrect="off"
@@ -74,24 +77,24 @@ export function SetupScreen() {
             enterKeyHint="done"
           />
           <Button type="submit" disabled={players.length >= MAX_PLAYERS}>
-            {t('setup.addPlayer')}
+            {t('players.addPlayer')}
           </Button>
         </div>
         <p className={styles.error} role="alert">
-          {error === null ? '' : t(`setup.errors.${error}`, { count: MAX_PLAYERS })}
+          {error === null ? '' : t(`players.errors.${error}`, { count: MAX_PLAYERS })}
         </p>
       </form>
 
       <section className={styles.roster}>
         <h2 className={styles.rosterHeading}>
-          <span>{t('setup.playersHeading')}</span>
+          <span>{t('players.playersHeading')}</span>
           <span className={styles.count}>
-            {t('setup.playerCount', { current: players.length, max: MAX_PLAYERS })}
+            {t('players.playerCount', { current: players.length, max: MAX_PLAYERS })}
           </span>
         </h2>
 
         {players.length === 0 ? (
-          <p className={styles.empty}>{t('setup.emptyRoster')}</p>
+          <p className={styles.empty}>{t('players.emptyRoster')}</p>
         ) : (
           <ul className={styles.list}>
             {players.map((player) => (
@@ -101,7 +104,7 @@ export function SetupScreen() {
                   type="button"
                   className={styles.remove}
                   onClick={() => dispatch({ type: 'player/remove', id: player.id })}
-                  aria-label={t('setup.removePlayer', { name: player.name })}
+                  aria-label={t('players.removePlayer', { name: player.name })}
                 >
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -114,11 +117,18 @@ export function SetupScreen() {
       <footer className={styles.footer}>
         <p className={styles.hint}>
           {ready
-            ? t('setup.spyHint', { count: SPY_COUNT })
-            : t('setup.needMore', { count: missing })}
+            ? t('players.spyHint', { count: SPY_COUNT })
+            : t('players.needMore', { count: missing })}
         </p>
         <Button size="lg" fullWidth disabled={!ready} onClick={handleStart}>
-          {t('setup.start')}
+          {t('players.start')}
+        </Button>
+        <Button
+          fullWidth
+          variant="ghost"
+          onClick={() => dispatch({ type: 'players/back' })}
+        >
+          {t('back')}
         </Button>
       </footer>
     </Screen>

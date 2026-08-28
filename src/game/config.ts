@@ -28,10 +28,10 @@ export const MAX_PLAYERS = 12
 export const PLAYER_NAME_MAX_LENGTH = 24
 
 /** Shape version of the persisted session. Bump on any breaking state change. */
-export const STATE_VERSION = 2
+export const STATE_VERSION = 3
 
 /** Single localStorage key holding the whole session. */
-export const STORAGE_KEY = 'spy:session:v2'
+export const STORAGE_KEY = 'spy:session:v3'
 
 /** How long to wait after the last state change before writing to storage. */
 export const PERSIST_DEBOUNCE_MS = 200

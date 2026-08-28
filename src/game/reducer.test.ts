@@ -1,9 +1,11 @@
 import { describe, it, expect } from 'vitest'
 import { canStart, initialState, reducer } from './reducer'
 import { DISCUSSION_SECONDS, MIN_PLAYERS, STATE_VERSION } from './config'
+import { ALL_TOPIC_IDS } from './topics'
 import type { Action, GameState, Player } from './types'
 
 const DISCUSSION_MS = DISCUSSION_SECONDS * 1000
+const ALL_TOPICS = [...ALL_TOPIC_IDS]
 
 function roster(n: number): Player[] {
   return Array.from({ length: n }, (_, i) => ({ id: `p${i + 1}`, name: `P${i + 1}` }))
@@ -11,8 +13,21 @@ function roster(n: number): Player[] {
 
 const round = { spyIds: ['p1'], wordId: 'beach' }
 
-function setup(overrides: Partial<GameState> = {}): GameState {
-  return { ...initialState, players: roster(MIN_PLAYERS), ...overrides }
+function home(overrides: Partial<GameState> = {}): GameState {
+  return { ...initialState, ...overrides }
+}
+
+function topics(overrides: Partial<GameState> = {}): GameState {
+  return { ...initialState, phase: 'topics', ...overrides }
+}
+
+function players(overrides: Partial<GameState> = {}): GameState {
+  return {
+    ...initialState,
+    phase: 'players',
+    players: roster(MIN_PLAYERS),
+    ...overrides,
+  }
 }
 
 function reveal(overrides: Partial<GameState> = {}): GameState {
@@ -50,10 +65,11 @@ function ended(overrides: Partial<GameState> = {}): GameState {
 }
 
 describe('initialState', () => {
-  it('is a clean setup state', () => {
+  it('is a clean home state with every topic in play', () => {
     expect(initialState.version).toBe(STATE_VERSION)
-    expect(initialState.phase).toBe('setup')
+    expect(initialState.phase).toBe('home')
     expect(initialState.players).toEqual([])
+    expect(initialState.topicIds).toEqual(ALL_TOPICS)
     expect(initialState.spyIds).toEqual([])
     expect(initialState.wordId).toBeNull()
     expect(initialState.revealIndex).toBe(0)
@@ -66,25 +82,104 @@ describe('initialState', () => {
   })
 
   it('is not mutated by dispatching against it', () => {
-    reducer(initialState, { type: 'player/add', player: { id: 'x', name: 'X' } })
-    reducer(initialState, { type: 'game/reset' })
-    expect(initialState.players).toEqual([])
-    expect(initialState.phase).toBe('setup')
+    reducer(initialState, { type: 'game/open' })
+    reducer(players(), { type: 'player/add', player: { id: 'x', name: 'X' } })
+    expect(initialState.phase).toBe('home')
+    expect(initialState.topicIds).toEqual(ALL_TOPICS)
   })
 })
 
 describe('canStart', () => {
   it('is false below MIN_PLAYERS and true at or above it', () => {
-    expect(canStart(setup({ players: roster(MIN_PLAYERS - 1) }))).toBe(false)
-    expect(canStart(setup({ players: roster(MIN_PLAYERS) }))).toBe(true)
-    expect(canStart(setup({ players: roster(MIN_PLAYERS + 1) }))).toBe(true)
-    expect(canStart(setup({ players: [] }))).toBe(false)
+    expect(canStart(players({ players: roster(MIN_PLAYERS - 1) }))).toBe(false)
+    expect(canStart(players({ players: roster(MIN_PLAYERS) }))).toBe(true)
+    expect(canStart(players({ players: roster(MIN_PLAYERS + 1) }))).toBe(true)
+    expect(canStart(players({ players: [] }))).toBe(false)
+  })
+})
+
+describe('game/open', () => {
+  it('moves from home to topics', () => {
+    expect(reducer(home(), { type: 'game/open' }).phase).toBe('topics')
+  })
+
+  it('is ignored outside home', () => {
+    for (const state of [topics(), players(), reveal(), discussion(), ended()]) {
+      expect(reducer(state, { type: 'game/open' })).toBe(state)
+    }
+  })
+})
+
+describe('topics/toggle', () => {
+  it('excludes an included topic', () => {
+    const before = topics({ topicIds: [...ALL_TOPICS] })
+    const after = reducer(before, { type: 'topics/toggle', id: ALL_TOPICS[1] })
+    expect(after.topicIds).not.toContain(ALL_TOPICS[1])
+    expect(after.topicIds).toHaveLength(ALL_TOPICS.length - 1)
+  })
+
+  it('re-includes an excluded topic in canonical order', () => {
+    const before = topics({ topicIds: [ALL_TOPICS[2]] })
+    const after = reducer(before, { type: 'topics/toggle', id: ALL_TOPICS[0] })
+    expect(after.topicIds).toEqual([ALL_TOPICS[0], ALL_TOPICS[2]])
+  })
+
+  it('refuses to deselect the last remaining topic', () => {
+    const before = topics({ topicIds: [ALL_TOPICS[0]] })
+    expect(reducer(before, { type: 'topics/toggle', id: ALL_TOPICS[0] })).toBe(before)
+  })
+
+  it('ignores an unknown topic id', () => {
+    const before = topics()
+    expect(reducer(before, { type: 'topics/toggle', id: 'nope' })).toBe(before)
+  })
+
+  it('is ignored outside topics', () => {
+    for (const state of [home(), players(), reveal(), discussion(), ended()]) {
+      expect(reducer(state, { type: 'topics/toggle', id: ALL_TOPICS[0] })).toBe(state)
+    }
+  })
+})
+
+describe('topics/confirm', () => {
+  it('moves from topics to players', () => {
+    expect(reducer(topics(), { type: 'topics/confirm' }).phase).toBe('players')
+  })
+
+  it('is ignored outside topics', () => {
+    for (const state of [home(), players(), reveal(), discussion(), ended()]) {
+      expect(reducer(state, { type: 'topics/confirm' })).toBe(state)
+    }
+  })
+})
+
+describe('topics/back', () => {
+  it('moves from topics to home', () => {
+    expect(reducer(topics(), { type: 'topics/back' }).phase).toBe('home')
+  })
+
+  it('is ignored outside topics', () => {
+    for (const state of [home(), players(), reveal(), discussion(), ended()]) {
+      expect(reducer(state, { type: 'topics/back' })).toBe(state)
+    }
+  })
+})
+
+describe('players/back', () => {
+  it('moves from players to topics', () => {
+    expect(reducer(players(), { type: 'players/back' }).phase).toBe('topics')
+  })
+
+  it('is ignored outside players', () => {
+    for (const state of [home(), topics(), reveal(), discussion(), ended()]) {
+      expect(reducer(state, { type: 'players/back' })).toBe(state)
+    }
   })
 })
 
 describe('player/add', () => {
   it('appends without mutating the previous state', () => {
-    const before = setup({ players: roster(1) })
+    const before = players({ players: roster(1) })
     const after = reducer(before, {
       type: 'player/add',
       player: { id: 'p2', name: 'P2' },
@@ -96,8 +191,8 @@ describe('player/add', () => {
     expect(after.players).not.toBe(before.players)
   })
 
-  it('is ignored outside setup', () => {
-    for (const state of [reveal(), discussion(), ended()]) {
+  it('is ignored outside the players phase', () => {
+    for (const state of [home(), topics(), reveal(), discussion(), ended()]) {
       const action: Action = {
         type: 'player/add',
         player: { id: 'z', name: 'Z' },
@@ -109,20 +204,20 @@ describe('player/add', () => {
 
 describe('player/remove', () => {
   it('drops the matching id and leaves others', () => {
-    const before = setup({ players: roster(3) })
+    const before = players({ players: roster(3) })
     const after = reducer(before, { type: 'player/remove', id: 'p2' })
     expect(after.players.map((p) => p.id)).toEqual(['p1', 'p3'])
     expect(before.players).toHaveLength(3)
   })
 
   it('is a no-op for an unknown id but still returns a state', () => {
-    const before = setup({ players: roster(2) })
+    const before = players({ players: roster(2) })
     const after = reducer(before, { type: 'player/remove', id: 'nope' })
     expect(after.players).toHaveLength(2)
   })
 
-  it('is ignored outside setup', () => {
-    for (const state of [reveal(), discussion(), ended()]) {
+  it('is ignored outside the players phase', () => {
+    for (const state of [home(), topics(), reveal(), discussion(), ended()]) {
       expect(reducer(state, { type: 'player/remove', id: 'p1' })).toBe(state)
     }
   })
@@ -130,7 +225,7 @@ describe('player/remove', () => {
 
 describe('game/start', () => {
   it('enters reveal from the top with the drawn spies, word and a reset timer', () => {
-    const before = setup()
+    const before = players()
     const after = reducer(before, { type: 'game/start', round })
     expect(after.phase).toBe('reveal')
     expect(after.spyIds).toEqual(['p1'])
@@ -143,21 +238,22 @@ describe('game/start', () => {
       running: false,
     })
     expect(after.players).toBe(before.players)
+    expect(after.topicIds).toBe(before.topicIds)
   })
 
   it('is ignored below MIN_PLAYERS', () => {
-    const state = setup({ players: roster(MIN_PLAYERS - 1) })
+    const state = players({ players: roster(MIN_PLAYERS - 1) })
     expect(reducer(state, { type: 'game/start', round })).toBe(state)
   })
 
-  it('is ignored outside setup', () => {
-    for (const state of [reveal(), discussion(), ended()]) {
+  it('is ignored outside the players phase', () => {
+    for (const state of [home(), topics(), reveal(), discussion(), ended()]) {
       expect(reducer(state, { type: 'game/start', round })).toBe(state)
     }
   })
 
   it('passes a multi-spy round straight through, spy-count agnostic', () => {
-    const before = setup({ players: roster(5) })
+    const before = players({ players: roster(5) })
     const after = reducer(before, {
       type: 'game/start',
       round: { spyIds: ['p2', 'p4'], wordId: 'school' },
@@ -182,7 +278,7 @@ describe('reveal/confirmHandoff', () => {
   })
 
   it('is ignored outside the reveal phase', () => {
-    for (const state of [setup(), discussion(), ended()]) {
+    for (const state of [players(), discussion(), ended()]) {
       expect(reducer(state, { type: 'reveal/confirmHandoff' })).toBe(state)
     }
   })
@@ -222,7 +318,7 @@ describe('reveal/done', () => {
   })
 
   it('is ignored outside the reveal phase', () => {
-    for (const state of [setup(), discussion(), ended()]) {
+    for (const state of [players(), discussion(), ended()]) {
       expect(reducer(state, { type: 'reveal/done', now: 0 })).toBe(state)
     }
   })
@@ -252,7 +348,7 @@ describe('timer/pause', () => {
       timer: { endsAt: null, remainingMs: 1_000, running: false },
     })
     expect(reducer(paused, { type: 'timer/pause', now: 0 })).toBe(paused)
-    for (const state of [setup(), reveal(), ended()]) {
+    for (const state of [players(), reveal(), ended()]) {
       expect(reducer(state, { type: 'timer/pause', now: 0 })).toBe(state)
     }
   })
@@ -281,7 +377,7 @@ describe('timer/resume', () => {
   it('is ignored when already running or outside discussion', () => {
     const running = discussion()
     expect(reducer(running, { type: 'timer/resume', now: 0 })).toBe(running)
-    for (const state of [setup(), reveal(), ended()]) {
+    for (const state of [players(), reveal(), ended()]) {
       expect(reducer(state, { type: 'timer/resume', now: 0 })).toBe(state)
     }
   })
@@ -302,42 +398,59 @@ describe('round/end', () => {
   })
 
   it('is ignored outside discussion', () => {
-    for (const state of [setup(), reveal(), ended()]) {
+    for (const state of [players(), reveal(), ended()]) {
       expect(reducer(state, { type: 'round/end' })).toBe(state)
     }
   })
 })
 
 describe('game/playAgain', () => {
-  it('re-enters reveal from the top with a new spy and word', () => {
-    const state = ended({ revealIndex: 2, revealStep: 'card' })
-    const after = reducer(state, {
-      type: 'game/playAgain',
-      round: { spyIds: ['p3'], wordId: 'airport' },
+  it('returns to topics, keeping the roster and topics, clearing the round', () => {
+    const state = ended({
+      revealIndex: 2,
+      revealStep: 'card',
+      spyIds: ['p2'],
+      topicIds: ['food'],
     })
-    expect(after.phase).toBe('reveal')
-    expect(after.spyIds).toEqual(['p3'])
-    expect(after.wordId).toBe('airport')
+    const after = reducer(state, { type: 'game/playAgain' })
+    expect(after.phase).toBe('topics')
+    expect(after.players).toBe(state.players)
+    expect(after.topicIds).toEqual(['food'])
+    expect(after.spyIds).toEqual([])
     expect(after.revealIndex).toBe(0)
     expect(after.revealStep).toBe('handoff')
-    expect(after.timer.running).toBe(false)
-    expect(after.timer.remainingMs).toBe(DISCUSSION_MS)
-    expect(after.players).toBe(state.players)
+    expect(after.timer).toEqual({
+      endsAt: null,
+      remainingMs: DISCUSSION_MS,
+      running: false,
+    })
+  })
+
+  it('keeps the last word so the next draw can avoid it', () => {
+    const after = reducer(ended({ wordId: 'school' }), { type: 'game/playAgain' })
+    expect(after.wordId).toBe('school')
   })
 
   it('is ignored outside the ended phase', () => {
-    for (const state of [setup(), reveal(), discussion()]) {
-      expect(reducer(state, { type: 'game/playAgain', round })).toBe(state)
+    for (const state of [home(), topics(), players(), reveal(), discussion()]) {
+      expect(reducer(state, { type: 'game/playAgain' })).toBe(state)
     }
   })
 })
 
-describe('game/reset', () => {
-  it('returns a fresh initial state from any phase', () => {
-    for (const state of [setup({ players: roster(5) }), reveal(), discussion(), ended()]) {
-      const after = reducer(state, { type: 'game/reset' })
-      expect(after).toEqual(initialState)
-      expect(after).not.toBe(initialState)
+describe('game/exit', () => {
+  it('returns to home, keeping the roster and topics, clearing the round', () => {
+    const state = ended({ spyIds: ['p1'], topicIds: ['travel'] })
+    const after = reducer(state, { type: 'game/exit' })
+    expect(after.phase).toBe('home')
+    expect(after.players).toBe(state.players)
+    expect(after.topicIds).toEqual(['travel'])
+    expect(after.spyIds).toEqual([])
+  })
+
+  it('is ignored outside the ended phase', () => {
+    for (const state of [home(), topics(), players(), reveal(), discussion()]) {
+      expect(reducer(state, { type: 'game/exit' })).toBe(state)
     }
   })
 })
@@ -375,9 +488,19 @@ describe('unrelated fields survive a transition', () => {
   })
 })
 
-describe('a full round played through the reducer', () => {
-  it('walks setup → reveal → discussion → ended', () => {
+describe('a full game played through the reducer', () => {
+  it('walks home → topics → players → reveal → discussion → ended → topics', () => {
     let state = initialState
+
+    state = reducer(state, { type: 'game/open' })
+    expect(state.phase).toBe('topics')
+
+    state = reducer(state, { type: 'topics/toggle', id: ALL_TOPICS[0] })
+    expect(state.topicIds).not.toContain(ALL_TOPICS[0])
+
+    state = reducer(state, { type: 'topics/confirm' })
+    expect(state.phase).toBe('players')
+
     for (const player of roster(3)) {
       state = reducer(state, { type: 'player/add', player })
     }
@@ -398,11 +521,15 @@ describe('a full round played through the reducer', () => {
     expect(state.timer.running).toBe(true)
 
     state = reducer(state, { type: 'timer/pause', now: 1_000 })
-    expect(state.timer.running).toBe(false)
     state = reducer(state, { type: 'timer/resume', now: 2_000 })
-    expect(state.timer.running).toBe(true)
 
     state = reducer(state, { type: 'round/end' })
     expect(state.phase).toBe('ended')
+
+    state = reducer(state, { type: 'game/playAgain' })
+    expect(state.phase).toBe('topics')
+    expect(state.players).toHaveLength(3)
+    expect(state.topicIds).not.toContain(ALL_TOPICS[0])
+    expect(state.spyIds).toEqual([])
   })
 })

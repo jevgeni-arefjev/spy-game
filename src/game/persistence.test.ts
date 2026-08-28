@@ -1,10 +1,5 @@
 import { afterEach, describe, it, expect, vi } from 'vitest'
-import {
-  clearState,
-  loadState,
-  parseStoredState,
-  saveState,
-} from './persistence'
+import { loadState, parseStoredState, saveState } from './persistence'
 import { initialState } from './reducer'
 import {
   DISCUSSION_SECONDS,
@@ -12,11 +7,13 @@ import {
   STATE_VERSION,
   STORAGE_KEY,
 } from './config'
-import { WORDS } from './words'
+import { ALL_TOPIC_IDS } from './topics'
+import { WORD_IDS } from './words'
 import type { GameState } from './types'
 
 const DISCUSSION_MS = DISCUSSION_SECONDS * 1000
-const KNOWN_WORD = WORDS[0].id
+const KNOWN_WORD = WORD_IDS[0]
+const ALL_TOPICS = [...ALL_TOPIC_IDS]
 
 function players(n: number) {
   return Array.from({ length: n }, (_, i) => ({ id: `p${i + 1}`, name: `P${i + 1}` }))
@@ -27,10 +24,11 @@ function players(n: number) {
 const ROUND_ROSTER = Math.max(3, SPY_COUNT + 2)
 const SPY_IDS = Array.from({ length: SPY_COUNT }, (_, i) => `p${i + 1}`)
 
-const validSetup: GameState = {
+const validHome: GameState = {
   version: STATE_VERSION,
-  phase: 'setup',
-  players: players(2),
+  phase: 'home',
+  players: [],
+  topicIds: ALL_TOPICS,
   spyIds: [],
   wordId: null,
   revealIndex: 0,
@@ -38,8 +36,20 @@ const validSetup: GameState = {
   timer: { endsAt: null, remainingMs: DISCUSSION_MS, running: false },
 }
 
+const validTopics: GameState = {
+  ...validHome,
+  phase: 'topics',
+  topicIds: [ALL_TOPICS[0]],
+}
+
+const validPlayers: GameState = {
+  ...validHome,
+  phase: 'players',
+  players: players(2),
+}
+
 const validReveal: GameState = {
-  ...validSetup,
+  ...validPlayers,
   phase: 'reveal',
   players: players(ROUND_ROSTER),
   spyIds: SPY_IDS,
@@ -69,7 +79,14 @@ function wire<T extends object>(value: T): Record<string, unknown> {
 
 describe('parseStoredState — accepts every valid phase', () => {
   it('round-trips each phase unchanged', () => {
-    for (const state of [validSetup, validReveal, validDiscussion, validEnded]) {
+    for (const state of [
+      validHome,
+      validTopics,
+      validPlayers,
+      validReveal,
+      validDiscussion,
+      validEnded,
+    ]) {
       expect(parseStoredState(wire(state))).toEqual(state)
     }
   })
@@ -84,26 +101,26 @@ describe('parseStoredState — accepts every valid phase', () => {
 
 describe('parseStoredState — rejects malformed containers', () => {
   it('rejects non-records', () => {
-    for (const bad of [null, undefined, 42, 'x', true, [], [validSetup]]) {
+    for (const bad of [null, undefined, 42, 'x', true, [], [validHome]]) {
       expect(parseStoredState(bad)).toBeNull()
     }
   })
 
-  it('rejects a version mismatch', () => {
-    for (const version of [0, STATE_VERSION + 1, '1', null, undefined]) {
-      expect(parseStoredState({ ...wire(validSetup), version })).toBeNull()
+  it('rejects a version mismatch, including the previous shape', () => {
+    for (const version of [0, STATE_VERSION - 1, STATE_VERSION + 1, '1', null, undefined]) {
+      expect(parseStoredState({ ...wire(validHome), version })).toBeNull()
     }
   })
 
-  it('rejects an unknown phase', () => {
-    for (const phase of ['lobby', '', 42, null]) {
-      expect(parseStoredState({ ...wire(validSetup), phase })).toBeNull()
+  it('rejects an unknown phase, including the old "setup"', () => {
+    for (const phase of ['lobby', 'setup', '', 42, null]) {
+      expect(parseStoredState({ ...wire(validHome), phase })).toBeNull()
     }
   })
 
   it('rejects an unknown reveal step', () => {
     for (const revealStep of ['flipped', '', 1, null]) {
-      expect(parseStoredState({ ...wire(validSetup), revealStep })).toBeNull()
+      expect(parseStoredState({ ...wire(validHome), revealStep })).toBeNull()
     }
   })
 })
@@ -111,12 +128,12 @@ describe('parseStoredState — rejects malformed containers', () => {
 describe('parseStoredState — rejects malformed players', () => {
   it('rejects a non-array roster', () => {
     for (const bad of [null, {}, 'p1,p2', 3]) {
-      expect(parseStoredState({ ...wire(validSetup), players: bad })).toBeNull()
+      expect(parseStoredState({ ...wire(validPlayers), players: bad })).toBeNull()
     }
   })
 
   it('rejects a roster past MAX_PLAYERS', () => {
-    expect(parseStoredState({ ...wire(validSetup), players: players(13) })).toBeNull()
+    expect(parseStoredState({ ...wire(validPlayers), players: players(13) })).toBeNull()
   })
 
   it('rejects malformed entries', () => {
@@ -129,8 +146,8 @@ describe('parseStoredState — rejects malformed players', () => {
       [{ id: 1, name: 'P1' }],
       [{ id: 'p1', name: 2 }],
     ]
-    for (const players of cases) {
-      expect(parseStoredState({ ...wire(validSetup), players })).toBeNull()
+    for (const roster of cases) {
+      expect(parseStoredState({ ...wire(validPlayers), players: roster })).toBeNull()
     }
   })
 
@@ -139,7 +156,27 @@ describe('parseStoredState — rejects malformed players', () => {
       { id: 'p1', name: 'A' },
       { id: 'p1', name: 'B' },
     ]
-    expect(parseStoredState({ ...wire(validSetup), players: dupes })).toBeNull()
+    expect(parseStoredState({ ...wire(validPlayers), players: dupes })).toBeNull()
+  })
+})
+
+describe('parseStoredState — rejects a malformed topic set', () => {
+  it('rejects a non-array or empty topicIds', () => {
+    for (const bad of [null, undefined, 'locations', 3, {}, []]) {
+      expect(parseStoredState({ ...wire(validHome), topicIds: bad })).toBeNull()
+    }
+  })
+
+  it('rejects unknown or non-string topic ids', () => {
+    for (const bad of [['locations', 'nope'], ['locations', 2], ['']]) {
+      expect(parseStoredState({ ...wire(validHome), topicIds: bad })).toBeNull()
+    }
+  })
+
+  it('rejects duplicate topic ids', () => {
+    expect(
+      parseStoredState({ ...wire(validHome), topicIds: [ALL_TOPICS[0], ALL_TOPICS[0]] }),
+    ).toBeNull()
   })
 })
 
@@ -165,7 +202,7 @@ describe('parseStoredState — rejects a malformed timer', () => {
 
   for (const [label, timer] of Object.entries(cases)) {
     it(`rejects a timer with ${label}`, () => {
-      expect(parseStoredState({ ...wire(validSetup), timer })).toBeNull()
+      expect(parseStoredState({ ...wire(validHome), timer })).toBeNull()
     })
   }
 })
@@ -173,13 +210,13 @@ describe('parseStoredState — rejects a malformed timer', () => {
 describe('parseStoredState — rejects a malformed spy set', () => {
   it('rejects a non-array spyIds', () => {
     for (const bad of [null, undefined, 'p1', 3, { 0: 'p1' }]) {
-      expect(parseStoredState({ ...wire(validSetup), spyIds: bad })).toBeNull()
+      expect(parseStoredState({ ...wire(validReveal), spyIds: bad })).toBeNull()
     }
   })
 
   it('rejects entries that are not non-empty strings', () => {
     for (const bad of [['p1', 2], [''], [null], [{ id: 'p1' }]]) {
-      expect(parseStoredState({ ...wire(validSetup), spyIds: bad })).toBeNull()
+      expect(parseStoredState({ ...wire(validReveal), spyIds: bad })).toBeNull()
     }
   })
 
@@ -192,18 +229,18 @@ describe('parseStoredState — rejects a malformed spy set', () => {
 
 describe('parseStoredState — rejects malformed scalars', () => {
   it('rejects a non-string, non-null wordId', () => {
-    expect(parseStoredState({ ...wire(validSetup), wordId: 3 })).toBeNull()
+    expect(parseStoredState({ ...wire(validHome), wordId: 3 })).toBeNull()
   })
 
   it('rejects a revealIndex that is not a non-negative integer', () => {
     for (const revealIndex of [-1, 1.5, '0', Number.NaN, null]) {
-      expect(parseStoredState({ ...wire(validSetup), revealIndex })).toBeNull()
+      expect(parseStoredState({ ...wire(validHome), revealIndex })).toBeNull()
     }
   })
 })
 
-describe('parseStoredState — cross-field consistency for in-progress rounds', () => {
-  it('rejects an empty or roster-foreign spy set once past setup', () => {
+describe('parseStoredState — cross-field consistency', () => {
+  it('rejects an empty or roster-foreign spy set once a round is live', () => {
     const foreign = SPY_IDS.map((id) => `${id}-gone`)
     expect(parseStoredState({ ...wire(validReveal), spyIds: [] })).toBeNull()
     expect(parseStoredState({ ...wire(validReveal), spyIds: foreign })).toBeNull()
@@ -214,9 +251,19 @@ describe('parseStoredState — cross-field consistency for in-progress rounds', 
     expect(parseStoredState({ ...wire(validReveal), spyIds: extra })).toBeNull()
   })
 
-  it('rejects a missing or unknown word once past setup', () => {
+  it('rejects a missing or unknown word once a round is live', () => {
     expect(parseStoredState({ ...wire(validReveal), wordId: null })).toBeNull()
-    expect(parseStoredState({ ...wire(validReveal), wordId: 'library' })).toBeNull()
+    expect(parseStoredState({ ...wire(validReveal), wordId: 'atlantis' })).toBeNull()
+  })
+
+  it('rejects a leftover spy set on a pre-round screen', () => {
+    expect(parseStoredState({ ...wire(validTopics), spyIds: ['p1'] })).toBeNull()
+  })
+
+  it('tolerates a kept last word on a pre-round screen but not an unknown one', () => {
+    const kept = parseStoredState({ ...wire(validTopics), wordId: KNOWN_WORD })
+    expect(kept?.wordId).toBe(KNOWN_WORD)
+    expect(parseStoredState({ ...wire(validTopics), wordId: 'atlantis' })).toBeNull()
   })
 
   it('rejects a revealIndex past the roster while revealing', () => {
@@ -233,8 +280,15 @@ describe('parseStoredState — cross-field consistency for in-progress rounds', 
     expect(parsed?.phase).toBe('discussion')
   })
 
-  it('still allows an empty spy set and null word during setup', () => {
-    expect(parseStoredState(wire(validSetup))).toEqual(validSetup)
+  it('still allows an empty spy set and null word on the home screen', () => {
+    expect(parseStoredState(wire(validHome))).toEqual(validHome)
+  })
+
+  it('discards a v2 session with no topic set', () => {
+    const v2 = wire(validReveal)
+    delete v2.topicIds
+    v2.version = 2
+    expect(parseStoredState(v2)).toBeNull()
   })
 
   it('discards a v1 session that still carries the old scalar spyId', () => {
@@ -243,7 +297,7 @@ describe('parseStoredState — cross-field consistency for in-progress rounds', 
   })
 })
 
-describe('loadState / saveState / clearState', () => {
+describe('loadState / saveState', () => {
   const memory = new Map<string, string>()
 
   afterEach(() => {
@@ -273,14 +327,6 @@ describe('loadState / saveState / clearState', () => {
   it('falls back to initialState when the stored blob is corrupt', () => {
     useFakeStorage()
     memory.set(STORAGE_KEY, JSON.stringify({ version: 999 }))
-    expect(loadState()).toEqual(initialState)
-  })
-
-  it('clearState removes the session', () => {
-    useFakeStorage()
-    saveState(validEnded)
-    clearState()
-    expect(memory.has(STORAGE_KEY)).toBe(false)
     expect(loadState()).toEqual(initialState)
   })
 })
