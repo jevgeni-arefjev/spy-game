@@ -47,8 +47,8 @@ the phone doesn't lose time.
 ## Adding a locale
 
 1. Copy `src/i18n/locales/en/` to `src/i18n/locales/<code>/` and translate
-   `common.json` (UI strings), `topics.json` (topic names) and `words.json`
-   (the word list).
+   `common.json` (UI strings), `topics.json` (topic names), `words.json`
+   (the word list) and `hints.json` (the spy's adjective clues).
 2. That's it — `src/i18n/index.ts` discovers `locales/*/*.json` with
    `import.meta.glob`, so no wiring to update. `SUPPORTED_LOCALES` picks the new
    folder up automatically.
@@ -66,11 +66,14 @@ contains display text.
 Topics and words share one source of truth,
 [`src/game/topics.ts`](src/game/topics.ts).
 
-- **A word:** add its id to a topic's `wordIds` in `TOPICS`, then add
-  `"id": "Display"` to `words.json` in **every** locale folder.
-- **A topic:** add a `{ id, wordIds }` entry to `TOPICS`, add `"id": "Name"` to
-  `topics.json` and every word to `words.json` — in every locale folder. No
-  other code changes; `WORD_IDS` and the topics screen pick it up.
+- **A word:** add a `{ id, hintId }` entry to a topic's `words` in `TOPICS`
+  (`hintId` is one of that topic's two adjectives), then add `"id": "Display"`
+  to `words.json` in **every** locale folder.
+- **A topic:** add a `{ id, words }` entry to `TOPICS` — pick one binary
+  adjective axis for it and tag every word with one of the two `hintId`s — then
+  add `"id": "Name"` to `topics.json`, every word to `words.json`, and both
+  adjectives to `hints.json` — in every locale folder. No other code changes;
+  `WORD_IDS` and the topics screen pick it up.
 
 Word ids must be unique across topics and stay stable once a build ships (the
 id is what gets persisted). Word selection never repeats the previous round's
@@ -101,15 +104,17 @@ custom properties.
 
 ## Tuning the rules
 
-[`src/game/config.ts`](src/game/config.ts) holds `SPY_COUNT`,
+[`src/game/config.ts`](src/game/config.ts) holds `DEFAULT_SPY_COUNT`,
 `DISCUSSION_SECONDS`, `MIN_PLAYERS`, `MAX_PLAYERS` and the storage key. Changing
 the persisted shape means bumping `STATE_VERSION` — old sessions are then
 discarded on boot rather than migrated.
 
-`SPY_COUNT` is a live switch: the state stores the spies as a set and the copy
-has singular/plural forms, so setting it to `2` genuinely gives you two spies
-with no other change. Keep it below `MIN_PLAYERS` — a round needs civilians.
-Changing it discards any in-progress session on the next boot.
+The number of spies is chosen per game on the Players screen: a `[−] N [+]`
+stepper, clamped to `1 … player count`. `DEFAULT_SPY_COUNT` is only the value a
+brand-new session starts at. The state stores the spies as a set and every
+string has singular/plural forms, so the count flows through reveal, discussion
+and the end screen as data. The choice is persisted and kept across "Play
+again".
 
 ## Bundle size
 

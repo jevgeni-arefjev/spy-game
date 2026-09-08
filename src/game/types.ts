@@ -29,6 +29,8 @@ export type GameState = {
   players: Player[]
   /** Ids of the topics whose words are in play. Never empty. */
   topicIds: string[]
+  /** How many spies the next round draws. Always `1 <= spyCount <= players.length`. */
+  spyCount: number
   /** Ids of the players who are spies this round. Empty until a round starts. */
   spyIds: string[]
   /** Key into the word list, never the translated string. */
@@ -54,6 +56,7 @@ export type Action =
   | { type: 'topics/confirm' }
   | { type: 'topics/back' }
   | { type: 'players/back' }
+  | { type: 'spyCount/set'; value: number }
   | { type: 'player/add'; player: Player }
   | { type: 'player/remove'; id: string }
   | { type: 'game/start'; round: RoundSetup }

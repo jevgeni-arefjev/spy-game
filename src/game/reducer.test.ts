@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest'
 import { canStart, initialState, reducer } from './reducer'
-import { DISCUSSION_SECONDS, MIN_PLAYERS, STATE_VERSION } from './config'
+import {
+  DEFAULT_SPY_COUNT,
+  DISCUSSION_SECONDS,
+  MIN_PLAYERS,
+  STATE_VERSION,
+} from './config'
 import { ALL_TOPIC_IDS } from './topics'
 import type { Action, GameState, Player } from './types'
 
@@ -70,6 +75,7 @@ describe('initialState', () => {
     expect(initialState.phase).toBe('home')
     expect(initialState.players).toEqual([])
     expect(initialState.topicIds).toEqual(ALL_TOPICS)
+    expect(initialState.spyCount).toBe(DEFAULT_SPY_COUNT)
     expect(initialState.spyIds).toEqual([])
     expect(initialState.wordId).toBeNull()
     expect(initialState.revealIndex).toBe(0)
@@ -95,6 +101,43 @@ describe('canStart', () => {
     expect(canStart(players({ players: roster(MIN_PLAYERS) }))).toBe(true)
     expect(canStart(players({ players: roster(MIN_PLAYERS + 1) }))).toBe(true)
     expect(canStart(players({ players: [] }))).toBe(false)
+  })
+})
+
+describe('spyCount/set', () => {
+  it('sets the count within the roster', () => {
+    const after = reducer(players({ players: roster(4) }), {
+      type: 'spyCount/set',
+      value: 3,
+    })
+    expect(after.spyCount).toBe(3)
+  })
+
+  it('clamps to at least 1', () => {
+    const after = reducer(players({ players: roster(4), spyCount: 2 }), {
+      type: 'spyCount/set',
+      value: 0,
+    })
+    expect(after.spyCount).toBe(1)
+  })
+
+  it('clamps to the player count', () => {
+    const after = reducer(players({ players: roster(3), spyCount: 1 }), {
+      type: 'spyCount/set',
+      value: 9,
+    })
+    expect(after.spyCount).toBe(3)
+  })
+
+  it('returns the same state when the clamped value is unchanged', () => {
+    const state = players({ players: roster(3), spyCount: 3 })
+    expect(reducer(state, { type: 'spyCount/set', value: 5 })).toBe(state)
+  })
+
+  it('is ignored outside the players phase', () => {
+    for (const state of [home(), topics(), reveal(), discussion(), ended()]) {
+      expect(reducer(state, { type: 'spyCount/set', value: 2 })).toBe(state)
+    }
   })
 })
 
@@ -214,6 +257,19 @@ describe('player/remove', () => {
     const before = players({ players: roster(2) })
     const after = reducer(before, { type: 'player/remove', id: 'nope' })
     expect(after.players).toHaveLength(2)
+  })
+
+  it('pulls the spy count down when the roster shrinks past it', () => {
+    const before = players({ players: roster(4), spyCount: 4 })
+    const after = reducer(before, { type: 'player/remove', id: 'p2' })
+    expect(after.players).toHaveLength(3)
+    expect(after.spyCount).toBe(3)
+  })
+
+  it('leaves the spy count alone when the roster still holds it', () => {
+    const before = players({ players: roster(4), spyCount: 2 })
+    const after = reducer(before, { type: 'player/remove', id: 'p2' })
+    expect(after.spyCount).toBe(2)
   })
 
   it('is ignored outside the players phase', () => {

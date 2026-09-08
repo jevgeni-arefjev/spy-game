@@ -1,4 +1,4 @@
-import { MAX_PLAYERS, SPY_COUNT, STATE_VERSION, STORAGE_KEY } from './config'
+import { MAX_PLAYERS, STATE_VERSION, STORAGE_KEY } from './config'
 import { initialState } from './reducer'
 import { isKnownTopicId } from './topics'
 import { isKnownWordId } from './words'
@@ -104,6 +104,16 @@ export function parseStoredState(value: unknown): GameState | null {
   const spyIds = parseSpyIds(value.spyIds)
   if (spyIds === null) return null
 
+  const spyCount = value.spyCount
+  if (
+    typeof spyCount !== 'number' ||
+    !Number.isInteger(spyCount) ||
+    spyCount < 1 ||
+    spyCount > MAX_PLAYERS
+  ) {
+    return null
+  }
+
   const { wordId, revealIndex } = value
   if (wordId !== null && typeof wordId !== 'string') return null
   if (typeof revealIndex !== 'number' || !Number.isInteger(revealIndex) || revealIndex < 0) {
@@ -113,9 +123,10 @@ export function parseStoredState(value: unknown): GameState | null {
   // Cross-field sanity: an in-progress round must still refer to real things,
   // and a pre-round phase must not carry a leftover spy set.
   if (IN_ROUND_PHASES.includes(phase as Phase)) {
-    // A stored spy count that no longer matches config is discarded, not
-    // resumed — same stance as a version bump for a shape change.
-    if (spyIds.length !== SPY_COUNT) return null
+    // A stored round whose spy set no longer matches its spy count is discarded,
+    // not resumed — same stance as a version bump for a shape change. Pre-round
+    // a stale `spyCount` is instead clamped when the Players screen loads.
+    if (spyIds.length !== spyCount) return null
     const roster = new Set(players.map((player) => player.id))
     if (!spyIds.every((id) => roster.has(id))) return null
     if (wordId === null || !isKnownWordId(wordId)) return null
@@ -131,6 +142,7 @@ export function parseStoredState(value: unknown): GameState | null {
     phase: phase as Phase,
     players,
     topicIds,
+    spyCount,
     spyIds,
     wordId,
     revealIndex,

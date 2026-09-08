@@ -2,8 +2,8 @@ import { afterEach, describe, it, expect, vi } from 'vitest'
 import { loadState, parseStoredState, saveState } from './persistence'
 import { initialState } from './reducer'
 import {
+  DEFAULT_SPY_COUNT,
   DISCUSSION_SECONDS,
-  SPY_COUNT,
   STATE_VERSION,
   STORAGE_KEY,
 } from './config'
@@ -19,16 +19,17 @@ function players(n: number) {
   return Array.from({ length: n }, (_, i) => ({ id: `p${i + 1}`, name: `P${i + 1}` }))
 }
 
-// Fixtures stay valid for whatever SPY_COUNT config ships: enough players to
-// hold the spies plus a civilian, and exactly SPY_COUNT spy ids from the roster.
-const ROUND_ROSTER = Math.max(3, SPY_COUNT + 2)
-const SPY_IDS = Array.from({ length: SPY_COUNT }, (_, i) => `p${i + 1}`)
+// Fixtures stay valid for whatever DEFAULT_SPY_COUNT ships: enough players to
+// hold the spies plus a civilian, and exactly that many spy ids from the roster.
+const ROUND_ROSTER = Math.max(3, DEFAULT_SPY_COUNT + 2)
+const SPY_IDS = Array.from({ length: DEFAULT_SPY_COUNT }, (_, i) => `p${i + 1}`)
 
 const validHome: GameState = {
   version: STATE_VERSION,
   phase: 'home',
   players: [],
   topicIds: ALL_TOPICS,
+  spyCount: DEFAULT_SPY_COUNT,
   spyIds: [],
   wordId: null,
   revealIndex: 0,
@@ -52,6 +53,7 @@ const validReveal: GameState = {
   ...validPlayers,
   phase: 'reveal',
   players: players(ROUND_ROSTER),
+  spyCount: SPY_IDS.length,
   spyIds: SPY_IDS,
   wordId: KNOWN_WORD,
   revealIndex: 1,
@@ -237,6 +239,12 @@ describe('parseStoredState — rejects malformed scalars', () => {
       expect(parseStoredState({ ...wire(validHome), revealIndex })).toBeNull()
     }
   })
+
+  it('rejects a spyCount that is not an integer of at least 1', () => {
+    for (const spyCount of [0, -1, 1.5, '1', Number.NaN, null, undefined, 13]) {
+      expect(parseStoredState({ ...wire(validHome), spyCount })).toBeNull()
+    }
+  })
 })
 
 describe('parseStoredState — cross-field consistency', () => {
@@ -246,9 +254,19 @@ describe('parseStoredState — cross-field consistency', () => {
     expect(parseStoredState({ ...wire(validReveal), spyIds: foreign })).toBeNull()
   })
 
-  it('rejects a stored spy count that no longer matches SPY_COUNT', () => {
-    const extra = Array.from({ length: SPY_COUNT + 1 }, (_, i) => `p${i + 1}`)
+  it('rejects a live round whose spy set size no longer matches spyCount', () => {
+    const extra = Array.from(
+      { length: validReveal.spyCount + 1 },
+      (_, i) => `p${i + 1}`,
+    )
     expect(parseStoredState({ ...wire(validReveal), spyIds: extra })).toBeNull()
+    expect(parseStoredState({ ...wire(validReveal), spyCount: validReveal.spyCount + 1 })).toBeNull()
+  })
+
+  it('clamps nothing here: a pre-round session keeps a spyCount above the roster', () => {
+    // The Players screen pulls it back into range on load; persistence lets it through.
+    const parsed = parseStoredState({ ...wire(validPlayers), spyCount: 5 })
+    expect(parsed?.spyCount).toBe(5)
   })
 
   it('rejects a missing or unknown word once a round is live', () => {

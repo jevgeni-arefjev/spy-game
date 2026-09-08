@@ -67,7 +67,7 @@ machine over six phases (`home`, `topics`, `players`, `reveal`, `discussion`,
 `ended`). `src/game/reducer.ts` is the only place state changes. Every action
 guards on the current phase and returns the state untouched if it doesn't
 apply. Leaving `ended` (`game/playAgain` → `topics`, `game/exit` → `home`)
-keeps `players` and `topicIds` and only clears the round.
+keeps `players`, `topicIds` and `spyCount`, and only clears the round.
 
 **The reducer is pure.** Randomness (spy, word) and `Date.now()` are drawn at
 the dispatch site and passed in the action payload — see
@@ -95,13 +95,15 @@ a native preferences plugin will be swapped in. No component may touch
 
 **Stored state is validated, never repaired.** `parseStoredState()` in
 `src/game/persistence.ts` checks the version, the shape *and* cross-field
-consistency: `topicIds` is a non-empty set of known ids; in a live round
-(`reveal`/`discussion`/`ended`) every spy id is in the roster, there are
-exactly `SPY_COUNT` of them, and the word id is known; before the round starts
-`spyIds` is empty and `wordId` is null or a known "last word" memo;
-`revealIndex` is in range while revealing. Anything off is discarded and the
-app boots clean. Changing the state shape means bumping `STATE_VERSION` and
-`STORAGE_KEY`'s suffix — currently `v3`.
+consistency: `topicIds` is a non-empty set of known ids; `spyCount` is an
+integer `1 … MAX_PLAYERS`; in a live round (`reveal`/`discussion`/`ended`) every
+spy id is in the roster, `spyIds.length` equals `spyCount`, and the word id is
+known; before the round starts `spyIds` is empty and `wordId` is null or a
+known "last word" memo; `revealIndex` is in range while revealing. A pre-round
+`spyCount` above the roster is *not* rejected — the Players screen clamps it on
+load. Anything else off is discarded and the app boots clean. Changing the
+state shape means bumping `STATE_VERSION` and `STORAGE_KEY`'s suffix — currently
+`v4`.
 
 **Writes are debounced ~200ms**, with a flush on `pagehide` and
 `visibilitychange` — a backgrounded mobile browser may never run the timeout.
@@ -113,15 +115,18 @@ face-down by construction.
 
 **Every user-facing string goes through `t()`.** State stores a `wordId` (and
 `topicIds`), never a translated word, so a language switch mid-game is safe.
-Namespaces are `common`, `words` and `topics`, one JSON file each per locale;
-locales are discovered with `import.meta.glob`, so adding a language needs no
-code change.
+Namespaces are `common`, `words`, `topics` and `hints`, one JSON file each per
+locale; locales are discovered with `import.meta.glob`, so adding a language
+needs no code change.
 
 **Topics and words share one source of truth: `src/game/topics.ts`.** `TOPICS`
-lists each topic's `wordIds`; `words.ts` derives its flat `WORD_IDS` pool by
-flattening them, and `createRoundSetup` draws from `wordIdsForTopics(topicIds)`.
-Word ids are unique across topics. Adding a topic is a `TOPICS` entry plus a
-`topics.json` line plus its `words.json` lines — no other code.
+lists each topic's `words`, each a `{ id, hintId }` pair; `words.ts` derives its
+flat `WORD_IDS` pool and the `hintIdForWord` lookup by flattening them, and
+`createRoundSetup` draws from `wordIdsForTopics(topicIds)`. Word ids are unique
+across topics. Every topic runs on one binary adjective axis — exactly two
+`hintId`s, e.g. `travel` → `fast`/`slow` — and the spy's card shows that
+adjective as its only clue. Adding a topic is a `TOPICS` entry plus a
+`topics.json` line plus its `words.json` and `hints.json` lines — no other code.
 
 **All visual constants live in `src/styles/tokens.css`**, split into a raw
 `--palette-*` ramp and a semantic `--color-*` layer. Only the semantic layer is
@@ -130,16 +135,19 @@ contains no hex colours, pixel values or font stacks — `public/favicon.svg` is
 the sole exception, since a standalone SVG asset can't read the page's custom
 properties.
 
-**`SPY_COUNT` is a real switch.** The state models the spies as a set
-(`spyIds: string[]`), `createRoundSetup` draws exactly `SPY_COUNT` of them with
-`pickSample`, and every screen asks `spyIds.includes(id)` — so changing the
-number is the whole change. Keep it in `1 <= SPY_COUNT < MIN_PLAYERS`.
-`parseStoredState` discards a stored session whose `spyIds.length` no longer
-equals `SPY_COUNT`, the same way a `STATE_VERSION` bump discards a stale shape,
-so flipping the constant between builds is safe. The `_one`/`_other` plural
-strings (`players.subtitle`, `discussion.hint`, `ended.subtitle`,
-`role.spy.hint`, `app.tagline`) are selected by passing `{ count: SPY_COUNT }`
-at the call site.
+**The spy count is runtime state, set on the Players screen.** `spyCount` lives
+on `GameState`; `config.ts` only exports `DEFAULT_SPY_COUNT` (the value a fresh
+session starts at). A `[−] N [+]` stepper on `PlayersScreen` dispatches
+`spyCount/set`, which the reducer clamps to `1 <= spyCount <= players.length`
+(`clampSpyCount`). `player/remove` re-clamps when the roster shrinks past the
+count, and `PlayersScreen` has a mount effect that clamps a persisted value
+that arrived too high. The state models the spies as a set (`spyIds: string[]`),
+`createRoundSetup(players, topicIds, prevWord, spyCount)` draws exactly that
+many with `pickSample`, and every screen asks `spyIds.includes(id)`. The
+`_one`/`_other` plural strings (`players.subtitle`, `discussion.hint`,
+`ended.subtitle`, `role.spy.hint`, `app.tagline`) are selected by passing
+`{ count: state.spyCount }` at the call site. `spyCount` is kept across "Play
+again" and "Exit", like the roster and topics.
 
 ## Gotchas
 
@@ -160,5 +168,23 @@ at the call site.
 ## Out of scope on purpose
 
 Voting, scoring, elimination, per-player word sets, network play, sound. Ask
-before adding any of them. (Multiple spies used to be here; `SPY_COUNT` now
-covers it.)
+before adding any of them. (Multiple spies is supported — `spyCount`, chosen on
+the Players screen.)
+
+## Agent skills
+
+### Issue tracker
+
+Issues and specs are tracked as GitHub issues via the `gh` CLI in
+`jevgeni-arefjev/spy-game`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five canonical triage roles, each label string equal to its name:
+`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`.
+See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `CONTEXT.md` plus `docs/adr/` at the repo root, created
+lazily by `/domain-modeling`. See `docs/agents/domain.md`.

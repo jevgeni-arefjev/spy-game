@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 import { Button } from '../components/Button'
 import { Countdown } from '../components/Countdown'
 import { Screen } from '../components/Screen'
-import { SPY_COUNT } from '../game/config'
 import { useGame } from '../game/useGame'
 import styles from './DiscussionScreen.module.css'
 
@@ -32,7 +31,7 @@ export function DiscussionScreen() {
         <Countdown timer={timer} onExpire={handleExpire} />
       </div>
 
-      <p className={styles.hint}>{t('discussion.hint', { count: SPY_COUNT })}</p>
+      <p className={styles.hint}>{t('discussion.hint', { count: state.spyCount })}</p>
 
       <div className={styles.actions}>
         <Button size="lg" fullWidth variant="secondary" onClick={toggle}>

@@ -5,10 +5,26 @@ import { TOPICS } from './topics'
  * Every word id across every topic, in topic order. The display string for
  * each lives in the `words` i18n namespace, keyed by id.
  */
-export const WORD_IDS: readonly string[] = TOPICS.flatMap((topic) => [...topic.wordIds])
+export const WORD_IDS: readonly string[] = TOPICS.flatMap((topic) =>
+  topic.words.map((word) => word.id),
+)
+
+/** Word id → its hint id, built once from `TOPICS`. */
+const HINT_BY_WORD_ID: ReadonlyMap<string, string> = new Map(
+  TOPICS.flatMap((topic) => topic.words.map((word) => [word.id, word.hintId] as const)),
+)
 
 export function isKnownWordId(id: string): boolean {
   return WORD_IDS.includes(id)
+}
+
+/**
+ * The adjective shown to the spy for a word — a key into the `hints`
+ * namespace. `null` for an unknown id, matching how `pickWordId` shrugs off
+ * ids it doesn't recognise; a live round's `wordId` is always known.
+ */
+export function hintIdForWord(wordId: string): string | null {
+  return HINT_BY_WORD_ID.get(wordId) ?? null
 }
 
 /**

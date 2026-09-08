@@ -22,6 +22,9 @@
     "nameLabel": "Player name",
     "namePlaceholder": "Add a player",
     "addPlayer": "Add",
+    "spyCountLabel": "Spies",
+    "fewerSpies": "Fewer spies",
+    "moreSpies": "More spies",
     "playersHeading": "Players",
     "playerCount": "{{current}} / {{max}}",
     "removePlayer": "Remove {{name}}",
@@ -40,7 +43,7 @@
   "reveal": {
     "progress": "Player {{current}} of {{total}}",
     "passTo": "Pass the phone to {{name}}",
-    "passHint": "Everyone else, look away.",
+    "passHint": "",
     "confirm": "I'm {{name}}",
     "cardLabel": "{{name}}'s card — tap to reveal",
     "cardName": "{{name}}",
@@ -50,13 +53,12 @@
   },
   "role": {
     "civilian": {
-      "title": "Your word",
-      "hint": "Talk about it without saying it."
+      "title": "Your word"
     },
     "spy": {
       "title": "You are the spy",
-      "hint_one": "You don't know the word. Blend in and work it out.",
-      "hint_other": "You don't know the word. Other players are spies too — blend in and work it out."
+      "hint_one": "Hint: {{adjective}}",
+      "hint_other": "Hint: {{adjective}} — other players are spies too."
     }
   },
   "discussion": {

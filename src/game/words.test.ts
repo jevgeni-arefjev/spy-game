@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { WORD_IDS, isKnownWordId, pickWordId } from './words'
+import { WORD_IDS, hintIdForWord, isKnownWordId, pickWordId } from './words'
 
 describe('WORD_IDS', () => {
   it('is a non-empty list of unique, camel-or-lowercase ids', () => {
@@ -18,6 +18,18 @@ describe('isKnownWordId', () => {
     for (const id of ['', 'atlantis', 'BEACH', 'beach ']) {
       expect(isKnownWordId(id)).toBe(false)
     }
+  })
+})
+
+describe('hintIdForWord', () => {
+  it('returns a hint id for every known word', () => {
+    for (const id of WORD_IDS) {
+      expect(hintIdForWord(id)).toMatch(/^[a-z][a-zA-Z]*$/)
+    }
+  })
+
+  it('returns null for an unknown word', () => {
+    expect(hintIdForWord('not-a-word')).toBe(null)
   })
 })
 

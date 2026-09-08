@@ -48,6 +48,37 @@
   color: var(--color-danger);
 }
 
+.spies {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.spiesLabel {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* Full-width row: the +/- buttons keep their touch-target width, the value
+   fills the middle, so the whole control lines up with the name input row. */
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.stepperValue {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-family-numeric);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
 .roster {
   display: flex;
   flex-direction: column;

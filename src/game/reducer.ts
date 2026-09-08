@@ -1,4 +1,9 @@
-import { DISCUSSION_SECONDS, MIN_PLAYERS, STATE_VERSION } from './config'
+import {
+  DEFAULT_SPY_COUNT,
+  DISCUSSION_SECONDS,
+  MIN_PLAYERS,
+  STATE_VERSION,
+} from './config'
 import { msLeft } from './timer'
 import { ALL_TOPIC_IDS, isKnownTopicId } from './topics'
 import type { Action, GameState, Phase, RoundSetup } from './types'
@@ -15,6 +20,7 @@ export const initialState: GameState = {
   phase: 'home',
   players: [],
   topicIds: [...ALL_TOPIC_IDS],
+  spyCount: DEFAULT_SPY_COUNT,
   spyIds: [],
   wordId: null,
   revealIndex: 0,
@@ -53,6 +59,11 @@ function clearRound(state: GameState, phase: Phase): GameState {
 
 export function canStart(state: GameState): boolean {
   return state.players.length >= MIN_PLAYERS
+}
+
+/** Hold the spy count inside `1 <= n <= rosterSize` (never below 1). */
+function clampSpyCount(value: number, rosterSize: number): number {
+  return Math.min(Math.max(value, 1), Math.max(rosterSize, 1))
 }
 
 export function reducer(state: GameState, action: Action): GameState {
@@ -98,6 +109,13 @@ export function reducer(state: GameState, action: Action): GameState {
       return { ...state, phase: 'topics' }
     }
 
+    case 'spyCount/set': {
+      if (state.phase !== 'players') return state
+      const value = clampSpyCount(action.value, state.players.length)
+      if (value === state.spyCount) return state
+      return { ...state, spyCount: value }
+    }
+
     case 'player/add': {
       if (state.phase !== 'players') return state
       return { ...state, players: [...state.players, action.player] }
@@ -105,9 +123,12 @@ export function reducer(state: GameState, action: Action): GameState {
 
     case 'player/remove': {
       if (state.phase !== 'players') return state
+      const players = state.players.filter((player) => player.id !== action.id)
       return {
         ...state,
-        players: state.players.filter((player) => player.id !== action.id),
+        players,
+        // Losing a player can pull the roster below the chosen spy count.
+        spyCount: clampSpyCount(state.spyCount, players.length),
       }
     }
 

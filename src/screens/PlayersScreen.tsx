@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../components/Button'
@@ -7,7 +7,6 @@ import {
   MAX_PLAYERS,
   MIN_PLAYERS,
   PLAYER_NAME_MAX_LENGTH,
-  SPY_COUNT,
 } from '../game/config'
 import { validatePlayerName } from '../game/players'
 import type { PlayerNameError } from '../game/players'
@@ -27,6 +26,14 @@ export function PlayersScreen() {
   const ready = canStart(state)
   const missing = MIN_PLAYERS - players.length
 
+  // A persisted session (or one edited by hand) can land here with more spies
+  // than players; pull it back into range as soon as the screen shows.
+  useEffect(() => {
+    if (players.length >= 1 && state.spyCount > players.length) {
+      dispatch({ type: 'spyCount/set', value: players.length })
+    }
+  }, [players.length, state.spyCount, dispatch])
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
@@ -44,7 +51,7 @@ export function PlayersScreen() {
   const handleStart = () => {
     dispatch({
       type: 'game/start',
-      round: createRoundSetup(players, state.topicIds, state.wordId),
+      round: createRoundSetup(players, state.topicIds, state.wordId, state.spyCount),
     })
   }
 
@@ -52,7 +59,9 @@ export function PlayersScreen() {
     <Screen>
       <header className={styles.header}>
         <h1 className={styles.title}>{t('players.title')}</h1>
-        <p className={styles.subtitle}>{t('players.subtitle', { count: SPY_COUNT })}</p>
+        <p className={styles.subtitle}>
+          {t('players.subtitle', { count: state.spyCount })}
+        </p>
       </header>
 
       <form className={styles.form} onSubmit={handleSubmit} noValidate>
@@ -84,6 +93,41 @@ export function PlayersScreen() {
           {error === null ? '' : t(`players.errors.${error}`, { count: MAX_PLAYERS })}
         </p>
       </form>
+
+      <div className={styles.spies}>
+        <span id="spy-count-label" className={styles.spiesLabel}>
+          {t('players.spyCountLabel')}
+        </span>
+        <div
+          className={styles.stepper}
+          role="group"
+          aria-labelledby="spy-count-label"
+        >
+          <Button
+            variant="secondary"
+            aria-label={t('players.fewerSpies')}
+            disabled={state.spyCount <= 1}
+            onClick={() =>
+              dispatch({ type: 'spyCount/set', value: state.spyCount - 1 })
+            }
+          >
+            <span aria-hidden="true">&minus;</span>
+          </Button>
+          <span className={styles.stepperValue} aria-live="polite">
+            {state.spyCount}
+          </span>
+          <Button
+            variant="secondary"
+            aria-label={t('players.moreSpies')}
+            disabled={state.spyCount >= players.length}
+            onClick={() =>
+              dispatch({ type: 'spyCount/set', value: state.spyCount + 1 })
+            }
+          >
+            <span aria-hidden="true">+</span>
+          </Button>
+        </div>
+      </div>
 
       <section className={styles.roster}>
         <h2 className={styles.rosterHeading}>
@@ -117,7 +161,7 @@ export function PlayersScreen() {
       <footer className={styles.footer}>
         <p className={styles.hint}>
           {ready
-            ? t('players.spyHint', { count: SPY_COUNT })
+            ? t('players.spyHint', { count: state.spyCount })
             : t('players.needMore', { count: missing })}
         </p>
         <Button size="lg" fullWidth disabled={!ready} onClick={handleStart}>

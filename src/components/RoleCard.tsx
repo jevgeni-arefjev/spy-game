@@ -1,13 +1,18 @@
 import { useTranslation } from 'react-i18next'
-import { SPY_COUNT } from '../game/config'
+import { hintIdForWord } from '../game/words'
 import { cx } from '../lib/classNames'
 import styles from './RoleCard.module.css'
 
 type RoleCardProps = {
   playerName: string
   isSpy: boolean
-  /** Key into the `words` namespace. Ignored for the spy, who never sees it. */
+  /**
+   * Key into the `words` namespace. The spy never sees the word itself, but
+   * their hint adjective is derived from it.
+   */
   wordId: string
+  /** Spies this round — drives the "other players are spies too" plural. */
+  spyCount: number
   revealed: boolean
   onReveal: () => void
 }
@@ -20,10 +25,12 @@ export function RoleCard({
   playerName,
   isSpy,
   wordId,
+  spyCount,
   revealed,
   onReveal,
 }: RoleCardProps) {
   const { t } = useTranslation()
+  const hintId = hintIdForWord(wordId)
 
   return (
     <button
@@ -43,15 +50,19 @@ export function RoleCard({
           {isSpy ? (
             <>
               <span className={styles.frontLabel}>{t('role.spy.title')}</span>
-              <span className={styles.frontHint}>
-                {t('role.spy.hint', { count: SPY_COUNT })}
-              </span>
+              {hintId !== null && (
+                <span className={styles.frontHint}>
+                  {t('role.spy.hint', {
+                    count: spyCount,
+                    adjective: t(hintId, { ns: 'hints' }),
+                  })}
+                </span>
+              )}
             </>
           ) : (
             <>
               <span className={styles.frontLabel}>{t('role.civilian.title')}</span>
               <span className={styles.word}>{t(wordId, { ns: 'words' })}</span>
-              <span className={styles.frontHint}>{t('role.civilian.hint')}</span>
             </>
           )}
         </span>

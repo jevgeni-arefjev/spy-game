@@ -16,19 +16,31 @@ describe('TOPICS', () => {
   })
 
   it('has word ids that are unique across every topic', () => {
-    const all = TOPICS.flatMap((topic) => [...topic.wordIds])
+    const all = TOPICS.flatMap((topic) => topic.words.map((word) => word.id))
     expect(new Set(all).size).toBe(all.length)
   })
 
   it('accounts for exactly the words in WORD_IDS', () => {
-    const all = TOPICS.flatMap((topic) => [...topic.wordIds])
+    const all = TOPICS.flatMap((topic) => topic.words.map((word) => word.id))
     expect(new Set(all)).toEqual(new Set(WORD_IDS))
   })
 
   it('gives every topic a handful of words to draw from', () => {
     for (const topic of TOPICS) {
-      expect(topic.wordIds.length).toBeGreaterThanOrEqual(5)
+      expect(topic.words.length).toBeGreaterThanOrEqual(5)
     }
+  })
+
+  it('runs every topic on exactly two hint adjectives', () => {
+    for (const topic of TOPICS) {
+      const hintIds = new Set(topic.words.map((word) => word.hintId))
+      expect(hintIds.size).toBe(2)
+    }
+  })
+
+  it('has hint ids that are camel-or-lowercase', () => {
+    const hintIds = TOPICS.flatMap((topic) => topic.words.map((word) => word.hintId))
+    for (const id of hintIds) expect(id).toMatch(/^[a-z][a-zA-Z]*$/)
   })
 })
 
@@ -46,12 +58,13 @@ describe('isKnownTopicId', () => {
 
 describe('wordIdsForTopics', () => {
   it('flattens the selected topics only, in topic order', () => {
-    expect(wordIdsForTopics([TOPICS[0].id])).toEqual([...TOPICS[0].wordIds])
+    const ids = TOPICS[0].words.map((word) => word.id)
+    expect(wordIdsForTopics([TOPICS[0].id])).toEqual(ids)
   })
 
   it('de-duplicates and ignores unknown topic ids', () => {
     const pool = wordIdsForTopics([TOPICS[0].id, TOPICS[0].id, 'nope'])
-    expect(pool).toEqual([...TOPICS[0].wordIds])
+    expect(pool).toEqual(TOPICS[0].words.map((word) => word.id))
   })
 
   it('covers the whole word list when every topic is selected', () => {

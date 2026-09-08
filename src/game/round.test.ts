@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest'
 import { createRoundSetup } from './round'
-import { SPY_COUNT } from './config'
 import { ALL_TOPIC_IDS, wordIdsForTopics } from './topics'
 import { isKnownWordId, WORD_IDS } from './words'
 import type { Player } from './types'
@@ -12,27 +11,29 @@ function roster(n: number): Player[] {
 }
 
 describe('createRoundSetup', () => {
-  it('draws exactly SPY_COUNT distinct spies, all from the roster', () => {
+  it('draws exactly spyCount distinct spies, all from the roster', () => {
     const players = roster(6)
     const ids = new Set(players.map((p) => p.id))
-    for (let i = 0; i < 300; i++) {
-      const { spyIds } = createRoundSetup(players, ALL_TOPICS, null)
-      expect(spyIds).toHaveLength(SPY_COUNT)
-      expect(new Set(spyIds).size).toBe(SPY_COUNT)
-      for (const id of spyIds) expect(ids.has(id)).toBe(true)
+    for (const spyCount of [1, 2, 3]) {
+      for (let i = 0; i < 200; i++) {
+        const { spyIds } = createRoundSetup(players, ALL_TOPICS, null, spyCount)
+        expect(spyIds).toHaveLength(spyCount)
+        expect(new Set(spyIds).size).toBe(spyCount)
+        for (const id of spyIds) expect(ids.has(id)).toBe(true)
+      }
     }
   })
 
   it('always picks a known word', () => {
     for (let i = 0; i < 300; i++) {
-      expect(isKnownWordId(createRoundSetup(roster(3), ALL_TOPICS, null).wordId)).toBe(true)
+      expect(isKnownWordId(createRoundSetup(roster(3), ALL_TOPICS, null, 1).wordId)).toBe(true)
     }
   })
 
   it('never repeats the previous word', () => {
     for (const previous of WORD_IDS) {
       for (let i = 0; i < 40; i++) {
-        expect(createRoundSetup(roster(3), ALL_TOPICS, previous).wordId).not.toBe(previous)
+        expect(createRoundSetup(roster(3), ALL_TOPICS, previous, 1).wordId).not.toBe(previous)
       }
     }
   })
@@ -41,7 +42,7 @@ describe('createRoundSetup', () => {
     const selected = ['food']
     const pool = new Set(wordIdsForTopics(selected))
     for (let i = 0; i < 300; i++) {
-      expect(pool.has(createRoundSetup(roster(3), selected, null).wordId)).toBe(true)
+      expect(pool.has(createRoundSetup(roster(3), selected, null, 1).wordId)).toBe(true)
     }
   })
 
@@ -49,7 +50,7 @@ describe('createRoundSetup', () => {
     const players = roster(4)
     const seen = new Set<string>()
     for (let i = 0; i < 500 && seen.size < players.length; i++) {
-      for (const id of createRoundSetup(players, ALL_TOPICS, null).spyIds) seen.add(id)
+      for (const id of createRoundSetup(players, ALL_TOPICS, null, 1).spyIds) seen.add(id)
     }
     expect(seen.size).toBe(players.length)
   })
