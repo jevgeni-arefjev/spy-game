@@ -25,8 +25,12 @@
   width: 100%;
 }
 
-/* The brass rule stamped under the wordmark, the width of a foil block. */
+/* The brass rule stamped under the wordmark, the width of a foil block. It is
+   pressed on left to right, after the second impression has landed. */
 .rule {
+  animation: var(--animation-foil-rule);
+  animation-delay: var(--duration-exit);
+  transform-origin: left center;
   width: var(--size-foil-rule);
   height: var(--space-2);
   margin-top: var(--space-5);
@@ -34,6 +38,11 @@
   background-color: var(--color-foil);
 }
 
+/**
+ * The second pass, arriving: the brass impression comes down onto the white
+ * one and settles into its own register rather than fading up in place. It is
+ * the press landing, so it is quick and it stops dead.
+ */
 .title::before {
   content: attr(data-text);
   position: absolute;
@@ -42,4 +51,5 @@
   transform: translate(var(--foil-offset), var(--foil-offset));
   color: var(--color-foil);
   z-index: var(--z-stock);
+  animation: var(--animation-foil-land);
 }

@@ -26,6 +26,7 @@ export function HomeScreen() {
           </defs>
           <circle className={styles.tokenDisc} cx="100" cy="100" r="83" />
           <image
+            className={styles.tokenSpy}
             href={spyToken}
             x="17"
             y="17"

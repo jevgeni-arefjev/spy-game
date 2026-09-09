@@ -76,6 +76,18 @@
 .content {
   position: relative;
   z-index: var(--z-content);
+  /**
+   * The column is the only thing that travels between phases: naming it lifts
+   * it out of the root snapshot, so the printed sheet cross-fades in place
+   * underneath while the outgoing column is carried off over the top. The
+   * animations are in `styles/motion.css`; `GameProvider` starts them.
+   *
+   * The same `Screen` element backs every phase, so this node is reused rather
+   * than remounted and the entrance below runs once, on the first paint of the
+   * session — the transition takes over from there.
+   */
+  view-transition-name: phase-column;
+  animation: var(--animation-column-in);
   display: flex;
   flex-direction: column;
   width: 100%;

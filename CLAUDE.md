@@ -50,13 +50,14 @@ environment with no jsdom.
 src/
   assets/        wallpaper.webp, the three spy poses, card-back.svg
   game/          domain: config, types, reducer, topics, words, persistence, context
-  lib/           storage.ts, classNames.ts, themeColor.ts — no React, no game rules
+  lib/           storage.ts, classNames.ts, themeColor.ts, viewTransition.ts —
+                 no React, no game rules
   components/    reusable UI: Screen, Button, Insert, CountRow, FoilTitle,
                  RoleCard, Countdown, LanguagePicker, useFitToWidth
   screens/       one per phase: Home, Topics, Players, Reveal, Discussion, Ended
   i18n/          i18next setup + locales/<locale>/<namespace>.json
-  styles/        tokens.css (the visual source of truth), fonts.css, tokens.ts,
-                 global.css
+  styles/        tokens.css (the visual source of truth), motion.css, fonts.css,
+                 tokens.ts, global.css
 ```
 
 Full-size PNG sources for the WebP assets live in `assets/` at the repo root.
@@ -163,6 +164,21 @@ across topics. Every topic runs on one binary adjective axis — exactly two
 adjective as its only clue. Adding a topic is a `TOPICS` entry plus a
 `topics.json` line plus its `words.json` and `hints.json` lines — no other code.
 
+**A phase change is a view transition; everything else is one piece settling.**
+Motion is documented in DESIGN.md and is normative like the rest of it. The
+keyframes are global, in `src/styles/motion.css`, because a
+`::view-transition-*` pseudo-element lives on the document root and cannot see
+a CSS-module-scoped name. `Screen`'s content column carries
+`view-transition-name: phase-column`, which lifts it out of the root snapshot,
+so the printed sheet cross-fades in place while only the column travels — up
+from below on the way in, off over the top on the way out. `GameProvider`
+starts the transition, and only for an action that actually changes phase: it
+asks the reducer what the action will do first, which is exact because the
+reducer is pure. It does not start one while the page is hidden, and it applies
+the action anyway if the browser has not called back in 200ms — a hidden
+document gets no rendering opportunities, and a round must never be lost to
+one.
+
 **All visual constants live in `src/styles/tokens.css`**, split into a raw
 `--palette-*` ramp and a semantic `--color-*` layer. Component CSS contains no
 hex colours, pixel values or font stacks — `public/favicon.svg` and
@@ -218,6 +234,12 @@ again" and "Exit", like the roster and topics.
   way round. Its geometry is the one set of real numbers in `tokens.ts` (`ring`),
   because the circumference has to be computed in JS and SVG's `r` is not
   dependable as a CSS property.
+- **Write an animation as `animation: var(--animation-*)`, never as a bare
+  keyframe name.** CSS Modules rewrites an animation name it finds in a module
+  file to a scoped one; the keyframes are global, so a bare name resolves to
+  nothing and the animation silently does not run while the element still looks
+  correct at rest. The gestures are whole `animation` shorthands in
+  `tokens.css`, and a name inside `var()` is not rewritten.
 - `<Countdown>`'s `onExpire` must be referentially stable, or the tick effect
   re-subscribes every render. `DiscussionScreen` wraps it in `useCallback`.
 - Interpolating with a variable named `count` triggers i18next pluralisation.

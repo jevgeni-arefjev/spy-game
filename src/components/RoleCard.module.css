@@ -14,7 +14,11 @@
   perspective: var(--card-perspective);
 }
 
+/* Dealt, then turned over: the card arrives on the table on its own, and the
+   flip below stays the player's own gesture. It is remounted for each player,
+   so every hand gets the deal. */
 .card {
+  animation: var(--animation-settle);
   width: min(var(--size-card-width), 100%);
   aspect-ratio: var(--card-aspect-ratio);
   padding: var(--space-0);

@@ -34,6 +34,16 @@
   fill: var(--color-lid-deep);
 }
 
+/**
+ * The one authored moment on the lid: the spy comes up into the hole from
+ * behind its rim, clipped by the same circle the die cut. Nothing about the
+ * punch itself moves — the disc, the ring and the shadow are the board, and
+ * board does not float.
+ */
+.tokenSpy {
+  animation: var(--animation-peek);
+}
+
 .tokenRing {
   fill: none;
   stroke: var(--color-foil);
@@ -46,6 +56,8 @@
 }
 
 .tagline {
+  animation: var(--animation-settle);
+  animation-delay: var(--duration-exit);
   margin-top: var(--space-6);
   font-size: var(--font-size-4xl);
   line-height: var(--line-height-snug);

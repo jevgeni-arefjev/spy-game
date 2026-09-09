@@ -4,6 +4,7 @@
  * o'clock and grows clockwise as the round burns down.
  */
 .token {
+  animation: var(--animation-punch-token);
   position: relative;
   width: var(--size-clock-token);
   height: var(--size-clock-token);
@@ -53,7 +54,15 @@
   stroke: var(--color-foil);
   stroke-linecap: round;
   /* One second of glide per second of round, so the ring never stutters. */
-  transition: stroke-dashoffset var(--duration-tick) var(--ease-linear);
+  transition:
+    stroke-dashoffset var(--duration-tick) var(--ease-linear),
+    opacity var(--duration-state) var(--ease-press);
+}
+
+/* Paused: the round is not burning down, so the brass stops carrying it. The
+   label says so too; this is what says it from across the table. */
+.paused .arc {
+  opacity: 0.45;
 }
 
 .label {

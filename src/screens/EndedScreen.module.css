@@ -8,6 +8,7 @@
 }
 
 .mark {
+  animation: var(--animation-settle);
   display: block;
   align-self: flex-end;
   width: var(--size-ended-mark);
@@ -21,6 +22,8 @@
 }
 
 .subtitle {
+  animation: var(--animation-settle);
+  animation-delay: var(--duration-exit);
   max-width: var(--size-measure-sub);
   margin-top: var(--space-6);
   font-size: var(--font-size-2xl);

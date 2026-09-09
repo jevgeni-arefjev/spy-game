@@ -22,6 +22,7 @@
 
 /* The printed insert that names who is next. */
 .panel {
+  animation: var(--animation-settle);
   position: relative;
   padding: var(--space-8) var(--space-5) var(--space-10);
   border-radius: var(--radius-lg);
@@ -34,6 +35,8 @@
 /* The spy leans on the panel's top edge, left of the fold: a character resting
    on the printed insert rather than art printed onto it. */
 .peek {
+  animation: var(--animation-lean-in);
+  animation-delay: var(--duration-press);
   position: absolute;
   left: var(--space-1);
   bottom: calc(100% - var(--space-5));

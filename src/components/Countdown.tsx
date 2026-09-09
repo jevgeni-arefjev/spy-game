@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { cx } from '../lib/classNames'
 import { DISCUSSION_SECONDS, TICK_INTERVAL_MS } from '../game/config'
 import { msLeft } from '../game/timer'
 import type { TimerState } from '../game/types'
@@ -66,7 +67,7 @@ export function Countdown({ timer, onExpire }: CountdownProps) {
   const center = ring.size / 2
 
   return (
-    <div className={styles.token}>
+    <div className={cx(styles.token, !timer.running && styles.paused)}>
       <div className={styles.edge} />
       <div className={styles.face}>
         <p className={styles.label}>

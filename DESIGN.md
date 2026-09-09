@@ -289,6 +289,40 @@ There is no third state, and "disabled" is always the second one.
 Every shadow in the system offsets down and to the right.
 A shadow with no offset is decoration and does not ship.
 
+## Motion
+
+Motion in this world is a pair of hands over a table, not a screen animating itself.
+Two gestures carry all of it.
+
+**A phase is a card dealt onto the pile.**
+It comes up from below into its place over `420ms` on `cubic-bezier(0.16, 1, 0.3, 1)`, and the phase it replaces is lifted off over the top in `220ms` on a curve that accelerates away.
+The printed sheet under both never moves: `Screen`'s content column carries its own `view-transition-name`, which lifts it out of the root snapshot, so the two washes cross-fade in place while only the columns travel.
+The room stays still and what is on the table changes.
+
+**Everything else is one piece settling.**
+A mark rises `12px` into its place; the spy on home rises `26px` into the die-cut hole from behind its rim, clipped by the same circle the die cut; a punched token arrives at `0.86` scale rather than growing from nothing; the second foil impression comes down onto the first and lands `5px` out of register.
+Each is a single gesture on a single element, between `240ms` and `560ms`, and each stops dead rather than easing out into nothing.
+
+Press feedback is unchanged and is not part of this: a piece sinks `2px` in `120ms`, and the card's flip is still the player's own `550ms` turn.
+
+### Named Rules
+
+**The One Gesture Rule.**
+A screen animates its subject and nothing else — the token on home, the panel and the spy on the handoff, the clock on discussion.
+Buttons, titles and body copy arrive with the column they are printed on. A screen where every element has its own entrance is a screen with no subject.
+
+**The Ground Does Not Move Rule.**
+The wallpaper, the wash and the vignette are the room.
+They cross-fade between phases and are never translated, scaled or parallaxed.
+
+**The Gesture Token Rule.**
+An animation is written as `animation: var(--animation-*)`, never as a bare keyframe name.
+CSS Modules rewrites an animation name it finds in a module file to a scoped one, and the keyframes are global; a bare name silently resolves to nothing and the animation simply does not run.
+
+**Reduced motion keeps the gesture and drops the travel.**
+`prefers-reduced-motion` zeroes every distance token and shortens the arrivals; what is left is the cross-fade, so a state change is still legible.
+It does not disable animation wholesale.
+
 ## Shapes
 
 Radii are small and consistent with die-cut board: `{rounded.xs}` on a foil rule, `{rounded.sm}` on a name tile, `{rounded.md}` on the insert and the text field, `{rounded.lg}` on a topic row, `{rounded.xl}` on a piece, `{rounded.2xl}` on the card.

@@ -157,7 +157,9 @@ export function PlayersScreen() {
               <MinusIcon />
             </button>
             <span className={styles.stepValue} aria-live="polite">
-              {state.spyCount}
+              <span key={state.spyCount} className={styles.stepNumber}>
+                {state.spyCount}
+              </span>
             </span>
             <button
               type="button"

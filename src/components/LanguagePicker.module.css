@@ -52,6 +52,8 @@
 /* The list, lifted off the lid the way the setup insert is lifted off the
    board, and re-declaring the die-line pair for the rows punched from it. */
 .menu {
+  animation: var(--animation-punch-menu);
+  transform-origin: top right;
   position: absolute;
   top: calc(100% + var(--space-2));
   right: var(--space-0);

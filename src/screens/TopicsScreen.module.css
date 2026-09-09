@@ -13,13 +13,46 @@
   margin-top: var(--space-3);
 }
 
+/**
+ * The sheet of punch-outs. It takes whatever height the insert has left and
+ * scrolls inside it, so a growing topic list never pushes the primary action
+ * below the fold. The inline negative margin lets a token's shadow sit in the
+ * insert's own gutter instead of being clipped by the scroll box; `safe`
+ * keeps a short list centred without making an overflowing one unreachable.
+ */
 .list {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
+  justify-content: safe center;
   gap: var(--space-2);
   margin-top: var(--space-3);
+  margin-inline: calc(-1 * var(--space-3));
+  padding-inline: var(--space-3);
+  padding-block: var(--space-1) var(--space-2);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-token) transparent;
+}
+
+.list::-webkit-scrollbar {
+  width: var(--space-2);
+}
+
+.list::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.list::-webkit-scrollbar-thumb {
+  background-color: var(--color-token);
+  border-radius: var(--radius-xs);
+}
+
+/* Rows keep their printed height; the list scrolls rather than squeezing them. */
+.list > li {
+  flex: none;
 }
 
 .topic {
@@ -103,8 +136,14 @@
   display: none;
 }
 
+/* Punching a topic in is the one thing this screen does, so it is the one
+   thing that moves: the token arrives at size, pushed out of the sheet rather
+   than grown from nothing. Going from `display: none` restarts the animation,
+   which is why the toggle needs no other hook. */
 .topic[aria-pressed='true'] .punched {
   display: block;
+  animation: var(--animation-punch);
+  transform-origin: center;
 }
 
 .disc {

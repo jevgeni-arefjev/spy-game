@@ -1,0 +1,126 @@
+/**
+ * How the box moves.
+ *
+ * Two rules carry everything. A phase is a card dealt onto the pile: it comes
+ * up from below into its place, and the one it replaces is lifted off over the
+ * top. The printed sheet under both never moves — only the content column
+ * travels — so the room stays still while what is on the table changes.
+ *
+ * Everything else is a piece settling: a mark rising into a die-cut hole, a
+ * token popping out of the sheet, foil landing out of register. Nothing here
+ * loops, and nothing here is longer than the gesture it stands for.
+ *
+ * Keyframes live in this file rather than in the component modules that use
+ * them because several components share the same gesture, and because a
+ * CSS-module-scoped keyframe cannot be reached from a `::view-transition`
+ * pseudo-element, which lives on the document root.
+ */
+
+/* ── The phase transition ───────────────────────────────────────────── */
+
+/**
+ * `Screen`'s column is lifted out of the root snapshot by its own
+ * `view-transition-name`, so the two grounds cross-fade in place while the
+ * columns pass each other. See `GameProvider`, which is what starts the
+ * transition, and only for a dispatch that actually changes phase.
+ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--duration-ground);
+  animation-timing-function: var(--ease-press);
+}
+
+::view-transition-old(phase-column) {
+  animation: spy-column-leave var(--duration-exit) var(--ease-exit) both;
+}
+
+::view-transition-new(phase-column) {
+  animation: spy-column-rise var(--duration-enter) var(--ease-rise) both;
+}
+
+@keyframes spy-column-rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--motion-rise));
+  }
+}
+
+@keyframes spy-column-leave {
+  to {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--motion-exit-rise)));
+  }
+}
+
+/* ── Pieces settling ────────────────────────────────────────────────── */
+
+/* A single piece arriving into its place on the sheet. */
+@keyframes spy-settle {
+  from {
+    opacity: 0;
+    transform: translateY(var(--motion-settle));
+  }
+}
+
+/* A mark rising into the hole it is seen through, from behind the rim. */
+@keyframes spy-peek {
+  from {
+    transform: translateY(var(--motion-peek));
+  }
+}
+
+/* A token pushed out of the sheet: it arrives at size, not from nothing. */
+@keyframes spy-punch {
+  from {
+    opacity: 0;
+    transform: scale(var(--pop-scale));
+  }
+}
+
+/* The second foil pass, landing slightly out of register with the first. */
+@keyframes spy-foil-land {
+  from {
+    opacity: 0;
+    transform: translate(var(--foil-land-from), var(--foil-land-from));
+  }
+}
+
+/* A rule stamped left to right, the width of a foil block. */
+@keyframes spy-foil-rule {
+  from {
+    transform: scaleX(var(--foil-rule-from));
+  }
+}
+
+
+/**
+ * Reduced motion keeps every one of these — they are what makes a state change
+ * legible — and takes the travel out of them: distances go to zero, the long
+ * arrivals shorten, and what is left is the cross-fade.
+ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-rise: 0px;
+    --motion-exit-rise: 0px;
+    --motion-settle: 0px;
+    --motion-peek: 0px;
+    --pop-scale: 1;
+    --press-travel: 0px;
+    --foil-land-from: var(--foil-offset);
+    --foil-rule-from: 1;
+
+    --duration-enter: 160ms;
+    --duration-exit: 120ms;
+    --duration-ground: 160ms;
+    --duration-settle: 160ms;
+    --duration-rise: 160ms;
+    --duration-pop: 160ms;
+    --duration-flip: 200ms;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+}

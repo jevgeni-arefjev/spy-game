@@ -205,15 +205,65 @@
   --duration-flip: 550ms;
   --duration-tick: 1s;
 
+  /* A phase is a card dealt onto the pile: it comes up from below into its
+     place, and the one it covers is lifted off over the top. The ground under
+     both — the printed sheet — never moves, so only the column travels. */
+  --duration-enter: 420ms;
+  --duration-exit: 220ms;
+  --duration-ground: 260ms;
+  /* One piece settling, one mark rising, one punch popping out of the sheet. */
+  --duration-settle: 360ms;
+  --duration-rise: 560ms;
+  --duration-pop: 240ms;
+  --duration-menu: 180ms;
+  --duration-state: 200ms;
+
+  /* Travel distances. Reduced motion zeroes these and keeps the fades. */
+  --motion-rise: 22px;
+  --motion-exit-rise: 14px;
+  --motion-settle: 12px;
+  /* How far the spy comes up from behind the die-cut rim of the home token. */
+  --motion-peek: 26px;
+  --pop-scale: 0.86;
+  /* Where the second foil impression starts before it lands in register, and
+     how much of the foil rule is pressed before the stroke runs. */
+  --foil-land-from: 0px;
+  --foil-rule-from: 0;
+
   --press-travel: 2px;
   /* How far a punched token's board edge shows below its face. */
   --token-lift: 6px;
   /* How far the second foil impression misses register by. */
   --foil-offset: 5px;
 
+  /**
+   * The gestures, whole. They are tokens rather than bare keyframe names
+   * because CSS Modules rewrites an animation name written in a module file
+   * to a scoped one, and the keyframes these name are global — they live in
+   * `motion.css`, next to the phase transition that shares them. A name
+   * inside `var()` is not rewritten, so this is also the only way a component
+   * can reach them at all.
+   */
+  --animation-column-in: spy-column-rise var(--duration-enter) var(--ease-rise)
+    both;
+  --animation-settle: spy-settle var(--duration-settle) var(--ease-rise) both;
+  --animation-lean-in: spy-settle var(--duration-rise) var(--ease-rise) both;
+  --animation-peek: spy-peek var(--duration-rise) var(--ease-rise) both;
+  --animation-punch: spy-punch var(--duration-pop) var(--ease-rise) both;
+  --animation-punch-token: spy-punch var(--duration-settle) var(--ease-rise)
+    both;
+  --animation-punch-menu: spy-punch var(--duration-menu) var(--ease-rise) both;
+  --animation-foil-land: spy-foil-land var(--duration-pop) var(--ease-rise)
+    both;
+  --animation-foil-rule: spy-foil-rule var(--duration-settle) var(--ease-rise)
+    both;
+
   --ease-press: ease-out;
   --ease-flip: cubic-bezier(0.2, 0.85, 0.25, 1);
   --ease-linear: linear;
+  /* Confident arrival, and a quicker departure than the arrival it replaces. */
+  --ease-rise: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
 
   /* ── 3g. Layout ─────────────────────────────────────────────────── */
   /* The world was drawn for a 360px phone; this caps it on anything wider
