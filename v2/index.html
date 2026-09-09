@@ -1,0 +1,1034 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spy - v2 Box Lid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rammetto+One&family=Rubik:wght@300..900&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   v2 - Box Lid.  The app as the board-game box on the table.
+   Matte lid teal, kraft punchboard, cream printed insert,
+   die-cut pieces with 4px of real cardboard thickness.
+   ============================================================ */
+
+:root{
+  /* box print palette */
+  --teal:        #0e5e5c;
+  --teal-deep:   #094442;
+  --teal-edge:   #073635;
+  --teal-soft:   #bcd8d2;
+  --teal-dim:    #b3d0cb;
+
+  --kraft:       #c9a97e;
+  --kraft-edge:  #a8875c;
+  --kraft-dark:  #b3915f;
+
+  --cream:       #f4ead6;
+  --cream-hi:    #fdf6e6;
+  --cream-edge:  #d9c39a;
+  --cream-sunk:  #e7dbc0;
+
+  --tomato:      #d9432f;
+  --tomato-edge: #a72d1d;
+  --red-ink:     #a92d1c;
+
+  --mustard:     #e8b62c;
+  --mustard-edge:#b98a12;
+
+  --ink:         #2a2018;
+  --ink-2:       #4a3826;
+  --ink-3:       #7a6248;
+
+  --display: 'Rammetto One', 'Trebuchet MS', Verdana, sans-serif;
+  --sans: 'Rubik', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  --lift: 2px 5px 10px rgba(0,0,0,.22);
+  --lift-sm: 1px 3px 6px rgba(0,0,0,.18);
+}
+
+*,*::before,*::after{ box-sizing:border-box }
+
+html{ background:#e8e6e1 }
+body{
+  margin:0;
+  font-family:var(--sans);
+  background:#e8e6e1;
+  color:#2b2a27;
+  -webkit-font-smoothing:antialiased;
+}
+
+::selection{ background:var(--mustard); color:var(--ink) }
+
+/* ---------- strip chrome (belongs to the mockup, not the world) ---------- */
+.strip{ padding:22px 24px 40px }
+.strip-header{
+  font:400 13px/1.5 var(--sans);
+  color:#57544e;
+  margin:0 0 20px;
+  letter-spacing:.005em;
+}
+.strip-header b{ color:#1d1c19; font-weight:600 }
+.frames{
+  display:flex; flex-wrap:wrap; gap:22px;
+  align-items:flex-start;
+}
+.frame{ margin:0 }
+.frame-tools{
+  height:26px; display:flex; align-items:center; gap:6px;
+}
+.rt{
+  font:500 11px/1 var(--sans);
+  border:1px solid #bdbab3; background:#f6f5f2; color:#4a4842;
+  padding:5px 9px; border-radius:5px; cursor:pointer;
+}
+.rt[aria-pressed="true"]{ background:#2b2a27; border-color:#2b2a27; color:#f6f5f2 }
+.rt:focus-visible{ outline:2px solid #2b2a27; outline-offset:2px }
+figcaption{
+  font:500 11px/1 var(--sans); color:#57544e;
+  padding-top:9px; letter-spacing:.03em;
+}
+
+/* ---------- the phone frame ---------- */
+.phone{
+  position:relative;
+  width:360px; height:780px;
+  overflow:hidden;
+  isolation:isolate;
+}
+.strip .phone{ box-shadow:0 0 0 1px rgba(0,0,0,.14) }
+
+/* ---------- single mode ---------- */
+body[data-mode="single"]{ margin:0; background:transparent; overflow:hidden; width:360px; height:780px }
+body[data-mode="single"] html{ background:transparent }
+body[data-mode="single"] .strip{ padding:0 }
+body[data-mode="single"] .strip-header,
+body[data-mode="single"] figcaption,
+body[data-mode="single"] .frame-tools{ display:none }
+body[data-mode="single"] .frames{ gap:0 }
+body[data-mode="single"] .frame{ display:none }
+body[data-mode="single"] .frame.is-active{ display:block }
+body[data-mode="single"] .strip .phone{ box-shadow:none }
+
+/* ============================================================
+   Surfaces
+   ============================================================ */
+.screen{
+  position:relative; z-index:1;
+  width:100%; height:100%;
+  padding:24px 16px 28px;
+  display:flex; flex-direction:column;
+}
+.screen.pad-wide{ padding-left:24px; padding-right:24px }
+
+/* fibre texture: one turbulence layer, multiplied, very low */
+.phone::after{
+  content:""; position:absolute; inset:0; z-index:2; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:180px 180px;
+  mix-blend-mode:multiply;
+  opacity:.09;
+}
+
+.s-teal{ background:var(--teal); --focus:var(--mustard); --cut:rgba(244,234,214,.45); --muted:var(--teal-dim) }
+.s-kraft{ background:var(--kraft); --focus:#241a10; --cut:rgba(42,32,24,.55); --muted:#4f3b27 }
+
+/* faint die-cut token motif printed into the lid */
+.s-teal.motif::before{
+  content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='84'%3E%3Cg fill='none' stroke='%23f4ead6' stroke-width='2'%3E%3Ccircle cx='21' cy='21' r='13'/%3E%3Ccircle cx='63' cy='63' r='13'/%3E%3C/g%3E%3C/svg%3E");
+  background-size:84px 84px;
+  opacity:.075;
+}
+
+/* ============================================================
+   Die-cut pieces: cardboard with thickness
+   ============================================================ */
+.piece{
+  position:relative;
+  display:inline-flex; align-items:center; justify-content:center;
+  width:100%; min-height:44px;
+  padding:0 18px;
+  border:0; border-bottom:4px solid var(--edge, var(--cream-edge));
+  border-radius:14px;
+  background:var(--face, var(--cream));
+  color:var(--label, var(--ink));
+  font:700 20px/1 var(--sans);
+  letter-spacing:.005em;
+  box-shadow:var(--lift);
+  cursor:pointer;
+  transition:transform .12s ease-out, border-bottom-width .12s ease-out, box-shadow .12s ease-out;
+}
+.piece:active{
+  transform:translateY(2px);
+  border-bottom-width:2px;
+  box-shadow:var(--lift-sm);
+}
+.piece--primary{ --face:var(--tomato); --edge:var(--tomato-edge); --label:var(--cream) }
+.piece--cream{ --face:var(--cream); --edge:var(--cream-edge); --label:var(--ink) }
+.piece--teal{ --face:var(--teal); --edge:var(--teal-edge); --label:var(--cream) }
+
+/* disabled = still in the sheet: flat outline, no thickness */
+.piece:disabled{
+  background:transparent;
+  border:2px dashed var(--cut);
+  color:var(--muted);
+  box-shadow:none;
+  transform:none;
+  cursor:default;
+}
+
+:where(button, input, [tabindex]):focus-visible{
+  outline:3px solid var(--focus, #241a10);
+  outline-offset:3px;
+}
+
+/* ============================================================
+   Shared typography
+   ============================================================ */
+.title{
+  font-family:var(--display);
+  font-weight:400;
+  line-height:1.02;
+  margin:0;
+  letter-spacing:0;
+}
+.sub{ font:400 14.5px/1.45 var(--sans); margin:0 }
+.sr{
+  position:absolute; width:1px; height:1px; margin:-1px;
+  padding:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+}
+
+/* spot varnish: a misregistered second impression in tomato */
+.varnish{ position:relative; display:inline-block; color:var(--cream) }
+.varnish::before{
+  content:attr(data-text);
+  position:absolute; left:0; top:0;
+  transform:translate(5px,5px);
+  color:var(--tomato);
+  z-index:-1;
+}
+
+/* the printed cream insert, lifted off the kraft */
+.insert{
+  flex:1;
+  --muted:var(--ink-3);
+  --cut:rgba(74,56,38,.45);
+  display:flex; flex-direction:column;
+  background:var(--cream);
+  border-radius:10px;
+  border-bottom:3px solid var(--cream-edge);
+  box-shadow:2px 6px 14px rgba(0,0,0,.26);
+  padding:18px 18px 20px;
+}
+
+/* printed label + live count row */
+.count-row{
+  display:flex; align-items:baseline; justify-content:space-between;
+  gap:12px;
+  border-top:2px solid var(--cream-sunk);
+  padding-top:10px;
+}
+.count-row .lab{
+  font:600 12px/1 var(--sans);
+  letter-spacing:.14em; text-transform:uppercase; color:var(--ink-2);
+}
+.count-row .val{
+  font-family:var(--display); font-size:19px; line-height:1; color:var(--teal);
+  font-variant-numeric:tabular-nums; word-spacing:.16em;
+}
+
+/* ============================================================
+   1. Home
+   ============================================================ */
+.home-mid{ flex:1; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; padding-left:2px }
+.home-title{ font-size:112px; letter-spacing:-.01em }
+.home-tag{
+  font:400 20px/1.3 var(--sans);
+  color:var(--cream); margin:26px 0 0;
+}
+.home-rule{
+  width:64px; height:8px; background:var(--mustard);
+  border-radius:4px; margin:22px 0 0;
+}
+
+/* ============================================================
+   2. Topics
+   ============================================================ */
+.topic-list{
+  list-style:none; margin:14px 0 0; padding:0;
+  flex:1; display:flex; flex-direction:column; justify-content:space-evenly; gap:8px;
+}
+.topic{
+  position:relative;
+  width:100%; min-height:54px;
+  display:flex; align-items:center; gap:13px;
+  padding:0 14px 0 8px;
+  border:0; border-radius:12px;
+  background:transparent;
+  font:600 17px/1.2 var(--sans);
+  color:var(--ink-2);
+  text-align:left;
+  cursor:pointer;
+  transition:transform .12s ease-out, box-shadow .12s ease-out;
+}
+.topic .cut-line{ display:block }
+.topic .punched{ display:none }
+.topic[aria-pressed="true"]{
+  background:var(--cream-hi);
+  color:var(--ink);
+  border-bottom:4px solid var(--cream-edge);
+  box-shadow:2px 5px 10px rgba(0,0,0,.20);
+}
+.topic[aria-pressed="true"] .cut-line{ display:none }
+.topic[aria-pressed="true"] .punched{ display:block }
+.topic[aria-pressed="false"]::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  border:2px solid var(--cream-sunk); border-radius:12px;
+}
+.topic[aria-pressed="true"]:not(:disabled):active{
+  transform:translateY(2px); border-bottom-width:2px; box-shadow:var(--lift-sm);
+}
+.topic:disabled{ cursor:default; box-shadow:1px 3px 6px rgba(0,0,0,.17) }
+.topic svg{ display:block; width:42px; height:42px; flex:none }
+.topic[aria-pressed="true"] svg{ filter:drop-shadow(2px 3px 2px rgba(0,0,0,.28)) }
+.topic .name{ flex:1 }
+
+/* ============================================================
+   3. Players
+   ============================================================ */
+.add-row{ display:flex; gap:8px; margin-top:14px }
+.field{
+  flex:1; min-width:0; height:48px;
+  border:2px solid var(--ink); border-radius:11px;
+  background:var(--cream-hi);
+  color:var(--ink);
+  font:500 16px/1 var(--sans);
+  padding:0 12px;
+  caret-color:var(--tomato);
+}
+.field::placeholder{ color:var(--ink-3); font-weight:400 }
+.field:focus-visible{ outline:3px solid var(--focus); outline-offset:2px }
+.add-btn{ width:78px; flex:none; font-size:17px; min-height:48px; padding:0 }
+
+.err{
+  min-height:18px;
+  font:500 13px/18px var(--sans);
+  color:var(--red-ink);
+  margin:6px 0 0;
+}
+
+.stepper-row{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; margin-top:8px;
+}
+.stepper-row .lab{ font:600 15px/1 var(--sans); color:var(--ink) }
+.stepper{ display:flex; align-items:center; gap:10px }
+.step{
+  width:44px; height:44px; flex:none;
+  border:0; border-bottom:4px solid var(--cream-edge);
+  border-radius:50%;
+  background:var(--cream-hi);
+  color:var(--ink);
+  box-shadow:var(--lift-sm);
+  cursor:pointer;
+  display:inline-flex; align-items:center; justify-content:center;
+  transition:transform .12s ease-out, border-bottom-width .12s ease-out, box-shadow .12s ease-out;
+}
+.step:active:not(:disabled){ transform:translateY(2px); border-bottom-width:2px; box-shadow:none }
+.step:disabled{
+  background:transparent; border:2px dashed var(--cut);
+  color:var(--muted); box-shadow:none; cursor:default;
+}
+.step svg{ width:18px; height:18px; display:block }
+.step-val{
+  font-family:var(--display); font-size:22px; line-height:1; color:var(--teal);
+  min-width:26px; text-align:center; font-variant-numeric:tabular-nums;
+}
+
+.rack{
+  margin-top:8px;
+  background:var(--kraft);
+  border-radius:10px;
+  border-top:3px solid var(--kraft-edge);
+  padding:10px;
+  flex:1; min-height:132px;
+  overflow-y:auto;
+  scrollbar-width:thin;
+  scrollbar-color:var(--ink-2) var(--kraft-edge);
+}
+.rack::-webkit-scrollbar{ width:8px }
+.rack::-webkit-scrollbar-track{ background:var(--kraft-edge); border-radius:4px }
+.rack::-webkit-scrollbar-thumb{ background:var(--ink-2); border-radius:4px }
+.tiles{ list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; align-content:flex-start; gap:8px }
+.tile{
+  display:flex; align-items:stretch;
+  height:44px;
+  background:var(--cream-hi);
+  border-bottom:4px solid var(--cream-edge);
+  border-radius:9px;
+  box-shadow:var(--lift-sm);
+  overflow:hidden;
+}
+.tile .nm{
+  display:flex; align-items:center;
+  padding:0 4px 0 11px;
+  font:600 16px/1 var(--sans); color:var(--ink);
+}
+.tile .rm{
+  width:32px; flex:none;
+  border:0; background:transparent; color:var(--ink-2);
+  cursor:pointer;
+  display:inline-flex; align-items:center; justify-content:center;
+}
+.tile .rm:hover{ color:var(--red-ink) }
+.tile .rm svg{ width:14px; height:14px; display:block }
+.rack-empty{ font:400 14px/44px var(--sans); color:var(--ink-2); padding:0 4px; margin:0 }
+.roster-hint{ font:400 14px/18px var(--sans); color:var(--ink-2); margin:10px 0 0; min-height:18px; flex:none }
+
+/* ============================================================
+   4. Handoff  /  5. Card
+   ============================================================ */
+.progress{
+  font:600 13px/1 var(--sans);
+  letter-spacing:.13em; text-transform:uppercase;
+  color:var(--ink-2);
+  text-align:center; margin:0;
+}
+.handoff-panel{
+  background:var(--cream);
+  border-radius:12px;
+  border-bottom:4px solid var(--cream-edge);
+  box-shadow:3px 8px 16px rgba(0,0,0,.26);
+  padding:34px 22px 38px;
+  text-align:center;
+}
+.handoff-panel .lead{
+  font:800 30px/1.18 var(--sans);
+  color:var(--ink); margin:0;
+  letter-spacing:-.01em;
+}
+.handoff-mark{ display:block; margin:0 auto 22px }
+
+.card-wrap{ perspective:1100px; display:flex; justify-content:center }
+.card{
+  width:296px; height:408px;
+  padding:0; border:0; background:transparent;
+  border-radius:16px;
+  cursor:pointer;
+  filter:drop-shadow(3px 8px 12px rgba(0,0,0,.30));
+}
+.card-inner{
+  position:relative; display:block;
+  width:100%; height:100%;
+  transform-style:preserve-3d;
+  transition:transform .55s cubic-bezier(.2,.85,.25,1);
+}
+.card.is-flipped .card-inner{ transform:rotateY(180deg) }
+.face{
+  position:absolute; inset:0;
+  border-radius:16px;
+  backface-visibility:hidden; -webkit-backface-visibility:hidden;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  overflow:hidden;
+}
+.face-back{
+  background-color:var(--cream);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23f4ead6'/%3E%3Cpath d='M20 7 L29 20 L20 33 L11 20 Z' fill='%230e5e5c'/%3E%3Ccircle cx='0' cy='0' r='3.4' fill='%230e5e5c'/%3E%3Ccircle cx='40' cy='0' r='3.4' fill='%230e5e5c'/%3E%3Ccircle cx='0' cy='40' r='3.4' fill='%230e5e5c'/%3E%3Ccircle cx='40' cy='40' r='3.4' fill='%230e5e5c'/%3E%3C/svg%3E");
+  background-size:40px 40px;
+  background-position:center;
+  background-clip:padding-box;
+  border:9px solid var(--cream);
+}
+.plate{
+  background:var(--cream);
+  padding:15px 19px 17px;
+  border:3px solid var(--teal);
+  border-radius:10px;
+  text-align:center;
+}
+.plate .who{ font-family:var(--display); font-size:30px; line-height:1.05; color:var(--teal); display:block }
+.plate .tap{ font:500 13px/1 var(--sans); color:var(--ink-2); display:block; margin-top:12px; letter-spacing:.02em }
+
+.face-front{ transform:rotateY(180deg); padding:26px 22px }
+.face-front::before{
+  content:""; position:absolute; inset:9px; border-radius:9px; pointer-events:none;
+  border:3px solid var(--rule, var(--teal));
+}
+.face-civ{ background:var(--cream); --rule:var(--teal) }
+.face-spy{ background:var(--mustard); --rule:var(--ink) }
+.face-front .kind{
+  font:600 13px/1 var(--sans); letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink-2); margin:0 0 16px; text-align:center;
+}
+.face-spy .kind{ color:var(--ink) }
+.face-front .big{
+  font-family:var(--display); font-size:34px; line-height:1.12;
+  color:var(--ink); margin:0; text-align:center; overflow-wrap:break-word;
+}
+.face-civ .big{ color:var(--teal) }
+.card-hint{
+  min-height:20px;
+  font:500 14px/20px var(--sans); color:var(--ink-2);
+  text-align:center; margin:0;
+}
+
+/* ============================================================
+   6. Discussion
+   ============================================================ */
+.clock-token{ position:relative; width:244px; height:244px; margin:0 auto }
+.clock-token::before{
+  content:""; position:absolute; inset:0; border-radius:50%;
+  background:var(--cream-edge);
+  transform:translateY(5px);
+  box-shadow:3px 9px 16px rgba(0,0,0,.38);
+}
+.clock-face{
+  position:absolute; inset:0; border-radius:50%;
+  background:var(--cream);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+.clock-face::before{
+  content:""; position:absolute; inset:8px; border-radius:50%; pointer-events:none;
+  border:3px solid var(--teal);
+}
+.clock-label{
+  font:600 12px/1 var(--sans); letter-spacing:.18em; text-transform:uppercase;
+  color:var(--ink-2); margin:0 0 12px;
+}
+.clock-time{
+  font-family:var(--display); font-size:46px; line-height:1;
+  color:var(--teal); margin:0;
+  font-variant-numeric:tabular-nums; letter-spacing:.01em;
+}
+.disc-hint{
+  font:400 15px/1.45 var(--sans); color:var(--teal-soft);
+  text-align:center; margin:0 auto; max-width:280px; text-wrap:balance;
+}
+
+/* ============================================================
+   7. Ended
+   ============================================================ */
+.ended-title{ font-size:60px; line-height:.98 }
+.ended-sub{ font:400 17px/1.45 var(--sans); color:var(--cream); margin:24px 0 0; max-width:292px; text-wrap:balance }
+
+/* stacked action block at the thumb end */
+.actions{ display:flex; flex-direction:column; gap:10px }
+.piece--sm{ min-height:46px; font-size:17px; font-weight:600 }
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{ transition-duration:0.001ms !important; animation-duration:0.001ms !important }
+}
+</style>
+</head>
+<body>
+
+<main class="strip">
+  <p class="strip-header"><b>v2 - Box Lid</b> &nbsp;·&nbsp; The board-game box already on the table: matte lid teal, kraft punchboard, cream printed insert, die-cut pieces with real thickness.</p>
+
+  <div class="frames">
+
+    <!-- ============ 1. HOME ============ -->
+    <figure class="frame" data-id="home">
+      <div class="frame-tools"></div>
+      <section class="phone" data-screen="home">
+        <div class="screen s-teal motif pad-wide">
+          <div class="home-mid">
+            <h1 class="title home-title varnish" data-text="Spy">Spy</h1>
+            <div class="home-rule"></div>
+            <p class="home-tag">One phone. One spy.</p>
+          </div>
+          <button type="button" class="piece piece--primary" style="min-height:60px">Play Spy</button>
+        </div>
+      </section>
+      <figcaption>Home</figcaption>
+    </figure>
+
+    <!-- ============ 2. TOPICS ============ -->
+    <figure class="frame" data-id="topics">
+      <div class="frame-tools"></div>
+      <section class="phone" data-screen="topics">
+        <div class="screen s-kraft">
+          <div class="insert">
+            <h1 class="title" style="font-size:30px">Topics</h1>
+            <p class="sub" style="color:var(--ink-2);margin:8px 0 14px">Pick which sets of words can come up. Keep at least one.</p>
+            <div class="count-row">
+              <span class="lab">Included</span>
+              <span class="val" id="topicCount">3 / 5</span>
+            </div>
+            <ul class="topic-list" id="topicList"></ul>
+          </div>
+          <div style="flex:none;height:14px"></div>
+          <div class="actions">
+            <button type="button" class="piece piece--primary" style="min-height:60px">Continue</button>
+            <button type="button" class="piece piece--sm" style="background:transparent;border:2px solid rgba(42,32,24,.6);color:var(--ink);box-shadow:none">Back</button>
+          </div>
+        </div>
+      </section>
+      <figcaption>Topics</figcaption>
+    </figure>
+
+    <!-- ============ 3. PLAYERS ============ -->
+    <figure class="frame" data-id="players">
+      <div class="frame-tools"></div>
+      <section class="phone" data-screen="players">
+        <div class="screen s-kraft">
+          <div class="insert">
+            <h1 class="title" style="font-size:30px">Players</h1>
+            <p class="sub" style="color:var(--ink-2);margin:8px 0 0">Pass the phone around. One of you is the spy.</p>
+
+            <form class="add-row" id="addForm" novalidate>
+              <label class="sr" for="nameInput">Player name</label>
+              <input class="field" id="nameInput" type="text" placeholder="Add a player" autocomplete="off">
+              <button type="submit" class="piece piece--teal add-btn">Add</button>
+            </form>
+            <p class="err" id="errLine" role="status"></p>
+
+            <div class="stepper-row" role="group" aria-labelledby="spiesLabel">
+              <span class="lab" id="spiesLabel">Spies</span>
+              <span class="stepper">
+                <button type="button" class="step" id="spyMinus" aria-label="Fewer spies">
+                  <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9h12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+                </button>
+                <span class="step-val" id="spyVal">1</span>
+                <button type="button" class="step" id="spyPlus" aria-label="More spies">
+                  <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9h12M9 3v12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+                </button>
+              </span>
+            </div>
+
+            <div class="count-row" style="margin-top:14px">
+              <span class="lab">Players</span>
+              <span class="val" id="rosterCount">6 / 12</span>
+            </div>
+
+            <div class="rack">
+              <ul class="tiles" id="rosterList"></ul>
+              <p class="rack-empty" id="rosterEmpty" hidden>No players yet.</p>
+            </div>
+
+            <p class="roster-hint" id="rosterHint">1 of you will secretly be the spy.</p>
+          </div>
+          <div style="flex:none;height:14px"></div>
+          <div class="actions">
+            <button type="button" class="piece piece--primary" id="startBtn" style="min-height:60px">Start game</button>
+            <button type="button" class="piece piece--sm" style="background:transparent;border:2px solid rgba(42,32,24,.6);color:var(--ink);box-shadow:none">Back</button>
+          </div>
+        </div>
+      </section>
+      <figcaption>Players</figcaption>
+    </figure>
+
+    <!-- ============ 4. HANDOFF ============ -->
+    <figure class="frame" data-id="handoff">
+      <div class="frame-tools"></div>
+      <section class="phone" data-screen="handoff">
+        <div class="screen s-kraft pad-wide">
+          <p class="progress">Player 3 of 6</p>
+          <div style="flex:1;display:flex;align-items:center">
+            <div class="handoff-panel">
+              <svg class="handoff-mark" width="132" height="72" viewBox="0 0 132 72" aria-hidden="true"><rect x="2" y="4" width="46" height="64" rx="7" fill="#f4ead6" stroke="#0e5e5c" stroke-width="3"/><path d="M25 20 L36 28 L25 36 L14 28 Z" fill="#0e5e5c"/><path d="M14 48h22M14 58h14" stroke="#0e5e5c" stroke-width="3" stroke-linecap="round"/><path d="M60 36h22" stroke="#d9432f" stroke-width="4" stroke-linecap="round"/><path d="M76 27l10 9-10 9" fill="none" stroke="#d9432f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="112" cy="36" r="18" fill="#0e5e5c"/><circle cx="112" cy="36" r="10" fill="none" stroke="#f4ead6" stroke-width="3"/></svg>
+              <p class="lead">Pass the phone to Priya</p>
+            </div>
+          </div>
+          <button type="button" class="piece piece--primary" style="min-height:60px">I'm Priya</button>
+        </div>
+      </section>
+      <figcaption>Handoff</figcaption>
+    </figure>
+
+    <!-- ============ 5. CARD ============ -->
+    <figure class="frame" data-id="card">
+      <div class="frame-tools">
+        <button type="button" class="rt" data-role="civilian" aria-pressed="true">Civilian</button>
+        <button type="button" class="rt" data-role="spy" aria-pressed="false">Spy</button>
+      </div>
+      <section class="phone" data-screen="card">
+        <div class="screen s-kraft pad-wide">
+          <p class="progress">Player 3 of 6</p>
+          <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:20px">
+            <div class="card-wrap">
+              <button type="button" class="card" id="cardBtn" data-role="civilian" aria-label="Priya's card &#8212; tap to reveal">
+                <span class="card-inner">
+                  <span class="face face-back">
+                    <span class="plate">
+                      <span class="who">Priya</span>
+                      <span class="tap">Tap to reveal</span>
+                    </span>
+                  </span>
+                  <span class="face face-front face-civ" data-face="civilian">
+                    <p class="kind">Your word</p>
+                    <p class="big">Hot-air balloon</p>
+                  </span>
+                  <span class="face face-front face-spy" data-face="spy">
+                    <p class="kind">You are the spy</p>
+                    <p class="big">Hint: Slow</p>
+                  </span>
+                </span>
+              </button>
+            </div>
+            <p class="card-hint" id="cardHint">Tap to reveal</p>
+          </div>
+          <button type="button" class="piece piece--primary" id="gotIt" style="min-height:60px" disabled>Got it</button>
+        </div>
+      </section>
+      <figcaption>Card</figcaption>
+    </figure>
+
+    <!-- ============ 6. DISCUSSION ============ -->
+    <figure class="frame" data-id="discussion">
+      <div class="frame-tools"></div>
+      <section class="phone" data-screen="discussion">
+        <div class="screen s-teal pad-wide">
+          <h1 class="title" style="font-size:32px;color:var(--cream);text-align:center">Discussion</h1>
+          <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:30px">
+            <div class="clock-token">
+              <div class="clock-face">
+                <p class="clock-label" id="clockLabel">Time left</p>
+                <p class="clock-time" id="clockTime">03:47</p>
+              </div>
+            </div>
+            <p class="disc-hint">Take turns describing the word. Find the spy.</p>
+          </div>
+          <div class="actions">
+            <button type="button" class="piece piece--primary" id="pauseBtn" style="min-height:60px">Pause</button>
+            <button type="button" class="piece piece--cream piece--sm" id="endBtn">End round</button>
+          </div>
+        </div>
+      </section>
+      <figcaption>Discussion</figcaption>
+    </figure>
+
+    <!-- ============ 7. ENDED ============ -->
+    <figure class="frame" data-id="ended">
+      <div class="frame-tools"></div>
+      <section class="phone" data-screen="ended">
+        <div class="screen s-teal motif pad-wide">
+          <div class="home-mid">
+            <h1 class="title ended-title varnish" data-text="Time's up">Time's up</h1>
+            <div class="home-rule"></div>
+            <p class="ended-sub">Decide together who the spy was.</p>
+          </div>
+          <div class="actions">
+            <button type="button" class="piece piece--primary" style="min-height:60px">Play again</button>
+            <button type="button" class="piece piece--cream piece--sm">Exit</button>
+          </div>
+        </div>
+      </section>
+      <figcaption>Ended</figcaption>
+    </figure>
+
+  </div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  var MAX_PLAYERS = 12;
+  var START_SECONDS = 3 * 60 + 47;
+
+  var DEMO_TOPICS = [
+    { id: 'locations',     name: 'Locations',    on: true  },
+    { id: 'professions',   name: 'Professions',  on: false },
+    { id: 'food',          name: 'Food & Drink', on: true  },
+    { id: 'entertainment', name: 'Entertainment', on: false },
+    { id: 'travel',        name: 'Travel',       on: true  }
+  ];
+  var DEMO_ROSTER = ['Mia', 'Theo', 'Priya', 'Jonas', 'Aiko', 'Sam'];
+
+  var state = {
+    topics: [],
+    players: [],
+    spies: 1,
+    role: 'civilian',
+    revealed: false,
+    seconds: START_SECONDS,
+    running: true,
+    finished: false
+  };
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* ---------- topics ---------- */
+
+  var PUNCH_SVG =
+    '<svg viewBox="0 0 42 42" aria-hidden="true">' +
+      '<circle class="cut-line" cx="21" cy="21" r="18" fill="#e7dbc0" stroke="rgba(14,94,92,.55)" stroke-width="2" stroke-dasharray="5 4"/>' +
+      '<g class="punched">' +
+        '<circle cx="21" cy="21" r="18" fill="#0e5e5c"/>' +
+        '<circle cx="21" cy="21" r="11" fill="none" stroke="#f4ead6" stroke-width="2.4"/>' +
+        '<circle cx="21" cy="21" r="4" fill="#f4ead6"/>' +
+      '</g>' +
+    '</svg>';
+
+  function includedCount() {
+    return state.topics.filter(function (t) { return t.on; }).length;
+  }
+
+  function renderTopics() {
+    var list = $('topicList');
+    var n = includedCount();
+    list.innerHTML = '';
+    state.topics.forEach(function (t, i) {
+      var li = document.createElement('li');
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'topic';
+      b.setAttribute('aria-pressed', t.on ? 'true' : 'false');
+      if (t.on && n === 1) { b.disabled = true; }
+      b.innerHTML = PUNCH_SVG + '<span class="name"></span>';
+      b.querySelector('.name').textContent = t.name;
+      b.addEventListener('click', function () {
+        if (state.topics[i].on && includedCount() === 1) { return; }
+        state.topics[i].on = !state.topics[i].on;
+        renderTopics();
+      });
+      li.appendChild(b);
+      list.appendChild(li);
+    });
+    $('topicCount').textContent = n + ' / ' + state.topics.length;
+  }
+
+  /* ---------- players ---------- */
+
+  var X_SVG = '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2l10 10M12 2L2 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
+
+  function setError(msg) { $('errLine').textContent = msg || ''; }
+
+  function renderPlayers() {
+    var list = $('rosterList');
+    list.innerHTML = '';
+    state.players.forEach(function (name, i) {
+      var li = document.createElement('li');
+      li.className = 'tile';
+      var nm = document.createElement('span');
+      nm.className = 'nm';
+      nm.textContent = name;
+      var rm = document.createElement('button');
+      rm.type = 'button';
+      rm.className = 'rm';
+      rm.setAttribute('aria-label', 'Remove ' + name);
+      rm.innerHTML = X_SVG;
+      rm.addEventListener('click', function () {
+        state.players.splice(i, 1);
+        if (state.spies > Math.max(1, state.players.length)) {
+          state.spies = Math.max(1, state.players.length);
+        }
+        setError('');
+        renderPlayers();
+      });
+      li.appendChild(nm);
+      li.appendChild(rm);
+      list.appendChild(li);
+    });
+
+    var empty = state.players.length === 0;
+    $('rosterEmpty').hidden = !empty;
+    list.hidden = empty;
+
+    $('rosterCount').textContent = state.players.length + ' / ' + MAX_PLAYERS;
+
+    var missing = 3 - state.players.length;
+    if (missing > 0) {
+      $('rosterHint').textContent =
+        'Add ' + missing + ' more player' + (missing === 1 ? '' : 's') + ' to start.';
+    } else {
+      $('rosterHint').textContent = state.spies + ' of you will secretly be the spy.';
+    }
+    $('startBtn').disabled = state.players.length < 3;
+
+    $('spyVal').textContent = String(state.spies);
+    $('spyMinus').disabled = state.spies <= 1;
+    $('spyPlus').disabled = state.spies >= Math.max(1, state.players.length);
+  }
+
+  $('addForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var input = $('nameInput');
+    var name = input.value.trim();
+    if (!name) { setError('Type a name first.'); return; }
+    var dup = state.players.some(function (p) {
+      return p.toLowerCase() === name.toLowerCase();
+    });
+    if (dup) { setError('Someone already has that name.'); return; }
+    if (state.players.length >= MAX_PLAYERS) {
+      setError("That's the maximum of " + MAX_PLAYERS + ' players.');
+      return;
+    }
+    state.players.push(name);
+    input.value = '';
+    setError('');
+    renderPlayers();
+  });
+
+  $('spyMinus').addEventListener('click', function () {
+    if (state.spies > 1) { state.spies -= 1; renderPlayers(); }
+  });
+  $('spyPlus').addEventListener('click', function () {
+    if (state.spies < state.players.length) { state.spies += 1; renderPlayers(); }
+  });
+
+  /* ---------- card ---------- */
+
+  var cardBtn = $('cardBtn');
+  var gotIt = $('gotIt');
+  var faceDownName = "Priya's card — tap to reveal";
+
+  function renderCard() {
+    cardBtn.dataset.role = state.role;
+    cardBtn.classList.toggle('is-flipped', state.revealed);
+    if (state.revealed) {
+      cardBtn.removeAttribute('aria-label');
+    } else {
+      cardBtn.setAttribute('aria-label', faceDownName);
+    }
+    var civ = cardBtn.querySelector('[data-face="civilian"]');
+    var spy = cardBtn.querySelector('[data-face="spy"]');
+    civ.style.display = state.role === 'civilian' ? '' : 'none';
+    spy.style.display = state.role === 'spy' ? '' : 'none';
+    $('cardHint').textContent = state.revealed ? 'Keep it to yourself.' : 'Tap to reveal';
+    gotIt.disabled = !state.revealed;
+  }
+
+  cardBtn.addEventListener('click', function () {
+    if (state.revealed) { return; }
+    state.revealed = true;
+    renderCard();
+  });
+
+  gotIt.addEventListener('click', function () {
+    gotIt.disabled = true;
+    window.setTimeout(function () {
+      state.revealed = false;
+      renderCard();
+    }, 650);
+  });
+
+  function setRole(role) {
+    if (role !== 'civilian' && role !== 'spy') { return; }
+    if (state.revealed) { state.revealed = false; }
+    state.role = role;
+    renderCard();
+    Array.prototype.forEach.call(document.querySelectorAll('.rt'), function (b) {
+      b.setAttribute('aria-pressed', b.dataset.role === role ? 'true' : 'false');
+    });
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('.rt'), function (b) {
+    b.addEventListener('click', function () { setRole(b.dataset.role); });
+  });
+
+  /* ---------- discussion clock ---------- */
+
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+
+  function renderClock() {
+    var s = Math.max(0, state.seconds);
+    $('clockTime').textContent = pad(Math.floor(s / 60)) + ':' + pad(s % 60);
+    $('clockLabel').textContent = state.running ? 'Time left' : 'Paused';
+    $('pauseBtn').textContent = state.running ? 'Pause' : 'Resume';
+    $('pauseBtn').disabled = state.finished;
+    $('endBtn').disabled = state.finished;
+  }
+
+  $('pauseBtn').addEventListener('click', function () {
+    if (state.finished) { return; }
+    state.running = !state.running;
+    renderClock();
+  });
+  $('endBtn').addEventListener('click', function () {
+    state.finished = true;
+    state.running = false;
+    renderClock();
+  });
+
+  window.setInterval(function () {
+    if (state.running && !state.finished && state.seconds > 0) {
+      state.seconds -= 1;
+      if (state.seconds === 0) { state.running = false; state.finished = true; }
+      renderClock();
+    }
+  }, 1000);
+
+  /* ---------- display mode ---------- */
+
+  var SCREENS = ['home', 'topics', 'players', 'handoff', 'card', 'discussion', 'ended'];
+
+  function show(screen) {
+    if (screen === 'all') {
+      document.body.removeAttribute('data-mode');
+      Array.prototype.forEach.call(document.querySelectorAll('.frame'), function (f) {
+        f.classList.remove('is-active');
+      });
+      return;
+    }
+    if (SCREENS.indexOf(screen) === -1) { return; }
+    document.body.setAttribute('data-mode', 'single');
+    Array.prototype.forEach.call(document.querySelectorAll('.frame'), function (f) {
+      f.classList.toggle('is-active', f.dataset.id === screen);
+    });
+  }
+
+  function reset() {
+    state.topics = DEMO_TOPICS.map(function (t) { return { id: t.id, name: t.name, on: t.on }; });
+    state.players = DEMO_ROSTER.slice();
+    state.spies = 1;
+    state.revealed = false;
+    state.seconds = START_SECONDS;
+    state.running = true;
+    state.finished = false;
+    $('nameInput').value = '';
+    setError('');
+    renderTopics();
+    renderPlayers();
+    renderCard();
+    renderClock();
+  }
+
+  /* ---------- hash + message API ---------- */
+
+  function readHash() {
+    var h = window.location.hash.replace(/^#/, '');
+    if (!h) { return; }
+    var params = {};
+    h.split('&').forEach(function (part) {
+      var kv = part.split('=');
+      params[decodeURIComponent(kv[0])] = decodeURIComponent(kv[1] || '');
+    });
+    if (params.role) { setRole(params.role); }
+    if (params.reveal === '1') { state.revealed = true; renderCard(); }
+    if (params.screen) { show(params.screen); }
+  }
+
+  window.addEventListener('message', function (e) {
+    var d = e.data;
+    if (!d || typeof d !== 'object') { return; }
+    if (d.type === 'spy:show') { show(d.screen); }
+    else if (d.type === 'spy:role') { setRole(d.role); }
+    else if (d.type === 'spy:reset') { reset(); }
+  });
+
+  window.addEventListener('hashchange', readHash);
+
+  reset();
+  readHash();
+
+  function ready() {
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'spy:ready', version: 'v2' }, '*');
+      }
+    } catch (err) { /* no parent */ }
+  }
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(ready);
+  } else {
+    window.addEventListener('load', ready);
+  }
+}());
+</script>
+</body>
+</html>

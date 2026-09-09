@@ -1,0 +1,90 @@
+{
+  "buildPath": "comp",
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          "v1/index.html"
+        ],
+        "createdAt": "2026-09-09T06:45:17.042Z",
+        "reason": "v1 Passed Note: the ground is ruled notebook paper, the direction contract's own material, with real rules, margin line and grain"
+      },
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          "v2/index.html"
+        ],
+        "createdAt": "2026-09-09T06:45:17.052Z",
+        "reason": "v2 Box Lid: cream is the printed cardboard insert of a board-game box, per the direction contract, set on kraft and teal"
+      },
+      {
+        "rule": "border-accent-on-rounded",
+        "value": "*",
+        "files": [
+          "v2/index.html"
+        ],
+        "createdAt": "2026-09-09T06:45:17.062Z",
+        "reason": "v2 Box Lid: the thick bottom border is cardboard thickness on die-cut pieces that sink on press, per the direction contract"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "v4/index.html"
+        ],
+        "createdAt": "2026-09-09T06:45:17.070Z",
+        "reason": "v4 Sleeve: full-bleed plates and edge-locked marks are the sleeve grammar; inner content keeps 20px insets, and the harness frame has no bezel"
+      },
+      {
+        "rule": "all-caps-body",
+        "value": "*",
+        "files": [
+          "v4/index.html"
+        ],
+        "createdAt": "2026-09-09T06:45:17.079Z",
+        "reason": "v4 Sleeve: caps at tracked small sizes are the Designers Republic sleeve grammar; the risk is recorded in v4/DIRECTION.md"
+      },
+      {
+        "rule": "repeating-stripes-gradient",
+        "value": "*",
+        "files": [
+          "v4/index.html"
+        ],
+        "createdAt": "2026-09-09T06:45:17.089Z",
+        "reason": "v4 Sleeve: hazard diagonals are the disabled treatment specified by the direction contract"
+      },
+      {
+        "rule": "border-accent-on-rounded",
+        "value": "*",
+        "files": [
+          "v6/index.html"
+        ],
+        "createdAt": "2026-09-09T12:05:52.815Z",
+        "reason": "v6 Night Lid: the thick bottom border is cardboard thickness on die-cut pieces that sink on press, inherited from the v2 direction contract this version remixes"
+      },
+      {
+        "rule": "gray-on-color",
+        "value": "*",
+        "files": [
+          "v6/index.html"
+        ],
+        "createdAt": "2026-09-09T12:05:52.824Z",
+        "reason": "v6 Night Lid: #f2eaf7 is a violet-tinted near-white (the rule's own recommended remedy) on the aubergine insert at 12.3:1, not gray"
+      },
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          "v6/index.html"
+        ],
+        "createdAt": "2026-09-09T12:05:52.834Z",
+        "reason": "v6 Night Lid: rgb(232,230,225) is the neutral strip chrome the mockup-harness contract requires to be identical across v1..v6; the world itself is aubergine"
+      }
+    ]
+  }
+}

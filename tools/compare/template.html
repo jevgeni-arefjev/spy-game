@@ -1,0 +1,652 @@
+<title>Spy Direction Lineup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --ground:#e6e9ee;
+  --wall:#dde1e8;
+  --panel:#ffffff;
+  --panel-2:#f2f4f7;
+  --ink:#14181e;
+  --ink-2:#59636f;
+  --ink-3:#8a939e;
+  --line:#ccd3dc;
+  --line-soft:#dfe4ea;
+  --accent:#2c5c6b;
+  --accent-ink:#ffffff;
+  --accent-soft:rgba(44,92,107,.10);
+  --bezel:#23262b;
+  --bezel-edge:#0d0f12;
+  --shadow:0 1px 2px rgba(16,24,34,.10), 0 12px 28px rgba(16,24,34,.13);
+  --sans:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;
+  --mono:'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;
+  --rail:64px;
+}
+:root:not([data-theme="light"]) , :root[data-theme="dark"]{}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#121418;
+    --wall:#0d0f12;
+    --panel:#1b1e24;
+    --panel-2:#22262d;
+    --ink:#e8ebef;
+    --ink-2:#9ba5b1;
+    --ink-3:#727c88;
+    --line:#2d323a;
+    --line-soft:#242931;
+    --accent:#84bdcc;
+    --accent-ink:#0f1418;
+    --accent-soft:rgba(132,189,204,.14);
+    --bezel:#04060a;
+    --bezel-edge:#000000;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 14px 34px rgba(0,0,0,.45);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#121418;
+  --wall:#0d0f12;
+  --panel:#1b1e24;
+  --panel-2:#22262d;
+  --ink:#e8ebef;
+  --ink-2:#9ba5b1;
+  --ink-3:#727c88;
+  --line:#2d323a;
+  --line-soft:#242931;
+  --accent:#84bdcc;
+  --accent-ink:#0f1418;
+  --accent-soft:rgba(132,189,204,.14);
+  --bezel:#04060a;
+  --bezel-edge:#000000;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 14px 34px rgba(0,0,0,.45);
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:14px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+
+/* ---------------------------------------------------------------- rail */
+.bar{
+  position:sticky;top:0;z-index:20;
+  background:color-mix(in srgb, var(--ground) 88%, transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.bar-in{
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+  padding:12px 20px;
+}
+.brand{display:flex;align-items:baseline;gap:10px;margin-right:auto}
+.brand h1{
+  margin:0;font-size:15px;font-weight:600;letter-spacing:-.01em;
+}
+.brand .sub{
+  font-family:var(--mono);font-size:11px;color:var(--ink-3);
+  letter-spacing:.04em;
+}
+.group{display:flex;align-items:center;gap:6px}
+.group-label{
+  font-family:var(--mono);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-3);margin-right:2px;
+}
+.seg{
+  display:flex;background:var(--panel);border:1px solid var(--line);
+  border-radius:7px;padding:2px;gap:2px;
+}
+.seg button{
+  appearance:none;border:0;background:transparent;color:var(--ink-2);
+  font-family:var(--sans);font-size:12px;font-weight:500;
+  padding:5px 10px;border-radius:5px;cursor:pointer;white-space:nowrap;
+}
+.seg button:hover{color:var(--ink);background:var(--panel-2)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.seg button[disabled]{opacity:.4;cursor:not-allowed}
+.btn{
+  appearance:none;background:var(--panel);border:1px solid var(--line);
+  color:var(--ink-2);font-family:var(--sans);font-size:12px;font-weight:500;
+  padding:6px 11px;border-radius:7px;cursor:pointer;
+}
+.btn:hover{color:var(--ink);border-color:var(--ink-3)}
+.zoom{
+  font-family:var(--mono);font-size:11px;color:var(--ink-2);
+  min-width:42px;text-align:center;font-variant-numeric:tabular-nums;
+}
+
+/* ------------------------------------------------------------- gallery */
+.wall{padding:22px 20px 40px}
+.track{
+  display:flex;gap:22px;align-items:flex-start;
+  overflow-x:auto;padding-bottom:14px;scrollbar-width:thin;
+}
+.col{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-start;gap:10px;width:max-content}
+.col.hidden{display:none}
+.step-no{
+  font-family:var(--mono);font-size:11px;font-weight:600;color:var(--ink-3);
+  font-variant-numeric:tabular-nums;
+}
+
+.plate{display:flex;align-items:center;gap:8px;padding:0 2px}
+.code{
+  font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.06em;
+  color:var(--accent);background:var(--accent-soft);
+  padding:2px 6px;border-radius:4px;
+}
+.plate h2{margin:0;font-size:13px;font-weight:600;letter-spacing:-.005em}
+.plate .spacer{flex:1}
+.plate .link{
+  appearance:none;background:none;border:0;padding:2px 4px;cursor:pointer;
+  font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);border-radius:4px;
+}
+.plate .link:hover{color:var(--ink)}
+.plate .link[aria-pressed="true"]{color:var(--accent)}
+
+.bezel{
+  background:linear-gradient(180deg,var(--bezel),var(--bezel-edge));
+  border-radius:30px;padding:9px;box-shadow:var(--shadow);
+  position:relative;
+}
+.bezel::after{
+  content:"";position:absolute;inset:9px;border-radius:22px;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);pointer-events:none;
+}
+.viewport{
+  position:relative;overflow:hidden;border-radius:22px;background:#000;
+}
+.viewport iframe{
+  border:0;display:block;transform-origin:0 0;
+  opacity:0;transition:opacity .35s ease;
+}
+.viewport iframe.ready{opacity:1}
+.caption{
+  font-size:12px;line-height:1.45;color:var(--ink-2);
+  max-width:360px;padding:0 2px;
+}
+
+/* --------------------------------------------------------------- panel */
+.drawer{
+  position:fixed;inset:0 0 0 auto;width:min(520px,92vw);z-index:40;
+  background:var(--panel);border-left:1px solid var(--line);
+  box-shadow:-18px 0 44px rgba(10,14,20,.22);
+  transform:translateX(100%);transition:transform .28s ease;
+  display:flex;flex-direction:column;
+}
+.drawer.open{transform:none}
+.drawer-head{
+  display:flex;align-items:center;gap:10px;
+  padding:16px 20px;border-bottom:1px solid var(--line-soft);
+}
+.drawer-head h2{margin:0;font-size:15px;font-weight:600}
+.drawer-body{overflow-y:auto;padding:18px 22px 44px}
+.drawer-body h3{
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-3);margin:26px 0 8px;font-weight:600;
+}
+.drawer-body h3:first-child{margin-top:0}
+.drawer-body p{margin:0 0 9px;max-width:62ch;color:var(--ink-2)}
+.drawer-body ul{margin:0 0 12px;padding-left:18px;color:var(--ink-2)}
+.drawer-body li{margin-bottom:5px}
+.drawer-body code{
+  font-family:var(--mono);font-size:12px;background:var(--panel-2);
+  padding:1px 4px;border-radius:3px;color:var(--ink);
+}
+.scrim{
+  position:fixed;inset:0;z-index:30;background:rgba(10,14,20,.34);
+  opacity:0;pointer-events:none;transition:opacity .28s ease;
+}
+.scrim.open{opacity:1;pointer-events:auto}
+
+.empty{color:var(--ink-3);font-size:13px;padding:40px 4px}
+
+@media (prefers-reduced-motion: reduce){
+  *{transition:none !important;animation:none !important}
+}
+</style>
+
+<header class="bar">
+  <div class="bar-in">
+    <div class="brand">
+      <h1>Spy Direction Lineup</h1>
+      <span class="sub" id="count"></span>
+    </div>
+
+    <div class="group">
+      <span class="group-label">View</span>
+      <div class="seg" id="views">
+        <button type="button" data-view="compare" aria-pressed="true">All versions</button>
+        <button type="button" data-view="flow" aria-pressed="false">One flow</button>
+      </div>
+    </div>
+
+    <div class="group" id="frame-group">
+      <span class="group-label">Frame</span>
+      <div class="seg" id="screens"></div>
+    </div>
+
+    <div class="group" id="version-group" hidden>
+      <span class="group-label">Version</span>
+      <div class="seg" id="versions"></div>
+    </div>
+
+    <div class="group">
+      <span class="group-label">Card</span>
+      <div class="seg" id="roles">
+        <button type="button" data-role="civilian" aria-pressed="true">Civilian</button>
+        <button type="button" data-role="spy" aria-pressed="false">Spy</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <span class="group-label">Zoom</span>
+      <button class="btn" type="button" id="zoom-out" aria-label="Zoom out">−</button>
+      <span class="zoom" id="zoom-value">70%</span>
+      <button class="btn" type="button" id="zoom-in" aria-label="Zoom in">+</button>
+    </div>
+
+    <button class="btn" type="button" id="reset">Reset all</button>
+  </div>
+</header>
+
+<main class="wall">
+  <div class="track" id="track"></div>
+  <div class="track" id="flow" hidden></div>
+</main>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true" aria-label="Direction notes">
+  <div class="drawer-head">
+    <span class="code" id="drawer-code"></span>
+    <h2 id="drawer-title"></h2>
+    <button class="btn" type="button" id="drawer-close" style="margin-left:auto">Close</button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+</aside>
+
+<script>
+const VERSIONS = /*__VERSIONS__*/null
+
+const SCREENS = [
+  ['home', 'Home'],
+  ['topics', 'Topics'],
+  ['players', 'Players'],
+  ['handoff', 'Handoff'],
+  ['card', 'Card'],
+  ['discussion', 'Discussion'],
+  ['ended', 'Ended']
+]
+
+const FRAME = { w: 360, h: 780 }
+
+const state = {
+  view: 'compare',        // 'compare' = one frame across versions, 'flow' = one version end to end
+  screen: 'home',
+  version: VERSIONS[0].id,
+  role: 'civilian',
+  zoom: 0.7,
+  solo: null
+}
+
+const frames = new Map()   // version id -> { iframe, viewport, col, solo, caption }
+const flowFrames = []      // { iframe, viewport } per screen, for the version on show
+const track = document.getElementById('track')
+const flowTrack = document.getElementById('flow')
+
+/* ------------------------------------------------------------ controls */
+const screensEl = document.getElementById('screens')
+SCREENS.forEach(([id, label]) => {
+  const b = document.createElement('button')
+  b.type = 'button'
+  b.textContent = label
+  b.dataset.screen = id
+  b.setAttribute('aria-pressed', String(id === state.screen))
+  b.addEventListener('click', () => setScreen(id))
+  screensEl.appendChild(b)
+})
+
+document.querySelectorAll('#views button').forEach(b => {
+  b.addEventListener('click', () => setView(b.dataset.view))
+})
+
+const versionsEl = document.getElementById('versions')
+VERSIONS.forEach(v => {
+  const b = document.createElement('button')
+  b.type = 'button'
+  b.textContent = v.id + ' ' + v.name
+  b.dataset.version = v.id
+  b.setAttribute('aria-pressed', String(v.id === state.version))
+  b.addEventListener('click', () => setVersion(v.id))
+  versionsEl.appendChild(b)
+})
+
+document.querySelectorAll('#roles button').forEach(b => {
+  b.addEventListener('click', () => setRole(b.dataset.role))
+})
+document.getElementById('zoom-in').addEventListener('click', () => setZoom(state.zoom + 0.1))
+document.getElementById('zoom-out').addEventListener('click', () => setZoom(state.zoom - 0.1))
+document.getElementById('reset').addEventListener('click', () => {
+  post({ type: 'spy:reset' })
+  post({ type: 'spy:role', role: state.role })
+  eachVisible((iframe, screen) => iframe.contentWindow &&
+    iframe.contentWindow.postMessage({ type: 'spy:show', screen }, '*'))
+})
+
+function setScreen (id) {
+  state.screen = id
+  screensEl.querySelectorAll('button').forEach(b => {
+    b.setAttribute('aria-pressed', String(b.dataset.screen === id))
+  })
+  syncRoleButtons()
+  post({ type: 'spy:show', screen: id })
+  layout()
+}
+
+function setView (view) {
+  state.view = view
+  document.querySelectorAll('#views button').forEach(b => {
+    b.setAttribute('aria-pressed', String(b.dataset.view === view))
+  })
+  const flow = view === 'flow'
+  document.getElementById('frame-group').hidden = flow
+  document.getElementById('version-group').hidden = !flow
+  track.hidden = flow
+  flowTrack.hidden = !flow
+  if (flow) buildFlow()
+  syncRoleButtons()
+  layout()
+}
+
+function setVersion (id) {
+  state.version = id
+  versionsEl.querySelectorAll('button').forEach(b => {
+    b.setAttribute('aria-pressed', String(b.dataset.version === id))
+  })
+  if (state.view === 'flow') buildFlow()
+}
+
+// The card frame is the only one the role toggle can change, so it is live in
+// the flow view (which always shows a card) and only on the card tab elsewhere.
+function syncRoleButtons () {
+  const usable = state.view === 'flow' || state.screen === 'card'
+  document.querySelectorAll('#roles button').forEach(b => { b.disabled = !usable })
+}
+
+function setRole (role) {
+  state.role = role
+  document.querySelectorAll('#roles button').forEach(b => {
+    b.setAttribute('aria-pressed', String(b.dataset.role === role))
+  })
+  post({ type: 'spy:role', role })
+}
+
+function setZoom (value) {
+  state.zoom = Math.min(1, Math.max(0.35, Math.round(value * 100) / 100))
+  document.getElementById('zoom-value').textContent = Math.round(state.zoom * 100) + '%'
+  layout()
+}
+
+function sync (iframe, screen) {
+  if (!iframe.contentWindow) return
+  iframe.contentWindow.postMessage({ type: 'spy:role', role: state.role }, '*')
+  iframe.contentWindow.postMessage({ type: 'spy:show', screen: screen || state.screen }, '*')
+}
+
+/** Every frame on show, with the screen it is pinned to. */
+function eachVisible (fn) {
+  if (state.view === 'flow') flowFrames.forEach(f => fn(f.iframe, f.screen))
+  else frames.forEach(f => fn(f.iframe, state.screen))
+}
+
+function post (message) {
+  frames.forEach(({ iframe }) => {
+    if (iframe.contentWindow) iframe.contentWindow.postMessage(message, '*')
+  })
+  flowFrames.forEach(({ iframe }) => {
+    if (iframe.contentWindow) iframe.contentWindow.postMessage(message, '*')
+  })
+}
+
+/* ------------------------------------------------------------- gallery */
+VERSIONS.forEach(v => {
+  const col = document.createElement('section')
+  col.className = 'col'
+
+  const plate = document.createElement('div')
+  plate.className = 'plate'
+  plate.innerHTML =
+    '<span class="code">' + v.id + '</span>' +
+    '<h2></h2><span class="spacer"></span>'
+  plate.querySelector('h2').textContent = v.name
+
+  const solo = document.createElement('button')
+  solo.type = 'button'
+  solo.className = 'link'
+  solo.textContent = 'Solo'
+  solo.setAttribute('aria-pressed', 'false')
+  solo.addEventListener('click', () => toggleSolo(v.id))
+  plate.appendChild(solo)
+
+  const flow = document.createElement('button')
+  flow.type = 'button'
+  flow.className = 'link'
+  flow.textContent = 'Flow'
+  flow.addEventListener('click', () => { setVersion(v.id); setView('flow') })
+  plate.appendChild(flow)
+
+  const notes = document.createElement('button')
+  notes.type = 'button'
+  notes.className = 'link'
+  notes.textContent = 'Direction'
+  notes.addEventListener('click', () => openDrawer(v))
+  plate.appendChild(notes)
+
+  const bezel = document.createElement('div')
+  bezel.className = 'bezel'
+  const viewport = document.createElement('div')
+  viewport.className = 'viewport'
+  const iframe = document.createElement('iframe')
+  iframe.title = v.id + ' - ' + v.name
+  iframe.setAttribute('scrolling', 'no')
+  // Size the frame before it boots: a version whose type fitting measures the
+  // document would run against a zero-width viewport and never finish.
+  iframe.width = FRAME.w
+  iframe.height = FRAME.h
+  viewport.style.width = FRAME.w + 'px'
+  viewport.style.height = FRAME.h + 'px'
+  viewport.appendChild(iframe)
+  bezel.appendChild(viewport)
+
+  const caption = document.createElement('p')
+  caption.className = 'caption'
+  caption.textContent = v.thesis
+
+  col.append(plate, bezel, caption)
+  plate.style.width = '100%'
+  track.appendChild(col)
+  iframe.srcdoc = v.html
+  frames.set(v.id, { iframe, viewport, col, solo, caption })
+
+  // A version re-lays itself out once its own fonts resolve, which can drop it
+  // back into strip mode after the first message; re-assert for a few seconds.
+  iframe.addEventListener('load', () => {
+    [0, 250, 700, 1500, 3000].forEach(ms => setTimeout(() => sync(iframe), ms))
+    setTimeout(() => iframe.classList.add('ready'), 400)
+  })
+})
+
+document.getElementById('count').textContent =
+  VERSIONS.length + ' versions · 7 frames · 360 × 780'
+
+window.addEventListener('message', event => {
+  const data = event.data
+  if (!data || data.type !== 'spy:ready') return
+  // A version may lay itself out again once its fonts resolve, which drops it
+  // back into strip mode; re-assert the selection the moment it says it is ready.
+  const entry = frames.get(data.version)
+  if (entry) {
+    entry.iframe.classList.add('ready')
+    sync(entry.iframe)
+  }
+  if (data.version === state.version) {
+    flowFrames.forEach(f => { f.iframe.classList.add('ready'); sync(f.iframe, f.screen) })
+  }
+})
+
+/* ---------------------------------------------------------- flow view */
+// What each frame in the sequence is carrying, in the demo data's own terms.
+const FLOW_NOTES = {
+  home: 'Title, tagline, one primary action.',
+  topics: 'Five sets of words; three included, at least one always is.',
+  players: 'The roster, six of twelve, and the spy stepper.',
+  handoff: 'Player 3 of 6 - the phone goes to Priya.',
+  card: 'Face-down until tapped, and there is no going back.',
+  discussion: 'The clock runs down from 03:47.',
+  ended: "Time's up - play again, or exit."
+}
+
+function buildFlow () {
+  const version = VERSIONS.find(v => v.id === state.version)
+  flowFrames.length = 0
+  flowTrack.textContent = ''
+
+  SCREENS.forEach(([id, label], index) => {
+    const col = document.createElement('section')
+    col.className = 'col'
+
+    const plate = document.createElement('div')
+    plate.className = 'plate'
+    plate.style.width = '100%'
+    const step = document.createElement('span')
+    step.className = 'step-no'
+    step.textContent = String(index + 1).padStart(2, '0')
+    const heading = document.createElement('h2')
+    heading.textContent = label
+    plate.append(step, heading)
+
+    const bezel = document.createElement('div')
+    bezel.className = 'bezel'
+    const viewport = document.createElement('div')
+    viewport.className = 'viewport'
+    const iframe = document.createElement('iframe')
+    iframe.title = version.id + ' ' + version.name + ' - ' + label
+    iframe.setAttribute('scrolling', 'no')
+    iframe.width = FRAME.w
+    iframe.height = FRAME.h
+    viewport.style.width = FRAME.w + 'px'
+    viewport.style.height = FRAME.h + 'px'
+    viewport.appendChild(iframe)
+    bezel.appendChild(viewport)
+
+    const caption = document.createElement('p')
+    caption.className = 'caption'
+    caption.textContent = FLOW_NOTES[id]
+
+    col.append(plate, bezel, caption)
+    flowTrack.appendChild(col)
+    iframe.srcdoc = version.html
+    flowFrames.push({ iframe, viewport, caption, screen: id })
+
+    iframe.addEventListener('load', () => {
+      [0, 250, 700, 1500, 3000].forEach(ms => setTimeout(() => sync(iframe, id), ms))
+      setTimeout(() => iframe.classList.add('ready'), 400)
+    })
+  })
+
+  layout()
+}
+
+function toggleSolo (id) {
+  state.solo = state.solo === id ? null : id
+  frames.forEach((entry, key) => {
+    entry.col.classList.toggle('hidden', state.solo !== null && key !== state.solo)
+    entry.solo.setAttribute('aria-pressed', String(state.solo === key))
+  })
+  layout()
+}
+
+function layout () {
+  const scale = state.zoom
+  const width = Math.round(FRAME.w * scale) + 'px'
+  const apply = ({ iframe, viewport, caption }) => {
+    iframe.style.transform = 'scale(' + scale + ')'
+    viewport.style.width = width
+    viewport.style.height = Math.round(FRAME.h * scale) + 'px'
+    caption.style.maxWidth = width
+  }
+  frames.forEach(apply)
+  flowFrames.forEach(apply)
+}
+
+/* -------------------------------------------------------------- drawer */
+const drawer = document.getElementById('drawer')
+const scrim = document.getElementById('scrim')
+
+function renderMarkdown (source) {
+  const html = []
+  let list = null
+  const inline = text => text
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+  source.split('\n').forEach(raw => {
+    const line = raw.trimEnd()
+    if (/^-\s+/.test(line)) {
+      if (!list) { list = []; }
+      list.push('<li>' + inline(line.replace(/^-\s+/, '')) + '</li>')
+      return
+    }
+    if (list) { html.push('<ul>' + list.join('') + '</ul>'); list = null }
+    if (!line) return
+    if (line.startsWith('## ')) { html.push('<h3>' + inline(line.slice(3)) + '</h3>'); return }
+    if (line.startsWith('# ')) return
+    html.push('<p>' + inline(line) + '</p>')
+  })
+  if (list) html.push('<ul>' + list.join('') + '</ul>')
+  return html.join('')
+}
+
+function openDrawer (v) {
+  document.getElementById('drawer-code').textContent = v.id
+  document.getElementById('drawer-title').textContent = v.name
+  document.getElementById('drawer-body').innerHTML =
+    v.direction ? renderMarkdown(v.direction) : '<p>No DIRECTION.md for this version.</p>'
+  drawer.classList.add('open')
+  drawer.setAttribute('aria-hidden', 'false')
+  scrim.classList.add('open')
+  document.getElementById('drawer-close').focus()
+}
+
+function closeDrawer () {
+  drawer.classList.remove('open')
+  drawer.setAttribute('aria-hidden', 'true')
+  scrim.classList.remove('open')
+}
+
+document.getElementById('drawer-close').addEventListener('click', closeDrawer)
+scrim.addEventListener('click', closeDrawer)
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeDrawer()
+})
+
+window.addEventListener('resize', layout)
+
+/* ----------------------------------------------------------------- boot */
+// `#view=flow&version=v3&screen=card&role=spy` opens straight into a view.
+const hash = new URLSearchParams((location.hash || '').replace(/^#/, ''))
+const wantedVersion = hash.get('version')
+const wantedScreen = hash.get('screen')
+
+setZoom(Math.min(0.8, Math.max(0.45, (window.innerHeight - 250) / FRAME.h)))
+if (hash.get('role') === 'spy') setRole('spy')
+if (VERSIONS.some(v => v.id === wantedVersion)) setVersion(wantedVersion)
+setScreen(SCREENS.some(([id]) => id === wantedScreen) ? wantedScreen : 'home')
+if (hash.get('view') === 'flow') setView('flow')
+</script>

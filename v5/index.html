@@ -1,0 +1,1123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spy - v5 Cyclorama</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Stencil+One&family=Saira:wdth,wght@50..125,100..900&display=swap">
+<style>
+/* ============================================================
+   v5 CYCLORAMA
+   The round is a lighting cue sequence on a curved wall.
+   Every ground is a horizon: a band with a hard-ish lower edge
+   and a smooth upward falloff. Five phases, five grounds.
+   ============================================================ */
+
+:root{
+  /* raw light */
+  --cyc-black:#050507;
+  --cyc-black-warm:#08060c;
+  --cobalt:#1435c8;
+  --cobalt-lit:#2b52f0;
+  --cobalt-hi:#3f63ff;
+  --cobalt-line:#6f8cff;
+  --rose:#ff5aa0;
+  --rose-deep:#d1356f;
+  --rose-line:#ff96c8;
+  --amber:#ffb36b;
+  --amber-hi:#ffc98f;
+  --amber-line:#ffd096;
+  --day:#f4f2ee;
+  --ink:#0a0a0c;
+
+  /* type on dark grounds */
+  --lit:#ffffff;
+  --dim:#c9d2ea;
+  --dimmer:#8fa6ff;
+  --warn:#ff9ab8;
+
+  /* type on the day ground */
+  --ink-dim:#55544f;
+
+  --face:'Saira','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --stencil:'Saira Stencil One','Saira','Arial Narrow',Arial,sans-serif;
+
+  --beam:#ffe3b8;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+button,input{font:inherit;color:inherit}
+
+/* ---------- page chrome (mockup only, never the world) ---------- */
+body{
+  background:#131315;
+  color:#7f7f86;
+  font-family:ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.chrome{padding:34px 40px 10px;max-width:1592px;margin:0 auto}
+.chrome h1{
+  margin:0;font-size:13px;font-weight:500;letter-spacing:.02em;color:#b7b7be;
+}
+.chrome h1 b{font-weight:600;color:#eaeaef;margin-right:10px}
+.strip{
+  display:flex;flex-wrap:wrap;gap:26px 24px;
+  padding:22px 40px 60px;max-width:1592px;margin:0 auto;align-items:flex-end;
+}
+.cell{width:360px}
+.roleswitch{
+  display:flex;align-items:center;gap:6px;height:24px;margin-bottom:8px;
+  font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+}
+.roleswitch button{
+  background:#1d1d21;border:1px solid #2e2e34;color:#9a9aa2;
+  padding:3px 9px;border-radius:2px;cursor:pointer;font-size:11px;letter-spacing:.06em;
+}
+.roleswitch button[aria-pressed="true"]{background:#2f2f36;color:#f0f0f4;border-color:#45454e}
+.roleswitch button:focus-visible{outline:2px solid #7e8cff;outline-offset:1px}
+.cell .pad{height:32px}
+.cap{
+  margin-top:10px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#93939b;
+}
+
+/* ---------- the frame ---------- */
+.phone{
+  position:relative;width:360px;height:780px;overflow:hidden;
+  background:var(--cyc-black);
+  outline:1px solid #26262b;
+}
+.screen{
+  position:absolute;inset:0;overflow:hidden;
+  font-family:var(--face);
+  font-variant-numeric:tabular-nums;
+  color:var(--lit);
+}
+.cyc{position:absolute;inset:0;pointer-events:none}
+.stage{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  padding:24px 0 28px;
+}
+.pad-x{padding-left:20px;padding-right:20px}
+.screen p{margin:0}
+
+/* ============================================================
+   THE FIVE GROUNDS
+   One system: --h is the horizon, the height on the wall where the
+   floor meets it. Every ground is the same three layers off that
+   line - a hairline at the junction, a wall band with a hard lower
+   edge and a smooth falloff upward, and the floor spill below it.
+   Only the light changes between phases.
+   ============================================================ */
+.cyc{
+  --hu:calc(100% - var(--h));
+  background-image:
+    linear-gradient(to bottom,
+      transparent 0, transparent calc(var(--h) - 1.5px),
+      var(--h-line) calc(var(--h) - 1.5px), var(--h-line) var(--h),
+      transparent var(--h), transparent 100%),
+    linear-gradient(to top,
+      transparent 0, transparent var(--hu),
+      var(--wall-0) var(--hu),
+      var(--wall-1) calc(var(--hu) + 8%),
+      var(--wall-2) calc(var(--hu) + 18%),
+      var(--wall-3) calc(var(--hu) + 30%),
+      transparent calc(var(--hu) + 44%), transparent 100%),
+    linear-gradient(to bottom,
+      transparent 0, transparent var(--h),
+      var(--floor-0) var(--h),
+      var(--floor-1) calc(var(--h) + 10%),
+      transparent calc(var(--h) + 26%), transparent 100%),
+    var(--ground);
+}
+
+/* LX 001 BLACKOUT - black wall, one thin cobalt horizon */
+.p-blackout{
+  --h:62%;
+  --h-line:rgba(111,140,255,.92);
+  --wall-0:rgba(20,53,200,.30); --wall-1:rgba(20,53,200,.12);
+  --wall-2:rgba(20,53,200,.03); --wall-3:rgba(20,53,200,0);
+  --floor-0:rgba(20,53,200,.16); --floor-1:rgba(20,53,200,.04);
+  --ground:linear-gradient(to bottom,#060609 0%,#050507 100%);
+}
+
+/* LX 127 NIGHT - a low cobalt band rising off the line */
+.p-night{
+  --h:81.5%;
+  --h-line:rgba(130,158,255,.80);
+  --wall-0:rgba(20,53,200,.78); --wall-1:rgba(20,53,200,.46);
+  --wall-2:rgba(20,53,200,.22); --wall-3:rgba(20,53,200,.08);
+  --floor-0:rgba(20,53,200,.30); --floor-1:rgba(20,53,200,.08);
+  --ground:linear-gradient(to bottom,#060609 0%,#050507 100%);
+}
+
+/* LX 263 FIRST LIGHT - cobalt with rose gathering on the line */
+.p-firstlight{
+  --h:76%;
+  --h-line:rgba(255,150,200,.84);
+  --wall-0:rgba(20,53,200,.86); --wall-1:rgba(20,53,200,.46);
+  --wall-2:rgba(20,53,200,.17); --wall-3:rgba(20,53,200,.04);
+  --floor-0:rgba(24,44,170,.55); --floor-1:rgba(52,16,72,.34);
+  --ground:linear-gradient(to bottom,#060609 0%,#050507 100%);
+}
+.p-firstlight .cyc::after{
+  content:"";position:absolute;inset:0;
+  background-image:radial-gradient(150% 30% at 50% var(--h),
+    rgba(255,90,160,.50) 0%, rgba(255,90,160,.22) 42%,
+    rgba(255,90,160,.05) 72%, rgba(255,90,160,0) 100%);
+}
+
+/* LX 389 DAWN - rose and amber blooming, cobalt only left at the top */
+.p-dawn{
+  --h:68%;
+  --h-line:rgba(255,208,150,.92);
+  --wall-0:rgba(255,179,107,.95); --wall-1:rgba(255,122,146,.52);
+  --wall-2:rgba(255,90,160,.22); --wall-3:rgba(96,74,196,.15);
+  --floor-0:rgba(255,160,110,.44); --floor-1:rgba(84,22,64,.36);
+  --ground:linear-gradient(to bottom,#08060c 0%,#060609 100%);
+}
+
+/* LX 512 DAY - the same wall, fully lit */
+.p-day{
+  --h:62%;
+  --h-line:rgba(20,53,200,.30);
+  --wall-0:rgba(20,53,200,.09); --wall-1:rgba(20,53,200,.04);
+  --wall-2:rgba(20,53,200,.015); --wall-3:rgba(20,53,200,0);
+  --floor-0:rgba(20,53,200,.06); --floor-1:rgba(20,53,200,.02);
+  --ground:linear-gradient(to bottom,#f0eee9 0%,#f7f5f1 42%,#fdfcfa 62%,#eceae4 62.05%,#e5e2db 100%);
+}
+.p-day .screen{color:var(--ink);background-color:var(--day)}
+.footline{position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--cobalt)}
+
+/* ============================================================
+   CUE LABEL
+   ============================================================ */
+/* the cue row is the header of every frame: the cue on the left,
+   the round's position on the right, exactly as a cue sheet reads */
+.cuerow{
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  padding-left:20px;padding-right:20px;
+}
+.cue{
+  font-family:var(--stencil);
+  font-size:11px;line-height:1;letter-spacing:.20em;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+.p-blackout .cue{color:#7d97ff}
+.p-night .cue{color:#96abff}
+.p-firstlight .cue{color:#ffadcb}
+.p-dawn .cue{color:#ffd2a4}
+.p-day .cue{color:var(--cobalt)}
+
+/* ============================================================
+   TYPE
+   ============================================================ */
+.h1{font-size:34px;line-height:1.04;font-weight:700;letter-spacing:-.022em;margin:0}
+.sub{font-size:14px;line-height:1.38;font-weight:400;color:var(--dim);margin:0}
+.p-day .sub{color:var(--ink-dim)}
+.meta{
+  font-family:var(--stencil);font-size:11px;line-height:1;letter-spacing:.18em;
+  text-transform:uppercase;font-variant-numeric:tabular-nums;
+}
+
+/* ============================================================
+   BANDS - controls and rows are all strips of light
+   ============================================================ */
+.deck{display:flex;flex-direction:column;width:100%}
+.band{
+  position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  width:100%;min-height:60px;padding:0 20px;border:0;border-radius:0;
+  font-size:17px;font-weight:600;letter-spacing:-.005em;text-align:left;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:filter 180ms cubic-bezier(.16,1,.3,1), background-color 180ms cubic-bezier(.16,1,.3,1);
+}
+.band .state{
+  font-family:var(--stencil);font-size:11px;letter-spacing:.2em;line-height:1;
+  opacity:.82;white-space:nowrap;
+}
+
+/* lit cobalt band - light type */
+.band.lit{
+  color:#fff;
+  background-image:linear-gradient(to top,#3f63ff 0%,#2b52f0 46%,#2447d8 100%);
+}
+.band.lit:hover{filter:brightness(1.1)}
+.band.lit:active{filter:brightness(1.22)}
+
+/* fully lit amber band - dark type */
+.band.lit-amber{
+  color:#160f06;
+  background-image:linear-gradient(to top,#ffc98f 0%,#ffb36b 52%,#f5a259 100%);
+}
+.band.lit-amber .state{color:#2a1c0c;opacity:.72}
+.band.lit-amber:hover{filter:brightness(1.06)}
+.band.lit-amber:active{filter:brightness(1.12)}
+
+/* unlit band - hairline top edge only */
+.band.unlit{
+  color:var(--dim);
+  background-color:#090c19;
+  box-shadow:inset 0 1px 0 rgba(168,190,255,.26);
+}
+.band.unlit:hover{background-color:#12172c}
+
+/* black band */
+.band.black{
+  color:#dfe4f2;
+  background-color:#030305;
+  box-shadow:inset 0 1px 0 rgba(180,196,255,.20);
+}
+.band.black .state{color:#8fa6ff;opacity:.9}
+.band.black:hover{background-color:#08080d}
+
+/* day bands */
+.p-day .band.unlit{
+  color:#16161a;
+  background-color:#fbfaf8;
+  box-shadow:inset 0 1px 0 rgba(20,53,200,.28);
+}
+.p-day .band.unlit:hover{background-color:#fff}
+
+.band[disabled]{cursor:default;filter:none}
+.band.unlit[disabled]{color:#7b89b4;background-color:#06080f;box-shadow:inset 0 1px 0 rgba(168,190,255,.16)}
+.band.unlit[disabled]:hover{background-color:#06080f}
+
+/* ============================================================
+   HOME
+   ============================================================ */
+/* headlines stand on the horizon: the line is the baseline of the world */
+.anchor{position:absolute;left:0;right:0;top:var(--h)}
+.above{position:absolute;left:20px;right:20px;bottom:26px;margin:0}
+.below{position:absolute;left:20px;right:20px;top:24px;margin:0}
+.home-title{
+  font-size:88px;line-height:.86;font-weight:700;letter-spacing:-.045em;color:#fff;
+}
+.home-tag{
+  font-size:15px;line-height:1.3;font-weight:400;letter-spacing:.005em;color:var(--dim);
+}
+
+/* ============================================================
+   TOPICS
+   ============================================================ */
+.metarow{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px 10px;
+}
+.metarow .k{color:var(--dimmer)}
+.metarow .v{color:#fff;font-family:var(--stencil);font-size:13px;letter-spacing:.14em}
+.p-day .metarow .k{color:var(--cobalt)}
+
+.rows{display:flex;flex-direction:column;width:100%}
+.row{
+  position:relative;display:flex;align-items:center;justify-content:space-between;gap:14px;
+  width:100%;min-height:62px;padding:0 20px;border:0;border-radius:0;text-align:left;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  color:var(--dim);font-size:17px;font-weight:500;letter-spacing:-.005em;
+  background-color:#0a0d1c;
+  background-image:linear-gradient(rgba(132,162,255,calc(.045 + .042 * var(--tier,0))) 0 100%);
+  box-shadow:inset 0 1px 0 rgba(150,171,255,.13);
+  transition:color 180ms cubic-bezier(.16,1,.3,1),background-color 180ms cubic-bezier(.16,1,.3,1);
+}
+.row::before{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:0;
+  background-image:linear-gradient(to top, rgba(63,99,255,.92) 0%, rgba(43,82,240,.46) 40%, rgba(30,60,190,.14) 74%, rgba(20,53,200,0) 100%);
+  transition:height 260ms cubic-bezier(.16,1,.3,1);
+  pointer-events:none;
+}
+.row[aria-pressed="true"]{color:#fff;font-weight:600}
+.row[aria-pressed="true"]::before{height:100%}
+.row[aria-pressed="true"]::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:2px;
+  background:#a8bcff;pointer-events:none;
+}
+.row:hover{color:#fff}
+.row > *{position:relative;z-index:1}
+.row[disabled]{cursor:default}
+
+/* the lamp: a lit or unlit strip of light, so state is never colour alone */
+.lamp{display:block;width:26px;height:5px;flex:none;box-shadow:inset 0 0 0 1px rgba(200,214,255,.42)}
+.row[aria-pressed="true"] .lamp{background:#fff;box-shadow:inset 0 0 0 1px #fff}
+
+/* ============================================================
+   PLAYERS
+   ============================================================ */
+.inputband{
+  display:flex;align-items:stretch;width:100%;min-height:52px;
+  background-color:#11162e;
+  box-shadow:inset 0 1px 0 rgba(150,171,255,.24), inset 0 -1px 0 rgba(150,171,255,.24);
+}
+.inputband input{
+  flex:1 1 auto;min-width:0;border:0;background:transparent;outline:0;
+  padding:0 18px;font-size:16px;font-weight:500;letter-spacing:-.005em;color:#fff;
+}
+.inputband input::placeholder{color:#9fb0dd;opacity:1}
+.addbtn{
+  flex:0 0 82px;border:0;cursor:pointer;color:#fff;font-size:15px;font-weight:600;
+  letter-spacing:.02em;
+  background-image:linear-gradient(to top,#3f63ff 0%,#2b52f0 52%,#2447d8 100%);
+}
+.addbtn:hover{filter:brightness(1.1)}
+
+.errline{
+  min-height:17px;padding:6px 20px 0;font-size:13px;line-height:17px;
+  color:var(--warn);letter-spacing:.005em;
+}
+
+.stepband{
+  display:flex;align-items:center;justify-content:space-between;width:100%;min-height:52px;
+  padding-left:20px;
+  background-color:#0b0f20;
+  box-shadow:inset 0 1px 0 rgba(150,171,255,.16);
+}
+.stepband .k{color:var(--dimmer)}
+.stepper{display:flex;align-items:stretch;height:52px}
+.stepper button{
+  width:48px;border:0;cursor:pointer;background:transparent;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:inset 1px 0 0 rgba(150,171,255,.14);
+}
+.stepper button:hover:not([disabled]){background:rgba(255,255,255,.08)}
+.stepper button[disabled]{cursor:default;opacity:.34}
+.stepper .val{
+  width:44px;display:flex;align-items:center;justify-content:center;
+  font-size:20px;font-weight:600;color:#fff;font-variant-numeric:tabular-nums;
+  box-shadow:inset 1px 0 0 rgba(150,171,255,.14);
+}
+.stepper svg{display:block}
+
+.rosterhead{display:flex;align-items:center;justify-content:space-between;padding:0 20px 8px}
+.rosterhead .k{color:var(--dimmer)}
+.rosterhead .v{color:#fff;font-family:var(--stencil);font-size:13px;letter-spacing:.14em}
+
+.rosterwrap{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.rosterwrap{scrollbar-width:thin;scrollbar-color:rgba(143,166,255,.45) transparent}
+.rosterwrap::-webkit-scrollbar{width:4px}
+.rosterwrap::-webkit-scrollbar-track{background:transparent}
+.rosterwrap::-webkit-scrollbar-thumb{background:rgba(143,166,255,.45)}
+ul.roster{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;width:100%}
+ul.roster li{
+  display:flex;align-items:center;justify-content:space-between;
+  min-height:44px;padding-left:20px;
+  background-color:#0a0d1c;
+  background-image:linear-gradient(rgba(132,162,255,calc(.040 + .032 * var(--tier,0))) 0 100%);
+  box-shadow:inset 0 1px 0 rgba(150,171,255,.11);
+}
+ul.roster .nm{font-size:16px;font-weight:500;color:#fff;letter-spacing:-.005em}
+.rm{
+  width:44px;height:44px;flex:none;border:0;background:transparent;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;color:#a4b4e2;
+}
+.rm:hover{color:#fff;background:rgba(255,255,255,.07)}
+.rm svg{display:block}
+.empty{padding:14px 20px;font-size:14px;color:var(--dim)}
+
+.hintline{
+  min-height:19px;padding:0 20px;font-size:13.5px;line-height:19px;color:var(--dim);
+}
+
+/* ============================================================
+   HANDOFF
+   ============================================================ */
+.progress{
+  margin:0;font-family:var(--stencil);font-size:11px;letter-spacing:.18em;line-height:1;
+  color:#ffb9d3;font-variant-numeric:tabular-nums;text-transform:uppercase;white-space:nowrap;
+}
+.handoff-h{font-size:40px;line-height:1.02;font-weight:700;letter-spacing:-.03em;margin:0;color:#fff}
+
+/* ============================================================
+   CARD
+   ============================================================ */
+.cardzone{
+  flex:1 1 auto;min-height:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:26px;width:100%;
+}
+.cardwrap{display:flex;justify-content:center;width:100%}
+.card{
+  position:relative;width:296px;height:372px;border:0;padding:0;overflow:hidden;
+  background:#020204;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  box-shadow:inset 0 0 0 1px rgba(180,198,255,.34), 0 18px 40px -18px rgba(0,0,0,.9);
+  border-radius:2px;
+}
+.card-light{
+  position:absolute;left:0;right:0;top:0;height:100%;
+  transform:translateY(101%);
+  transition:transform 900ms cubic-bezier(.16,1,.3,1);
+  pointer-events:none;
+  background-image:linear-gradient(to top,
+    #2b52f0 0%, rgba(38,72,220,.92) 20%, rgba(30,58,180,.52) 48%,
+    rgba(22,42,130,.16) 72%, rgba(12,22,74,0) 90%);
+}
+.card[data-role="spy"] .card-light{
+  background-image:linear-gradient(to top,
+    #d1356f 0%, rgba(190,45,100,.90) 20%, rgba(126,36,88,.50) 48%,
+    rgba(70,26,72,.16) 72%, rgba(20,20,60,0) 90%);
+}
+.card-back,.card-face{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px;text-align:center;
+}
+.card-back{gap:14px;transition:opacity 380ms cubic-bezier(.16,1,.3,1)}
+.card-back .nm{font-size:26px;font-weight:600;color:#fff;letter-spacing:-.02em}
+.card-back .tap{
+  font-family:var(--stencil);font-size:11px;letter-spacing:.2em;color:#93a8e6;text-transform:uppercase;
+}
+.card-face{
+  gap:10px;opacity:0;transform:translateY(12px);
+  transition:opacity 420ms cubic-bezier(.16,1,.3,1) 340ms,
+             transform 620ms cubic-bezier(.16,1,.3,1) 300ms;
+}
+.card-face .lab{
+  font-family:var(--stencil);font-size:11px;letter-spacing:.2em;color:#dfe5f7;text-transform:uppercase;
+}
+.card-face .word{font-size:32px;line-height:1.08;font-weight:700;letter-spacing:-.028em;color:#fff}
+.card.is-open .card-light{transform:translateY(0)}
+.card.is-open .card-back{opacity:0}
+.card.is-open .card-face{opacity:1;transform:none}
+.card-edge{position:absolute;left:0;right:0;bottom:0;height:1px;background:rgba(200,216,255,.5);pointer-events:none}
+
+.cardhint{
+  min-height:19px;text-align:center;font-size:13.5px;line-height:19px;color:#fff;
+  padding:0 20px;letter-spacing:.005em;
+}
+
+/* ============================================================
+   DISCUSSION
+   ============================================================ */
+.clocklab{
+  font-family:var(--stencil);font-size:11px;letter-spacing:.2em;line-height:1;
+  color:#ffd2a4;text-transform:uppercase;
+}
+.clock{
+  font-size:84px;line-height:.92;font-weight:700;letter-spacing:-.045em;
+  color:#fff;font-variant-numeric:tabular-nums;margin:0;
+}
+.clock.paused{color:#ffd8b6}
+
+/* ============================================================
+   ENDED
+   ============================================================ */
+.ended-h{font-size:56px;line-height:.96;font-weight:700;letter-spacing:-.04em;margin:0;color:#0a0a0c}
+
+/* ============================================================
+   BROWSER SURFACES
+   ============================================================ */
+.screen ::selection{background:var(--cobalt);color:#fff}
+.p-day .screen ::selection{background:rgba(20,53,200,.24);color:#0a0a0c}
+.inputband input{caret-color:var(--rose)}
+
+.screen :focus-visible{outline:2px solid var(--beam);outline-offset:-3px}
+.p-day :focus-visible{outline:2px solid var(--cobalt);outline-offset:-3px}
+.card:focus-visible{outline:2px solid var(--beam);outline-offset:2px}
+
+.vh{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;
+}
+
+/* ============================================================
+   SINGLE MODE
+   ============================================================ */
+body.single{background:transparent;overflow:hidden;width:360px;height:780px}
+body.single .chrome,body.single .cap,body.single .roleswitch,body.single .pad{display:none}
+body.single .strip{padding:0;margin:0;gap:0;display:block;max-width:none}
+body.single .cell{width:360px}
+body.single .cell{display:none}
+body.single .cell.active{display:block;position:absolute;left:0;top:0}
+body.single .phone{outline:0}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    transition-duration:1ms !important;
+    animation-duration:1ms !important;
+    animation-iteration-count:1 !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <h1><b>v5 Cyclorama</b> The round is a lighting cue sequence on a curved wall: blackout at home, the light rising through every phase, full white day when time is up.</h1>
+</div>
+
+<main class="strip">
+
+  <!-- ================= HOME ================= -->
+  <div class="cell" data-cell="home">
+    <div class="pad"></div>
+    <section class="phone" data-screen="home">
+      <div class="screen p-blackout">
+        <div class="cyc"></div>
+        <div class="stage">
+          <div class="cuerow"><span class="cue">LX 001 BLACKOUT</span></div>
+          <div class="anchor">
+            <h1 class="home-title above">Spy</h1>
+            <p class="home-tag below">One phone. One spy.</p>
+          </div>
+          <div class="deck" style="margin-top:auto">
+            <button class="band lit" type="button">Play Spy</button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="cap">Home</div>
+  </div>
+
+  <!-- ================= TOPICS ================= -->
+  <div class="cell" data-cell="topics">
+    <div class="pad"></div>
+    <section class="phone" data-screen="topics">
+      <div class="screen p-night">
+        <div class="cyc"></div>
+        <div class="stage">
+          <div class="cuerow"><span class="cue">LX 127 NIGHT</span></div>
+          <div class="pad-x" style="padding-top:30px">
+            <h1 class="h1">Topics</h1>
+            <p class="sub" style="margin-top:10px;max-width:290px">Pick which sets of words can come up. Keep at least one.</p>
+          </div>
+          <div class="metarow meta" style="padding-top:28px">
+            <span class="k">Included</span>
+            <span class="v" id="topicCount">3 / 5</span>
+          </div>
+          <div class="rows" id="topicRows"></div>
+          <div class="deck" style="margin-top:auto">
+            <button class="band lit" type="button">Continue</button>
+            <button class="band unlit" type="button">Back</button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="cap">Topics</div>
+  </div>
+
+  <!-- ================= PLAYERS ================= -->
+  <div class="cell" data-cell="players">
+    <div class="pad"></div>
+    <section class="phone" data-screen="players">
+      <div class="screen p-night">
+        <div class="cyc"></div>
+        <div class="stage">
+          <div class="cuerow"><span class="cue">LX 127 NIGHT</span></div>
+          <div class="pad-x" style="padding-top:20px">
+            <h1 class="h1">Players</h1>
+            <p class="sub" style="margin-top:7px;max-width:280px">Pass the phone around. One of you is the spy.</p>
+          </div>
+
+          <form id="addForm" style="margin-top:16px" autocomplete="off">
+            <div class="inputband">
+              <label class="vh" for="pname">Player name</label>
+              <input id="pname" type="text" placeholder="Add a player">
+              <button class="addbtn" type="submit">Add</button>
+            </div>
+          </form>
+          <p class="errline" id="errLine" role="status" aria-live="polite"></p>
+
+          <div class="stepband" style="margin-top:8px">
+            <span class="k meta" id="spiesLabel">Spies</span>
+            <div class="stepper" role="group" aria-labelledby="spiesLabel">
+              <button type="button" id="spyMinus" aria-label="Fewer spies">
+                <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true"><path d="M2 7.5h11" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></svg>
+              </button>
+              <span class="val" id="spyVal">1</span>
+              <button type="button" id="spyPlus" aria-label="More spies">
+                <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true"><path d="M2 7.5h11M7.5 2v11" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="rosterhead meta" style="padding-top:12px">
+            <span class="k">Players</span>
+            <span class="v" id="rosterCount">6 / 12</span>
+          </div>
+          <div class="rosterwrap">
+            <ul class="roster" id="rosterList"></ul>
+          </div>
+
+          <p class="hintline" id="playerHint" style="padding-top:7px;padding-bottom:7px"></p>
+
+          <div class="deck">
+            <button class="band lit" type="button" id="startBtn">Start game</button>
+            <button class="band unlit" type="button">Back</button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="cap">Players</div>
+  </div>
+
+  <!-- ================= HANDOFF ================= -->
+  <div class="cell" data-cell="handoff">
+    <div class="pad"></div>
+    <section class="phone" data-screen="handoff">
+      <div class="screen p-firstlight">
+        <div class="cyc"></div>
+        <div class="stage">
+          <div class="cuerow">
+            <span class="cue">LX 263 FIRST LIGHT</span>
+            <p class="progress">Player 3 of 6</p>
+          </div>
+          <div class="anchor">
+            <h1 class="handoff-h above">Pass the phone to Priya</h1>
+          </div>
+          <div class="deck" style="margin-top:auto">
+            <button class="band lit" type="button">I'm Priya</button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="cap">Handoff</div>
+  </div>
+
+  <!-- ================= CARD ================= -->
+  <div class="cell" data-cell="card">
+    <div class="roleswitch" role="group" aria-label="Demo role">
+      <button type="button" id="roleCivilian" aria-pressed="true">Civilian</button>
+      <button type="button" id="roleSpy" aria-pressed="false">Spy</button>
+    </div>
+    <section class="phone" data-screen="card">
+      <div class="screen p-firstlight">
+        <div class="cyc"></div>
+        <div class="stage">
+          <div class="cuerow">
+            <span class="cue">LX 263 FIRST LIGHT</span>
+            <p class="progress">Player 3 of 6</p>
+          </div>
+          <div class="cardzone">
+          <div class="cardwrap">
+            <button class="card" id="card" type="button" data-role="civilian" aria-label="Priya's card &mdash; tap to reveal">
+              <div class="card-light"></div>
+              <div class="card-back">
+                <span class="nm">Priya</span>
+                <span class="tap">Tap to reveal</span>
+              </div>
+              <div class="card-face" id="cardFace">
+                <span class="lab" id="cardLab">Your word</span>
+                <span class="word" id="cardWord">Hot-air balloon</span>
+              </div>
+              <span class="card-edge"></span>
+            </button>
+          </div>
+          <p class="cardhint" id="cardHint">Tap to reveal</p>
+          </div>
+          <div class="deck">
+            <button class="band unlit" type="button" id="gotIt" disabled>Got it</button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="cap">Card</div>
+  </div>
+
+  <!-- ================= DISCUSSION ================= -->
+  <div class="cell" data-cell="discussion">
+    <div class="pad"></div>
+    <section class="phone" data-screen="discussion">
+      <div class="screen p-dawn">
+        <div class="cyc"></div>
+        <div class="stage">
+          <div class="cuerow"><span class="cue">LX 389 DAWN</span></div>
+          <div class="pad-x" style="padding-top:30px">
+            <h1 class="h1">Discussion</h1>
+          </div>
+          <div class="anchor">
+            <div class="above">
+              <p class="clocklab" id="clockLab">Time left</p>
+              <p class="clock" id="clock" style="margin-top:12px" aria-live="off">03:47</p>
+            </div>
+            <p class="sub below" style="max-width:250px;color:#e7dcef">Take turns describing the word. Find the spy.</p>
+          </div>
+          <div class="deck" style="margin-top:auto">
+            <button class="band lit-amber" type="button" id="pauseBtn">
+              <span id="pauseLab">Pause</span><span class="state">HOLD</span>
+            </button>
+            <button class="band black" type="button" id="endBtn">
+              <span>End round</span><span class="state">BLACKOUT</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="cap">Discussion</div>
+  </div>
+
+  <!-- ================= ENDED ================= -->
+  <div class="cell" data-cell="ended">
+    <div class="pad"></div>
+    <section class="phone" data-screen="ended">
+      <div class="screen p-day">
+        <div class="cyc"></div>
+        <div class="stage">
+          <div class="cuerow"><span class="cue">LX 512 DAY</span></div>
+          <div class="anchor">
+            <h1 class="ended-h above">Time's up</h1>
+            <p class="sub below" style="max-width:260px;font-size:15px">Decide together who the spy was.</p>
+          </div>
+          <div class="deck" style="margin-top:auto">
+            <button class="band lit" type="button">Play again</button>
+            <button class="band unlit" type="button">Exit</button>
+          </div>
+        </div>
+        <span class="footline"></span>
+      </div>
+    </section>
+    <div class="cap">Ended</div>
+  </div>
+
+</main>
+
+<script>
+(function(){
+  'use strict';
+
+  var MAX = 12;
+  var START_SECONDS = 227; /* 03:47 */
+
+  var DEMO_TOPICS = [
+    { id:'locations',     name:'Locations',    on:true  },
+    { id:'professions',   name:'Professions',  on:false },
+    { id:'food',          name:'Food & Drink', on:true  },
+    { id:'entertainment', name:'Entertainment',on:false },
+    { id:'travel',        name:'Travel',       on:true  }
+  ];
+  var DEMO_ROSTER = ['Mia','Theo','Priya','Jonas','Aiko','Sam'];
+
+  var state = {
+    topics: DEMO_TOPICS.map(function(t){ return { id:t.id, name:t.name, on:t.on }; }),
+    roster: DEMO_ROSTER.slice(),
+    spies: 1,
+    role: 'civilian',
+    revealed: false,
+    error: '',
+    running: true,
+    endsAt: 0,
+    remaining: START_SECONDS * 1000
+  };
+
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ---------------- topics ---------------- */
+  var topicRows = $('topicRows');
+
+  function renderTopics(){
+    var included = state.topics.filter(function(t){ return t.on; }).length;
+    topicRows.innerHTML = '';
+    state.topics.forEach(function(t, i){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'row';
+      b.style.setProperty('--tier', String(i));
+      b.setAttribute('aria-pressed', t.on ? 'true' : 'false');
+      if (t.on && included === 1) b.disabled = true;
+      var nm = document.createElement('span');
+      nm.textContent = t.name;
+      var lamp = document.createElement('span');
+      lamp.className = 'lamp';
+      b.appendChild(nm);
+      b.appendChild(lamp);
+      b.addEventListener('click', function(){
+        var live = state.topics.filter(function(x){ return x.on; }).length;
+        if (t.on && live <= 1) return;
+        t.on = !t.on;
+        renderTopics();
+      });
+      topicRows.appendChild(b);
+    });
+    $('topicCount').textContent = included + ' / 5';
+  }
+
+  /* ---------------- players ---------------- */
+  var rosterList = $('rosterList');
+  var errLine = $('errLine');
+  var playerHint = $('playerHint');
+  var startBtn = $('startBtn');
+  var spyVal = $('spyVal');
+  var spyMinus = $('spyMinus');
+  var spyPlus = $('spyPlus');
+
+  function clampSpies(){
+    var max = Math.max(1, state.roster.length);
+    if (state.spies > max) state.spies = max;
+    if (state.spies < 1) state.spies = 1;
+  }
+
+  function renderPlayers(){
+    clampSpies();
+    rosterList.innerHTML = '';
+    if (state.roster.length === 0){
+      var li = document.createElement('li');
+      li.style.background = 'transparent';
+      li.style.boxShadow = 'none';
+      li.style.paddingLeft = '0';
+      var e = document.createElement('span');
+      e.className = 'empty';
+      e.textContent = 'No players yet.';
+      li.appendChild(e);
+      rosterList.appendChild(li);
+    } else {
+      state.roster.forEach(function(name, i){
+        var li = document.createElement('li');
+        li.style.setProperty('--tier', String(i));
+        var nm = document.createElement('span');
+        nm.className = 'nm';
+        nm.textContent = name;
+        var rm = document.createElement('button');
+        rm.type = 'button';
+        rm.className = 'rm';
+        rm.setAttribute('aria-label', 'Remove ' + name);
+        rm.innerHTML = '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">' +
+          '<path d="M3.4 3.4l8.2 8.2M11.6 3.4l-8.2 8.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>';
+        rm.addEventListener('click', function(){
+          state.roster.splice(i, 1);
+          state.error = '';
+          renderPlayers();
+        });
+        li.appendChild(nm);
+        li.appendChild(rm);
+        rosterList.appendChild(li);
+      });
+    }
+
+    $('rosterCount').textContent = state.roster.length + ' / ' + MAX;
+    spyVal.textContent = String(state.spies);
+    spyMinus.disabled = state.spies <= 1;
+    spyPlus.disabled = state.spies >= Math.max(1, state.roster.length);
+
+    var n = state.roster.length;
+    if (n >= 3){
+      playerHint.textContent = state.spies + (state.spies === 1
+        ? ' of you will secretly be the spy.'
+        : ' of you will secretly be the spies.');
+      startBtn.disabled = false;
+      startBtn.className = 'band lit';
+    } else {
+      var missing = 3 - n;
+      playerHint.textContent = 'Add ' + missing + (missing === 1 ? ' more player to start.' : ' more players to start.');
+      startBtn.disabled = true;
+      startBtn.className = 'band unlit';
+    }
+    errLine.textContent = state.error;
+  }
+
+  $('addForm').addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var input = $('pname');
+    var value = input.value.trim();
+    if (!value){
+      state.error = 'Type a name first.';
+    } else if (state.roster.some(function(n){ return n.toLowerCase() === value.toLowerCase(); })){
+      state.error = 'Someone already has that name.';
+    } else if (state.roster.length >= MAX){
+      state.error = 'That\'s the maximum of 12 players.';
+    } else {
+      state.roster.push(value);
+      state.error = '';
+      input.value = '';
+    }
+    renderPlayers();
+  });
+
+  spyMinus.addEventListener('click', function(){ state.spies -= 1; renderPlayers(); });
+  spyPlus.addEventListener('click', function(){ state.spies += 1; renderPlayers(); });
+
+  /* ---------------- card ---------------- */
+  var card = $('card');
+  var cardHint = $('cardHint');
+  var gotIt = $('gotIt');
+  var resetTimer = null;
+
+  function renderCard(){
+    card.dataset.role = state.role;
+    $('cardLab').textContent = state.role === 'spy' ? 'You are the spy' : 'Your word';
+    $('cardWord').textContent = state.role === 'spy' ? 'Hint: Slow' : 'Hot-air balloon';
+    if (state.revealed){
+      card.classList.add('is-open');
+      card.setAttribute('aria-label', state.role === 'spy'
+        ? 'You are the spy. Hint: Slow'
+        : 'Your word. Hot-air balloon');
+      cardHint.textContent = 'Keep it to yourself.';
+      gotIt.disabled = false;
+      gotIt.className = 'band lit';
+    } else {
+      card.classList.remove('is-open');
+      card.setAttribute('aria-label', 'Priya\'s card — tap to reveal');
+      cardHint.textContent = 'Tap to reveal';
+      gotIt.disabled = true;
+      gotIt.className = 'band unlit';
+    }
+  }
+
+  function faceDown(){
+    if (resetTimer){ clearTimeout(resetTimer); resetTimer = null; }
+    state.revealed = false;
+    renderCard();
+  }
+
+  card.addEventListener('click', function(){
+    if (state.revealed) return;
+    state.revealed = true;
+    renderCard();
+  });
+
+  gotIt.addEventListener('click', function(){
+    if (!state.revealed) return;
+    if (resetTimer) clearTimeout(resetTimer);
+    resetTimer = setTimeout(faceDown, 700);
+  });
+
+  function setRole(role){
+    if (role !== 'spy' && role !== 'civilian') return;
+    faceDown();
+    state.role = role;
+    $('roleCivilian').setAttribute('aria-pressed', role === 'civilian' ? 'true' : 'false');
+    $('roleSpy').setAttribute('aria-pressed', role === 'spy' ? 'true' : 'false');
+    renderCard();
+  }
+  $('roleCivilian').addEventListener('click', function(){ setRole('civilian'); });
+  $('roleSpy').addEventListener('click', function(){ setRole('spy'); });
+
+  /* ---------------- clock (deadline based) ---------------- */
+  var clockEl = $('clock');
+  var clockLab = $('clockLab');
+  var pauseBtn = $('pauseBtn');
+  var pauseLab = $('pauseLab');
+  var ended = false;
+
+  function msLeft(){
+    if (!state.running) return state.remaining;
+    return Math.max(0, state.endsAt - Date.now());
+  }
+
+  function paint(){
+    var total = Math.ceil(msLeft() / 1000);
+    var m = Math.floor(total / 60);
+    var s = total % 60;
+    clockEl.textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    if (ended){
+      clockLab.textContent = 'Time left';
+      clockEl.classList.remove('paused');
+    } else if (state.running){
+      clockLab.textContent = 'Time left';
+      clockEl.classList.remove('paused');
+      pauseLab.textContent = 'Pause';
+    } else {
+      clockLab.textContent = 'Paused';
+      clockEl.classList.add('paused');
+      pauseLab.textContent = 'Resume';
+    }
+  }
+
+  function startClock(){
+    state.endsAt = Date.now() + state.remaining;
+    state.running = true;
+    paint();
+  }
+
+  pauseBtn.addEventListener('click', function(){
+    if (ended) return;
+    if (state.running){
+      state.remaining = msLeft();
+      state.running = false;
+    } else {
+      state.endsAt = Date.now() + state.remaining;
+      state.running = true;
+    }
+    paint();
+  });
+
+  $('endBtn').addEventListener('click', function(){
+    if (state.running) state.remaining = msLeft();
+    state.running = false;
+    ended = true;
+    pauseBtn.disabled = true;
+    paint();
+  });
+
+  setInterval(function(){
+    if (state.running){
+      if (msLeft() <= 0){
+        state.remaining = 0;
+        state.running = false;
+      }
+      paint();
+    }
+  }, 250);
+
+  /* ---------------- reset ---------------- */
+  function resetAll(){
+    state.topics = DEMO_TOPICS.map(function(t){ return { id:t.id, name:t.name, on:t.on }; });
+    state.roster = DEMO_ROSTER.slice();
+    state.spies = 1;
+    state.error = '';
+    $('pname').value = '';
+    faceDown();
+    ended = false;
+    pauseBtn.disabled = false;
+    state.remaining = START_SECONDS * 1000;
+    startClock();
+    renderTopics();
+    renderPlayers();
+    renderCard();
+  }
+
+  /* ---------------- display modes ---------------- */
+  var cells = Array.prototype.slice.call(document.querySelectorAll('.cell'));
+  var VALID = ['home','topics','players','handoff','card','discussion','ended'];
+
+  function show(screen){
+    if (screen === 'all' || !screen){
+      document.body.classList.remove('single');
+      cells.forEach(function(c){ c.classList.remove('active'); });
+      return;
+    }
+    if (VALID.indexOf(screen) === -1) return;
+    document.body.classList.add('single');
+    cells.forEach(function(c){
+      c.classList.toggle('active', c.dataset.cell === screen);
+    });
+  }
+
+  function readHash(){
+    var h = (location.hash || '').replace(/^#/, '');
+    if (!h) return;
+    var params = {};
+    h.split('&').forEach(function(pair){
+      var kv = pair.split('=');
+      if (kv.length === 2) params[decodeURIComponent(kv[0])] = decodeURIComponent(kv[1]);
+    });
+    if (params.role) setRole(params.role);
+    if (params.screen) show(params.screen);
+  }
+
+  window.addEventListener('message', function(ev){
+    var d = ev && ev.data;
+    if (!d || typeof d !== 'object') return;
+    if (d.type === 'spy:show') show(d.screen);
+    else if (d.type === 'spy:role') setRole(d.role);
+    else if (d.type === 'spy:reset') resetAll();
+  });
+
+  window.addEventListener('hashchange', readHash);
+
+  /* ---------------- boot ---------------- */
+  renderTopics();
+  renderPlayers();
+  renderCard();
+  startClock();
+  readHash();
+
+  function announceReady(){
+    try {
+      if (window.parent && window.parent !== window){
+        window.parent.postMessage({ type:'spy:ready', version:'v5' }, '*');
+      }
+    } catch (e) { /* cross-origin parent; nothing to do */ }
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(announceReady);
+  else window.addEventListener('load', announceReady);
+})();
+</script>
+</body>
+</html>

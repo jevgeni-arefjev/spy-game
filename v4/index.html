@@ -1,0 +1,980 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spy - v4 Sleeve</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@1..1000&family=Sofia+Sans:wght@1..1000&display=swap">
+<style>
+:root{
+  --black:#000;
+  --white:#fff;
+  --mag:#ff2d95;
+  --org:#ff5a00;
+  --ink:#fff;
+  --dim:rgba(255,255,255,.72);
+  --hair:rgba(255,255,255,.42);
+  --hair-soft:rgba(255,255,255,.24);
+  --shout:'Sofia Sans Extra Condensed','Sofia Sans','Archivo Narrow','Roboto Condensed','Arial Narrow',sans-serif;
+  --mark:'Sofia Sans','Sofia Sans Extra Condensed','Helvetica Neue',Arial,sans-serif;
+  --hazard:repeating-linear-gradient(45deg,#000 0 5px,var(--org) 5px 10px);
+  --hazard-soft:repeating-linear-gradient(45deg,#000 0 6px,rgba(255,90,0,.34) 6px 12px);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+
+html,body{margin:0;padding:0}
+body{
+  background:#d5d5d5;
+  color:#2a2a2a;
+  font-family:var(--mark);
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--mag);color:#000}
+:focus{outline:none}
+:focus-visible{outline:2px solid var(--org);outline-offset:2px}
+
+/* ---------- mockup chrome (not part of the world) ---------- */
+.chrome-head{
+  font:600 12px/1.5 var(--mark);
+  letter-spacing:.04em;
+  color:#4a4a4a;
+  padding:20px 24px 4px;
+}
+.chrome-head b{color:#111;font-weight:700}
+.strip{
+  display:flex;flex-wrap:wrap;gap:28px 22px;
+  padding:16px 24px 48px;
+  align-items:flex-end;
+}
+.cell{margin:0;display:flex;flex-direction:column;gap:8px;width:360px}
+.cell figcaption{
+  font:600 11px/1 var(--mark);letter-spacing:.14em;text-transform:uppercase;color:#5a5a5a;
+  order:3;
+}
+.cell .phone{order:2}
+.rolebar{order:1;display:flex;gap:6px;align-items:center}
+.rolebar span{font:600 11px/1 var(--mark);letter-spacing:.14em;text-transform:uppercase;color:#5a5a5a}
+.rolebar button{
+  font:600 11px/1 var(--mark);letter-spacing:.12em;text-transform:uppercase;
+  background:#fff;color:#3a3a3a;border:1px solid #b3b3b3;border-radius:0;
+  padding:6px 10px;cursor:pointer;
+}
+.rolebar button[aria-pressed="true"]{background:#2a2a2a;color:#fff;border-color:#2a2a2a}
+.rolebar button:focus-visible{outline:2px solid #2a2a2a;outline-offset:2px}
+.defs{position:absolute;width:0;height:0;overflow:hidden}
+
+/* ---------- the world ---------- */
+.phone{
+  position:relative;
+  width:360px;height:780px;
+  overflow:hidden;
+  background:var(--black);
+  color:var(--ink);
+  font-family:var(--mark);
+  isolation:isolate;
+}
+.noise{position:absolute;inset:0;z-index:0;pointer-events:none}
+.reg{position:absolute;width:18px;height:18px;color:var(--mag);z-index:1;pointer-events:none}
+.reg-tl{top:6px;left:6px}
+.reg-tr{top:6px;right:6px}
+.reg-bl{bottom:6px;left:6px}
+.reg-br{bottom:6px;right:6px}
+
+.code{
+  position:absolute;top:22px;left:24px;right:24px;z-index:2;
+  font:600 11px/1 var(--mark);
+  letter-spacing:.11em;text-transform:uppercase;
+  color:var(--dim);
+  white-space:nowrap;overflow:hidden;
+}
+.code i{font-style:normal;color:var(--mag)}
+.rule{position:absolute;top:47px;left:20px;right:20px;height:5px;z-index:2;background:var(--hazard)}
+
+.edge{
+  position:absolute;right:5px;top:0;bottom:0;z-index:2;
+  display:flex;align-items:center;justify-content:center;
+  writing-mode:vertical-rl;
+  font:700 11px/1 var(--mark);
+  letter-spacing:.42em;text-transform:uppercase;
+  color:var(--mag);
+  pointer-events:none;
+}
+
+.screen{
+  position:absolute;left:24px;right:24px;top:60px;bottom:28px;z-index:3;
+  display:flex;flex-direction:column;
+}
+.grow{flex:1 1 auto;min-height:0}
+
+/* type ---------------------------------------------------- */
+.shout{
+  font-family:var(--shout);
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:-.012em;
+  margin:0;
+  color:var(--white);
+}
+.fit-line{display:block;white-space:nowrap;line-height:.76}
+.lead-in{
+  display:block;
+  font:700 11px/1.2 var(--mark);
+  letter-spacing:.2em;text-transform:uppercase;
+  color:var(--mag);
+  margin-bottom:6px;
+}
+.micro{
+  display:block;
+  font:600 11px/1.4 var(--mark);
+  letter-spacing:.2em;text-transform:uppercase;
+  color:var(--dim);
+}
+.micro-mag{color:var(--mag)}
+/* sentences stay sentence case and readable at 14px; only marks and
+   labels take the sleeve's tracked caps */
+.sub{
+  margin:10px 0 0;
+  font:500 14px/1.45 var(--mark);
+  letter-spacing:.01em;
+  color:var(--dim);
+  max-width:30ch;
+  text-wrap:balance;
+}
+.hint{
+  margin:0;
+  font:500 13px/1.4 var(--mark);
+  letter-spacing:.01em;
+  color:var(--dim);
+  min-height:18px;
+}
+.err{
+  margin:0;
+  font:600 13px/1.4 var(--mark);
+  letter-spacing:.01em;
+  color:var(--org);
+  min-height:18px;
+}
+
+/* plates --------------------------------------------------- */
+.plate{
+  -webkit-appearance:none;appearance:none;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  width:100%;min-height:56px;padding:0 16px;
+  border:1px solid var(--hair);border-radius:0;
+  background:transparent;color:var(--white);
+  font:700 13px/1 var(--mark);
+  letter-spacing:.2em;text-transform:uppercase;
+  cursor:pointer;
+  text-align:left;
+}
+.plate .tick{flex:0 0 auto;color:var(--white)}
+.plate--primary{
+  background:var(--mag);border-color:var(--mag);color:#000;min-height:60px;
+  font-size:15px;
+}
+.plate--primary .tick{color:#000}
+.plate--primary:active{background:#000;color:var(--mag)}
+.plate--primary:active .tick{color:var(--mag)}
+.plate--ghost{min-height:46px;font-size:12px;border-color:var(--hair-soft);color:var(--dim);justify-content:flex-start;gap:14px}
+.plate--ghost:active{background:var(--white);color:#000;border-color:var(--white)}
+.plate--ghost:active .tick{color:#000}
+.plate--sec{min-height:52px}
+.plate--sec:active{background:var(--white);color:#000}
+.plate--sec:active .tick{color:#000}
+.plate[disabled]{
+  cursor:default;color:var(--white);border-color:rgba(255,90,0,.62);
+  background-color:#000;background-image:var(--hazard-soft);
+}
+.plate[disabled] .plate-label{
+  background:#000;padding:5px 9px;color:rgba(255,255,255,.82);
+}
+.plate[disabled] .tick{display:none}
+
+.actions{display:flex;flex-direction:column;gap:8px;flex:0 0 auto}
+
+/* home ----------------------------------------------------- */
+.home-shout{margin-top:-6px}
+.tagline{
+  margin:14px 0 0;
+  font:700 12px/1.5 var(--mark);
+  letter-spacing:.24em;text-transform:uppercase;
+  color:var(--white);
+  border-left:1px solid var(--mag);
+  padding-left:10px;
+}
+
+/* topics --------------------------------------------------- */
+.meter{
+  display:flex;align-items:baseline;justify-content:space-between;
+  border-bottom:1px solid var(--hair-soft);
+  padding-bottom:6px;
+}
+.meter .val{font:700 13px/1 var(--mark);letter-spacing:.16em;color:var(--mag);font-variant-numeric:tabular-nums}
+.list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.topic{
+  display:flex;align-items:center;gap:11px;
+  width:100%;min-height:48px;padding:0 13px;
+  background:transparent;border:1px solid var(--hair-soft);border-radius:0;
+  color:var(--dim);
+  font:700 13px/1 var(--mark);letter-spacing:.16em;text-transform:uppercase;
+  cursor:pointer;text-align:left;
+}
+.topic .name{flex:1 1 auto}
+.topic[aria-pressed="true"]{border-color:var(--mag);color:var(--white)}
+.topic[disabled]{cursor:default}
+.topic[disabled] .box{background-image:var(--hazard)}
+.topic:not([disabled]):active{background:var(--white);color:#000;border-color:var(--white)}
+.topic:not([disabled]):active .roundel,.topic:not([disabled]):active .box{color:#000}
+.roundel{flex:0 0 auto;color:var(--mag)}
+.topic[aria-pressed="false"] .roundel{color:var(--hair-soft)}
+.box{flex:0 0 auto;width:11px;height:11px;border:1px solid currentColor;color:var(--hair-soft)}
+.topic[aria-pressed="true"] .box{background:var(--mag);border-color:var(--mag)}
+
+/* players -------------------------------------------------- */
+.vh{
+  position:absolute;width:1px;height:1px;margin:-1px;padding:0;
+  overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;
+}
+.addrow{display:flex;gap:7px}
+.field{
+  flex:1 1 auto;min-width:0;height:48px;padding:0 12px;
+  background:transparent;border:1px solid var(--hair);border-radius:0;
+  color:var(--white);
+  font:700 13px/1 var(--mark);letter-spacing:.16em;text-transform:uppercase;
+  caret-color:var(--mag);
+}
+.field::placeholder{color:rgba(255,255,255,.6);text-transform:uppercase}
+.field:focus-visible{border-color:var(--mag)}
+.add{
+  flex:0 0 auto;height:48px;padding:0 16px;
+  background:var(--white);color:#000;border:1px solid var(--white);border-radius:0;
+  font:700 13px/1 var(--mark);letter-spacing:.16em;text-transform:uppercase;cursor:pointer;
+}
+.add:active{background:#000;color:var(--white)}
+
+.stepper{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  border:1px solid var(--hair-soft);height:50px;padding:0 6px 0 13px;
+}
+.stepper .lab{font:700 12px/1 var(--mark);letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
+.stepper .grp{display:flex;align-items:center;gap:2px}
+.step{
+  width:44px;height:38px;display:flex;align-items:center;justify-content:center;
+  background:transparent;border:1px solid var(--hair);border-radius:0;color:var(--white);cursor:pointer;
+}
+.step:not([disabled]):active{background:var(--white);color:#000}
+.step[disabled]{
+  position:relative;cursor:default;
+  background-image:var(--hazard-soft);border-color:rgba(255,90,0,.62);color:rgba(255,255,255,.82);
+}
+.step[disabled]::before{
+  content:"";position:absolute;left:50%;top:50%;width:24px;height:22px;
+  transform:translate(-50%,-50%);background:#000;
+}
+.step[disabled] svg{position:relative}
+.step-val{
+  min-width:38px;text-align:center;
+  font-family:var(--shout);font-weight:900;font-size:26px;line-height:1;
+  color:var(--mag);font-variant-numeric:tabular-nums;
+}
+
+.rosterhead{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--hair-soft);padding-bottom:6px}
+.rosterhead .lab{font:700 12px/1 var(--mark);letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
+.rosterhead .bc{flex:1 1 auto;min-width:0;height:14px;display:block}
+.rosterhead .val{font:700 13px/1 var(--mark);letter-spacing:.14em;color:var(--mag);font-variant-numeric:tabular-nums}
+
+.roster{
+  list-style:none;margin:0;padding:0;
+  flex:1 1 auto;min-height:60px;overflow-y:auto;
+  counter-reset:seat;
+  scrollbar-width:thin;scrollbar-color:var(--mag) #000;
+}
+.roster::-webkit-scrollbar{width:4px}
+.roster::-webkit-scrollbar-track{background:#000}
+.roster::-webkit-scrollbar-thumb{background:var(--mag)}
+.roster li{
+  counter-increment:seat;
+  display:flex;align-items:center;gap:11px;
+  height:40px;border-bottom:1px solid rgba(255,255,255,.14);
+}
+.roster li::before{
+  content:counter(seat,decimal-leading-zero);
+  font:700 11px/1 var(--mark);letter-spacing:.12em;color:var(--mag);
+  font-variant-numeric:tabular-nums;
+}
+.roster .who{
+  flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font:700 14px/1 var(--mark);letter-spacing:.14em;text-transform:uppercase;color:var(--white);
+}
+.roster .empty{font:600 12px/1 var(--mark);letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.kill{
+  flex:0 0 auto;width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+  background:transparent;border:0;border-radius:0;color:var(--dim);cursor:pointer;
+}
+.kill:active{color:var(--org)}
+
+/* handoff / card ------------------------------------------- */
+.progress{display:flex;align-items:center;gap:10px}
+.progress .lab{font:700 11px/1 var(--mark);letter-spacing:.18em;text-transform:uppercase;color:var(--dim);white-space:nowrap}
+.pips{display:flex;gap:3px;flex:1 1 auto}
+.pips i{flex:1 1 auto;height:5px;background:rgba(255,255,255,.22);display:block}
+.pips i.on{background:var(--mag)}
+.pips i.now{background:var(--white)}
+
+.card{
+  position:relative;display:block;width:100%;flex:1 1 auto;min-height:0;
+  max-height:452px;
+  padding:0;margin:0;
+  background:#000;border:1px solid var(--white);border-radius:0;
+  overflow:hidden;cursor:pointer;text-align:left;
+}
+.card-face{position:absolute;inset:0;display:flex;flex-direction:column;padding:14px}
+.slot{
+  border:1px solid var(--hair);padding:7px 10px;display:flex;align-items:center;justify-content:space-between;gap:8px;
+}
+.slot .k{font:700 14px/1 var(--mark);letter-spacing:.24em;text-transform:uppercase;color:var(--white)}
+.slot .n{font:600 11px/1 var(--mark);letter-spacing:.16em;text-transform:uppercase;color:var(--mag)}
+.card-mid{flex:1 1 auto;display:flex;align-items:center;justify-content:center;color:var(--hair-soft)}
+.card-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+.card-foot .bc{width:118px;height:24px;display:block}
+
+.card-inner{
+  position:absolute;inset:0;
+  background:#000;border-top:2px solid var(--mag);
+  padding:14px;
+  display:flex;flex-direction:column;
+  transform:translateY(100%);
+  transition:transform 460ms cubic-bezier(.16,1,.3,1);
+}
+.card.is-open .card-inner{transform:translateY(0)}
+.card-word{margin-top:auto;margin-bottom:auto}
+.card-note{font:700 12px/1 var(--mark);letter-spacing:.2em;text-transform:uppercase;color:var(--mag)}
+
+/* discussion ----------------------------------------------- */
+.clockwrap{display:flex;flex-direction:column}
+.clock{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+.track{height:5px;background:rgba(255,255,255,.2);margin-top:14px}
+.track i{display:block;height:100%;background:var(--mag)}
+.is-paused .track i{background:var(--org)}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:0ms!important;animation-duration:0ms!important;animation-iteration-count:1!important}
+}
+
+/* single mode ---------------------------------------------- */
+body[data-mode="single"]{background:transparent;width:360px;height:780px;overflow:hidden}
+body[data-mode="single"] .chrome-head{display:none}
+body[data-mode="single"] .strip{display:block;padding:0;gap:0}
+body[data-mode="single"] .cell{display:none;width:360px}
+body[data-mode="single"] .cell.is-active{display:block}
+body[data-mode="single"] .cell figcaption,body[data-mode="single"] .rolebar{display:none}
+</style>
+</head>
+<body data-mode="strip">
+
+<svg class="defs" aria-hidden="true" focusable="false">
+  <defs>
+    <pattern id="pgrid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M30 0H0v30" fill="none" stroke="#ff2d95" stroke-width="1" stroke-opacity=".13"/>
+    </pattern>
+    <pattern id="ptick" width="90" height="90" patternUnits="userSpaceOnUse">
+      <path d="M45 39v12M39 45h12" fill="none" stroke="#ff2d95" stroke-width="1" stroke-opacity=".34"/>
+    </pattern>
+  </defs>
+</svg>
+
+<template id="tpl-furniture">
+  <svg class="noise" width="360" height="780" aria-hidden="true" focusable="false">
+    <rect width="360" height="780" fill="url(#pgrid)"></rect>
+    <rect width="360" height="780" fill="url(#ptick)"></rect>
+  </svg>
+  <svg class="reg reg-tl" viewBox="0 0 18 18" aria-hidden="true" focusable="false"><circle cx="9" cy="9" r="4.5" fill="none" stroke="currentColor" stroke-width="1"/><path d="M9 0v3M9 15v3M0 9h3M15 9h3" stroke="currentColor" stroke-width="1"/></svg>
+  <svg class="reg reg-tr" viewBox="0 0 18 18" aria-hidden="true" focusable="false"><circle cx="9" cy="9" r="4.5" fill="none" stroke="currentColor" stroke-width="1"/><path d="M9 0v3M9 15v3M0 9h3M15 9h3" stroke="currentColor" stroke-width="1"/></svg>
+  <svg class="reg reg-bl" viewBox="0 0 18 18" aria-hidden="true" focusable="false"><circle cx="9" cy="9" r="4.5" fill="none" stroke="currentColor" stroke-width="1"/><path d="M9 0v3M9 15v3M0 9h3M15 9h3" stroke="currentColor" stroke-width="1"/></svg>
+  <svg class="reg reg-br" viewBox="0 0 18 18" aria-hidden="true" focusable="false"><circle cx="9" cy="9" r="4.5" fill="none" stroke="currentColor" stroke-width="1"/><path d="M9 0v3M9 15v3M0 9h3M15 9h3" stroke="currentColor" stroke-width="1"/></svg>
+  <p class="code" aria-hidden="true"></p>
+  <div class="rule" aria-hidden="true"></div>
+</template>
+
+<header class="chrome-head"><b>v4 Sleeve</b> - every screen is a record sleeve: one enormous condensed word shouts through immaculate information noise.</header>
+
+<main class="strip">
+
+  <!-- HOME -->
+  <figure class="cell" data-cell="home">
+    <section class="phone" data-screen="home" data-ru="Шпион">
+      <div class="screen">
+        <div class="grow"></div>
+        <h1 class="shout home-shout" data-fit><span class="fit-line">Spy</span></h1>
+        <p class="tagline">One phone. One spy.</p>
+        <div class="grow"></div>
+        <svg class="bc" data-bc width="100%" height="30" preserveAspectRatio="none" aria-hidden="true" focusable="false"></svg>
+        <div class="actions" style="margin-top:14px">
+          <button type="button" class="plate plate--primary"><span class="plate-label">Play Spy</span><svg class="tick" width="22" height="12" viewBox="0 0 22 12" aria-hidden="true" focusable="false"><path d="M0 6h20M15 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
+        </div>
+      </div>
+    </section>
+    <figcaption>Home</figcaption>
+  </figure>
+
+  <!-- TOPICS -->
+  <figure class="cell" data-cell="topics">
+    <section class="phone" data-screen="topics" data-ru="Темы">
+      <div class="screen">
+        <h1 class="shout" data-fit><span class="fit-line">Topics</span></h1>
+        <p class="sub">Pick which sets of words can come up. Keep at least one.</p>
+        <div class="meter" style="margin-top:18px">
+          <span class="micro">Included</span>
+          <span class="val" data-topic-count>3 / 5</span>
+        </div>
+        <ul class="list" data-topics style="margin-top:12px"></ul>
+        <div class="grow"></div>
+        <div class="actions">
+          <button type="button" class="plate plate--primary"><span class="plate-label">Continue</span><svg class="tick" width="22" height="12" viewBox="0 0 22 12" aria-hidden="true" focusable="false"><path d="M0 6h20M15 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
+          <button type="button" class="plate plate--ghost"><svg class="tick" width="22" height="12" viewBox="0 0 22 12" aria-hidden="true" focusable="false"><path d="M22 6H2M7 1 2 6l5 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span class="plate-label">Back</span></button>
+        </div>
+      </div>
+    </section>
+    <figcaption>Topics</figcaption>
+  </figure>
+
+  <!-- PLAYERS -->
+  <figure class="cell" data-cell="players">
+    <section class="phone" data-screen="players" data-ru="Игроки">
+      <div class="screen">
+        <h1 class="shout" data-fit><span class="fit-line">Players</span></h1>
+        <p class="sub">Pass the phone around. One of you is the spy.</p>
+        <form class="addrow" data-add-form style="margin-top:14px" novalidate>
+          <label class="vh" for="p-name">Player name</label>
+          <input class="field" id="p-name" name="p-name" type="text" placeholder="Add a player" autocomplete="off" data-name-input>
+          <button type="submit" class="add">Add</button>
+        </form>
+        <p class="err" data-error style="margin-top:7px"></p>
+        <div class="stepper" role="group" aria-label="Spies" style="margin-top:5px">
+          <span class="lab" aria-hidden="true">Spies</span>
+          <span class="grp">
+            <button type="button" class="step" aria-label="Fewer spies" data-spy="-1"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" focusable="false"><rect x="1" y="6" width="12" height="2" fill="currentColor"/></svg></button>
+            <span class="step-val" data-spy-value aria-live="polite">1</span>
+            <button type="button" class="step" aria-label="More spies" data-spy="1"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" focusable="false"><rect x="1" y="6" width="12" height="2" fill="currentColor"/><rect x="6" y="1" width="2" height="12" fill="currentColor"/></svg></button>
+          </span>
+        </div>
+        <div class="rosterhead" style="margin-top:14px">
+          <span class="lab">Players</span>
+          <svg class="bc" data-bc preserveAspectRatio="none" aria-hidden="true" focusable="false"></svg>
+          <span class="val" data-roster-count>6 / 12</span>
+        </div>
+        <ul class="roster" data-roster></ul>
+        <p class="hint" data-roster-hint style="margin:8px 0 10px">1 of you will secretly be the spy.</p>
+        <div class="actions">
+          <button type="button" class="plate plate--primary" data-start><span class="plate-label">Start game</span><svg class="tick" width="22" height="12" viewBox="0 0 22 12" aria-hidden="true" focusable="false"><path d="M0 6h20M15 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
+          <button type="button" class="plate plate--ghost"><svg class="tick" width="22" height="12" viewBox="0 0 22 12" aria-hidden="true" focusable="false"><path d="M22 6H2M7 1 2 6l5 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span class="plate-label">Back</span></button>
+        </div>
+      </div>
+    </section>
+    <figcaption>Players</figcaption>
+  </figure>
+
+  <!-- HANDOFF -->
+  <figure class="cell" data-cell="handoff">
+    <section class="phone" data-screen="handoff" data-ru="Игроки">
+      <div class="screen">
+        <p class="progress"><span class="lab">Player 3 of 6</span><span class="pips" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="now"></i><i></i><i></i><i></i></span></p>
+        <div class="grow"></div>
+        <h1 class="shout" data-fit><span class="lead-in">Pass the phone to</span> <span class="fit-line">Priya</span></h1>
+        <div class="grow"></div>
+        <div class="actions">
+          <button type="button" class="plate plate--primary"><span class="plate-label">I'm Priya</span><svg class="tick" width="22" height="12" viewBox="0 0 22 12" aria-hidden="true" focusable="false"><path d="M0 6h20M15 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
+        </div>
+      </div>
+    </section>
+    <figcaption>Handoff</figcaption>
+  </figure>
+
+  <!-- CARD -->
+  <figure class="cell" data-cell="card">
+    <div class="rolebar"><span>Demo role</span>
+      <button type="button" data-role="civilian" aria-pressed="true">Civilian</button>
+      <button type="button" data-role="spy" aria-pressed="false">Spy</button>
+    </div>
+    <section class="phone" data-screen="card" data-ru="Игроки">
+      <div class="screen">
+        <p class="progress"><span class="lab">Player 3 of 6</span><span class="pips" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="now"></i><i></i><i></i><i></i></span></p>
+        <button type="button" class="card" data-card aria-label="Priya's card &#8212; tap to reveal" aria-pressed="false" style="margin-top:14px">
+          <span class="card-face">
+            <span class="slot"><span class="k">Priya</span><span class="n">03/06</span></span>
+            <span class="card-mid">
+              <svg width="96" height="96" viewBox="0 0 96 96" aria-hidden="true" focusable="false"><circle cx="48" cy="48" r="30" fill="none" stroke="currentColor" stroke-width="1"/><circle cx="48" cy="48" r="13" fill="none" stroke="currentColor" stroke-width="1"/><path d="M48 0v24M48 72v24M0 48h24M72 48h24" stroke="currentColor" stroke-width="1"/></svg>
+            </span>
+            <span class="card-foot">
+              <span class="micro">Tap to reveal</span>
+              <svg class="bc" data-bc preserveAspectRatio="none" aria-hidden="true" focusable="false"></svg>
+            </span>
+          </span>
+          <span class="card-inner" data-card-inner aria-hidden="true">
+            <span class="micro micro-mag" data-card-label>Your word</span>
+            <span class="shout card-word" data-fit data-card-word><span class="fit-line">Hot-air</span> <span class="fit-line">balloon</span></span>
+            <span class="card-note" data-card-note hidden>Hint: Slow</span>
+          </span>
+        </button>
+        <p class="hint" data-card-hint style="margin:10px 0 12px">Tap to reveal</p>
+        <div class="actions">
+          <button type="button" class="plate plate--primary" data-got disabled><span class="plate-label">Got it</span><svg class="tick" width="22" height="12" viewBox="0 0 22 12" aria-hidden="true" focusable="false"><path d="M0 6h20M15 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
+        </div>
+      </div>
+    </section>
+    <figcaption>Card</figcaption>
+  </figure>
+
+  <!-- DISCUSSION -->
+  <figure class="cell" data-cell="discussion">
+    <section class="phone" data-screen="discussion" data-ru="Обсуждение">
+      <div class="screen">
+        <p class="micro" style="letter-spacing:.3em">Discussion</p>
+        <div class="grow"></div>
+        <div class="clockwrap">
+          <span class="micro micro-mag" data-clock-label>Time left</span>
+          <span class="shout clock" data-fit data-clock style="margin-top:6px"><span class="fit-line">03:47</span></span>
+          <span class="track" aria-hidden="true"><i data-track style="width:75.7%"></i></span>
+        </div>
+        <div class="grow"></div>
+        <p class="hint" style="margin-bottom:14px">Take turns describing the word. Find the spy.</p>
+        <div class="actions">
+          <button type="button" class="plate plate--primary" data-pause><span class="plate-label">Pause</span><svg class="tick" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><rect x="2" y="1" width="4" height="14" fill="currentColor"/><rect x="10" y="1" width="4" height="14" fill="currentColor"/></svg></button>
+          <button type="button" class="plate plate--sec" data-end><span class="plate-label">End round</span><svg class="tick" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><rect x="2" y="2" width="12" height="12" fill="currentColor"/></svg></button>
+        </div>
+      </div>
+    </section>
+    <figcaption>Discussion</figcaption>
+  </figure>
+
+  <!-- ENDED -->
+  <figure class="cell" data-cell="ended">
+    <section class="phone" data-screen="ended" data-ru="Время вышло">
+      <div class="screen">
+        <div class="grow"></div>
+        <h1 class="shout" data-fit><span class="fit-line">Time's</span> <span class="fit-line">up</span></h1>
+        <p class="sub" style="color:#fff">Decide together who the spy was.</p>
+        <div class="grow"></div>
+        <svg class="bc" data-bc width="100%" height="26" preserveAspectRatio="none" aria-hidden="true" focusable="false"></svg>
+        <div class="actions" style="margin-top:14px">
+          <button type="button" class="plate plate--primary"><span class="plate-label">Play again</span><svg class="tick" width="22" height="12" viewBox="0 0 22 12" aria-hidden="true" focusable="false"><path d="M0 6h20M15 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
+          <button type="button" class="plate plate--ghost"><span class="plate-label">Exit</span></button>
+        </div>
+      </div>
+    </section>
+    <figcaption>Ended</figcaption>
+  </figure>
+
+</main>
+
+<script>
+(function(){
+  'use strict';
+
+  var VERSION = 'v4';
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  var MAX_PLAYERS = 12;
+  var ROUND_MS = 300000;
+  var START_MS = 227000; /* 03:47 */
+
+  var DEMO = {
+    topics: ['Locations','Professions','Food & Drink','Entertainment','Travel'],
+    included: [true,false,true,false,true],
+    roster: ['Mia','Theo','Priya','Jonas','Aiko','Sam'],
+    spies: 1
+  };
+
+  var state = {
+    topics: DEMO.topics.slice(),
+    included: DEMO.included.slice(),
+    roster: DEMO.roster.slice(),
+    spies: DEMO.spies,
+    error: '',
+    role: 'civilian',
+    revealed: false,
+    running: true,
+    remaining: START_MS,
+    endsAt: 0
+  };
+
+  var $ = function(s,r){ return (r||document).querySelector(s); };
+  var $$ = function(s,r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); };
+  var pad2 = function(n){ return (n < 10 ? '0' : '') + n; };
+
+  /* ---------- furniture ---------- */
+  var tpl = $('#tpl-furniture');
+  $$('.phone').forEach(function(phone){
+    phone.insertBefore(tpl.content.cloneNode(true), phone.firstChild);
+    var ru = phone.getAttribute('data-ru');
+    if (ru) {
+      var edge = document.createElement('span');
+      edge.className = 'edge';
+      edge.setAttribute('aria-hidden','true');
+      edge.textContent = ru;
+      phone.appendChild(edge);
+    }
+  });
+
+  /* ---------- fit-to-width shouting type ---------- */
+  var MAX_FIT = 340;
+  function fitOne(el){
+    var box = el.getBoundingClientRect().width;
+    if (!box) return;
+    var lines = $$('.fit-line', el);
+    lines.forEach(function(line){
+      line.style.fontSize = '100px';
+      var range = document.createRange();
+      range.selectNodeContents(line);
+      var w = range.getBoundingClientRect().width;
+      if (!w) { line.style.fontSize = ''; return; }
+      var size = Math.min(MAX_FIT, (box / w) * 100 * 0.985);
+      line.style.fontSize = size.toFixed(2) + 'px';
+    });
+  }
+  function fitAll(){ $$('[data-fit]').forEach(fitOne); }
+
+  /* ---------- barcode drawn from the roster ---------- */
+  function drawBarcodes(){
+    var names = state.roster;
+    $$('[data-bc]').forEach(function(svg){
+      while (svg.firstChild) svg.removeChild(svg.firstChild);
+      var x = 0, h = 100, groupGap = 7;
+      var groups = names.length ? names : ['0'];
+      groups.forEach(function(name, gi){
+        var seed = 0;
+        for (var c = 0; c < name.length; c++) seed += name.charCodeAt(c);
+        for (var b = 0; b < 6; b++) {
+          var w = 1 + ((seed >> b) & 3);
+          var tall = (b === 0 || b === 5);
+          var rect = document.createElementNS(SVGNS,'rect');
+          rect.setAttribute('x', String(x));
+          rect.setAttribute('y', tall ? '0' : '16');
+          rect.setAttribute('width', String(w));
+          rect.setAttribute('height', tall ? String(h) : String(h - 16));
+          rect.setAttribute('fill', (gi % 2 && b === 3) ? '#ff2d95' : '#ffffff');
+          svg.appendChild(rect);
+          x += w + 2;
+        }
+        x += groupGap;
+      });
+      svg.setAttribute('viewBox', '0 0 ' + Math.max(1, x - groupGap - 2) + ' ' + h);
+    });
+  }
+
+  /* ---------- product code strip ---------- */
+  function renderCode(){
+    var inc = state.included.filter(Boolean).length;
+    var txt = 'Round <i>01</i> · Players <i>' + pad2(state.roster.length) +
+      '</i> · Spies <i>' + pad2(state.spies) +
+      '</i> · Topics <i>' + pad2(inc) + '/' + pad2(state.topics.length) + '</i>';
+    $$('.code').forEach(function(el){ el.innerHTML = txt; });
+  }
+
+  /* ---------- topics ---------- */
+  var topicList = $('[data-topics]');
+  function renderTopics(){
+    var inc = state.included.filter(Boolean).length;
+    topicList.innerHTML = '';
+    state.topics.forEach(function(name, i){
+      var li = document.createElement('li');
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'topic';
+      btn.setAttribute('aria-pressed', state.included[i] ? 'true' : 'false');
+      if (state.included[i] && inc === 1) btn.disabled = true;
+      var roundel = document.createElementNS(SVGNS,'svg');
+      roundel.setAttribute('class','roundel');
+      roundel.setAttribute('width','16'); roundel.setAttribute('height','16');
+      roundel.setAttribute('viewBox','0 0 16 16');
+      roundel.setAttribute('aria-hidden','true');
+      roundel.setAttribute('focusable','false');
+      roundel.innerHTML = state.included[i]
+        ? '<circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1"/><circle cx="8" cy="8" r="3.4" fill="currentColor"/><path d="M8 0v2M8 14v2M0 8h2M14 8h2" stroke="currentColor" stroke-width="1"/>'
+        : '<circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1"/>';
+      var label = document.createElement('span');
+      label.className = 'name';
+      label.textContent = name;
+      var box = document.createElement('span');
+      box.className = 'box';
+      btn.appendChild(roundel); btn.appendChild(label); btn.appendChild(box);
+      btn.addEventListener('click', function(){
+        if (btn.disabled) return;
+        state.included[i] = !state.included[i];
+        renderTopics(); renderCode();
+      });
+      li.appendChild(btn);
+      topicList.appendChild(li);
+    });
+    $('[data-topic-count]').textContent = inc + ' / ' + state.topics.length;
+  }
+
+  /* ---------- players ---------- */
+  var rosterEl = $('[data-roster]');
+  var errEl = $('[data-error]');
+  var hintEl = $('[data-roster-hint]');
+  var startEl = $('[data-start]');
+
+  function renderRoster(){
+    rosterEl.innerHTML = '';
+    if (!state.roster.length) {
+      var li0 = document.createElement('li');
+      li0.style.borderBottom = '0';
+      var em = document.createElement('span');
+      em.className = 'empty';
+      em.textContent = 'No players yet.';
+      li0.appendChild(em);
+      rosterEl.appendChild(li0);
+    } else {
+      state.roster.forEach(function(name, i){
+        var li = document.createElement('li');
+        var who = document.createElement('span');
+        who.className = 'who';
+        who.textContent = name;
+        var kill = document.createElement('button');
+        kill.type = 'button';
+        kill.className = 'kill';
+        kill.setAttribute('aria-label', 'Remove ' + name);
+        kill.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" focusable="false"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.6"/></svg>';
+        kill.addEventListener('click', function(){
+          state.roster.splice(i,1);
+          if (state.spies > Math.max(1, state.roster.length)) state.spies = Math.max(1, state.roster.length);
+          state.error = '';
+          renderPlayers();
+        });
+        li.appendChild(who); li.appendChild(kill);
+        rosterEl.appendChild(li);
+      });
+    }
+    $('[data-roster-count]').textContent = state.roster.length + ' / ' + MAX_PLAYERS;
+  }
+
+  function renderPlayers(){
+    renderRoster();
+    var n = state.roster.length;
+    if (n >= 3) {
+      hintEl.textContent = state.spies + ' of you will secretly be the spy.';
+    } else {
+      var need = 3 - n;
+      hintEl.textContent = 'Add ' + need + ' more player' + (need === 1 ? '' : 's') + ' to start.';
+    }
+    startEl.disabled = n < 3;
+    errEl.textContent = state.error;
+    $('[data-spy-value]').textContent = String(state.spies);
+    $('[data-spy="-1"]').disabled = state.spies <= 1;
+    $('[data-spy="1"]').disabled = state.spies >= Math.max(1, n);
+    drawBarcodes();
+    renderCode();
+  }
+
+  $('[data-add-form]').addEventListener('submit', function(e){
+    e.preventDefault();
+    var input = $('[data-name-input]');
+    var name = input.value.trim();
+    if (!name) { state.error = 'Type a name first.'; }
+    else if (state.roster.length >= MAX_PLAYERS) { state.error = "That's the maximum of 12 players."; }
+    else if (state.roster.some(function(p){ return p.toLowerCase() === name.toLowerCase(); })) {
+      state.error = 'Someone already has that name.';
+    } else {
+      state.roster.push(name);
+      state.error = '';
+      input.value = '';
+    }
+    renderPlayers();
+  });
+
+  $$('[data-spy]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if (btn.disabled) return;
+      var delta = Number(btn.getAttribute('data-spy'));
+      var next = state.spies + delta;
+      var max = Math.max(1, state.roster.length);
+      state.spies = Math.min(max, Math.max(1, next));
+      renderPlayers();
+    });
+  });
+
+  /* ---------- card ---------- */
+  var cardEl = $('[data-card]');
+  var cardInner = $('[data-card-inner]');
+  var cardLabel = $('[data-card-label]');
+  var cardWord = $('[data-card-word]');
+  var cardNote = $('[data-card-note]');
+  var cardHint = $('[data-card-hint]');
+  var gotEl = $('[data-got]');
+  var gotTimer = null;
+
+  function renderCardFace(){
+    if (state.role === 'spy') {
+      cardLabel.textContent = 'You are the ';
+      cardWord.innerHTML = '<span class="fit-line">spy</span>';
+      cardNote.hidden = false;
+      cardNote.textContent = 'Hint: Slow';
+    } else {
+      cardLabel.textContent = 'Your word';
+      cardWord.innerHTML = '<span class="fit-line">Hot-air</span> <span class="fit-line">balloon</span>';
+      cardNote.hidden = true;
+    }
+    fitOne(cardWord);
+  }
+
+  function setRevealed(on){
+    state.revealed = on;
+    cardEl.classList.toggle('is-open', on);
+    cardEl.setAttribute('aria-pressed', on ? 'true' : 'false');
+    cardInner.setAttribute('aria-hidden', on ? 'false' : 'true');
+    cardHint.textContent = on ? 'Keep it to yourself.' : 'Tap to reveal';
+    gotEl.disabled = !on;
+  }
+
+  cardEl.addEventListener('click', function(){
+    if (state.revealed) return;
+    setRevealed(true);
+  });
+
+  gotEl.addEventListener('click', function(){
+    if (gotEl.disabled) return;
+    clearTimeout(gotTimer);
+    gotTimer = setTimeout(function(){ setRevealed(false); }, 450);
+  });
+
+  function setRole(role){
+    state.role = (role === 'spy') ? 'spy' : 'civilian';
+    if (state.revealed) setRevealed(false);
+    renderCardFace();
+    $$('[data-role]').forEach(function(b){
+      b.setAttribute('aria-pressed', b.getAttribute('data-role') === state.role ? 'true' : 'false');
+    });
+  }
+  $$('[data-role]').forEach(function(b){
+    b.addEventListener('click', function(){ setRole(b.getAttribute('data-role')); });
+  });
+
+  /* ---------- clock ---------- */
+  var clockEl = $('[data-clock]');
+  var clockLabel = $('[data-clock-label]');
+  var trackEl = $('[data-track]');
+  var pauseEl = $('[data-pause]');
+  var discussionScreen = $('[data-screen="discussion"]');
+  var frozen = false;
+
+  function remainingNow(){
+    if (!state.running) return state.remaining;
+    return Math.max(0, state.endsAt - Date.now());
+  }
+  function paintClock(){
+    var ms = remainingNow();
+    var total = Math.round(ms / 1000);
+    var line = $('.fit-line', clockEl);
+    var next = pad2(Math.floor(total / 60)) + ':' + pad2(total % 60);
+    if (line.textContent !== next) line.textContent = next;
+    trackEl.style.width = Math.max(0, Math.min(100, (ms / ROUND_MS) * 100)).toFixed(1) + '%';
+    clockLabel.textContent = state.running ? 'Time left' : 'Paused';
+    pauseEl.querySelector('.plate-label').textContent = state.running ? 'Pause' : 'Resume';
+    discussionScreen.classList.toggle('is-paused', !state.running);
+    if (state.running && ms <= 0) { state.running = false; state.remaining = 0; }
+  }
+  function startClock(){
+    state.endsAt = Date.now() + state.remaining;
+    state.running = true;
+    paintClock();
+  }
+  pauseEl.addEventListener('click', function(){
+    if (frozen) return;
+    if (state.running) { state.remaining = remainingNow(); state.running = false; }
+    else { startClock(); }
+    paintClock();
+  });
+  $('[data-end]').addEventListener('click', function(){
+    state.remaining = remainingNow();
+    state.running = false;
+    frozen = true;
+    paintClock();
+  });
+  setInterval(paintClock, 250);
+
+  /* ---------- modes ---------- */
+  var SCREENS = ['home','topics','players','handoff','card','discussion','ended'];
+  function show(id){
+    if (id === 'all' || SCREENS.indexOf(id) === -1) {
+      document.body.setAttribute('data-mode','strip');
+      $$('.cell').forEach(function(c){ c.classList.remove('is-active'); });
+    } else {
+      document.body.setAttribute('data-mode','single');
+      $$('.cell').forEach(function(c){
+        c.classList.toggle('is-active', c.getAttribute('data-cell') === id);
+      });
+    }
+    requestAnimationFrame(fitAll);
+  }
+
+  function reset(){
+    state.topics = DEMO.topics.slice();
+    state.included = DEMO.included.slice();
+    state.roster = DEMO.roster.slice();
+    state.spies = DEMO.spies;
+    state.error = '';
+    $('[data-name-input]').value = '';
+    setRevealed(false);
+    clearTimeout(gotTimer);
+    state.remaining = START_MS;
+    frozen = false;
+    startClock();
+    renderTopics();
+    renderPlayers();
+    renderCardFace();
+    fitAll();
+  }
+
+  window.addEventListener('message', function(e){
+    var d = e && e.data;
+    if (!d || typeof d !== 'object') return;
+    if (d.type === 'spy:show') show(d.screen);
+    else if (d.type === 'spy:role') setRole(d.role);
+    else if (d.type === 'spy:reset') reset();
+  });
+
+  function readHash(){
+    var h = (location.hash || '').replace(/^#/, '');
+    if (!h) return;
+    h.split('&').forEach(function(part){
+      var kv = part.split('=');
+      if (kv[0] === 'screen') show(kv[1]);
+      if (kv[0] === 'role') setRole(kv[1]);
+    });
+  }
+  window.addEventListener('hashchange', readHash);
+
+  var resizeTimer = null;
+  window.addEventListener('resize', function(){
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(fitAll, 80);
+  });
+
+  /* ---------- boot ---------- */
+  renderTopics();
+  renderPlayers();
+  renderCardFace();
+  drawBarcodes();
+  renderCode();
+  startClock();
+  readHash();
+  fitAll();
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function(){
+      fitAll();
+      requestAnimationFrame(function(){
+        fitAll();
+        try { if (window.parent && window.parent !== window) window.parent.postMessage({ type:'spy:ready', version: VERSION }, '*'); } catch (err) {}
+      });
+    });
+  } else {
+    try { if (window.parent && window.parent !== window) window.parent.postMessage({ type:'spy:ready', version: VERSION }, '*'); } catch (err) {}
+  }
+})();
+</script>
+</body>
+</html>
