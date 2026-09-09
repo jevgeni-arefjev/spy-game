@@ -50,7 +50,7 @@ describe('isKnownTopicId', () => {
   })
 
   it('is false for anything else', () => {
-    for (const id of ['', 'sports', 'LOCATIONS', 'locations ']) {
+    for (const id of ['', 'gadgets', 'LOCATIONS', 'locations ']) {
       expect(isKnownTopicId(id)).toBe(false)
     }
   })

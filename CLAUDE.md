@@ -52,7 +52,7 @@ src/
   game/          domain: config, types, reducer, topics, words, persistence, context
   lib/           storage.ts, classNames.ts, themeColor.ts — no React, no game rules
   components/    reusable UI: Screen, Button, Insert, CountRow, FoilTitle,
-                 RoleCard, Countdown
+                 RoleCard, Countdown, LanguagePicker, useFitToWidth
   screens/       one per phase: Home, Topics, Players, Reveal, Discussion, Ended
   i18n/          i18next setup + locales/<locale>/<namespace>.json
   styles/        tokens.css (the visual source of truth), fonts.css, tokens.ts,
@@ -133,6 +133,27 @@ Namespaces are `common`, `words`, `topics` and `hints`, one JSON file each per
 locale; locales are discovered with `import.meta.glob`, so adding a language
 needs no code change.
 
+**The locale is chosen on the lid and nowhere else.** `<LanguagePicker>` - a
+round globe punch in the home screen's top-right corner - opens a small insert
+listing every entry in `SUPPORTED_LOCALES`, each row a piece punched from it
+(the language in play is the punched one, with the brass pip; the rest are
+scored die lines). Choosing one calls `setLocale()` in `src/i18n/index.ts`, the
+only writer of `spy:locale:v1` and of `document.documentElement.lang`. Each
+locale's `common.json` supplies its own `language.name`, written in itself, so
+a new `locales/` folder needs no code here either. The picker renders only on
+`HomeScreen`: from the topics screen on, the phone is being passed around, and
+a stray tap on a corner must not relabel the game under whoever is holding it.
+A stored locale that no longer ships is ignored and the app boots in
+`FALLBACK_LOCALE`.
+
+**A foil title is one line, fitted to the column.** The `font-size` a screen
+gives `<FoilTitle>` is the *maximum*; `useFitToWidth` measures the line and
+scales it down by the ratio it overflows the block by, which is exact because
+text width is linear in font size. "Spy" is stamped at the full `7rem`;
+"Шпион" is not, and neither is a long `ended.title` on a 320px phone. The fit
+re-runs on resize and on `document.fonts.ready`, because a line measured in the
+fallback face comes out the wrong width.
+
 **Topics and words share one source of truth: `src/game/topics.ts`.** `TOPICS`
 lists each topic's `words`, each a `{ id, hintId }` pair; `words.ts` derives its
 flat `WORD_IDS` pool and the `hintIdForWord` lookup by flattening them, and
@@ -184,7 +205,7 @@ that arrived too high. The state models the spies as a set (`spyIds: string[]`),
 `createRoundSetup(players, topicIds, prevWord, spyCount)` draws exactly that
 many with `pickSample`, and every screen asks `spyIds.includes(id)`. The
 `_one`/`_other` plural strings (`players.subtitle`, `discussion.hint`,
-`ended.subtitle`, `role.spy.hint`, `app.tagline`) are selected by passing
+`ended.subtitle`, `role.spy.hint`) are selected by passing
 `{ count: state.spyCount }` at the call site. `spyCount` is kept across "Play
 again" and "Exit", like the roster and topics.
 

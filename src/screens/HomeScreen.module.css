@@ -2,6 +2,14 @@
  * The lid. Box art top-right, the title hot-stamped under it, and the single
  * brass piece at the thumb.
  */
+
+/* The language punch, in the top corner of the lid. It sits above the box art
+   in its own row; the middle block below still centres in what is left. */
+.corner {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .middle {
   flex: 1;
   display: flex;

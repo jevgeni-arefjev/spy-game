@@ -198,6 +198,7 @@
   --z-base: 0;
   --z-content: 1;
   --z-vignette: 3;
+  --z-popover: 4;
 
   /* ── 3f. Motion ─────────────────────────────────────────────────── */
   --duration-press: 120ms;
@@ -239,6 +240,10 @@
   /* Measures for the two balanced one-line paragraphs in the world. */
   --size-measure-hint: 17.5rem;
   --size-measure-sub: 18.25rem;
+
+  /* The brass pip that marks the chosen language, and the list it sits in. */
+  --size-pip: 0.5rem;
+  --size-language-menu: 9.5rem;
 
   --size-home-mark: 13rem;
   --size-ended-mark: 10.375rem;

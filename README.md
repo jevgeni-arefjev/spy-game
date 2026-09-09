@@ -55,14 +55,20 @@ the phone doesn't lose time.
 1. Copy `src/i18n/locales/en/` to `src/i18n/locales/<code>/` and translate
    `common.json` (UI strings), `topics.json` (topic names), `words.json`
    (the word list) and `hints.json` (the spy's adjective clues).
-2. That's it — `src/i18n/index.ts` discovers `locales/*/*.json` with
+2. Give the new `common.json` a `language.name` written in that language
+   itself ("English", "Русский") - it labels the language button.
+3. That's it - `src/i18n/index.ts` discovers `locales/*/*.json` with
    `import.meta.glob`, so no wiring to update. `SUPPORTED_LOCALES` picks the new
-   folder up automatically.
+   folder up automatically, and the language button on the home screen cycles
+   through it.
 
 Only `FALLBACK_LOCALE` in `src/i18n/index.ts` is hardcoded, and only because
-something has to be the fallback. To let players choose a language, call
-`i18n.changeLanguage(code)` — state stores a `wordId`, never a translated
-string, so switching mid-game is safe.
+something has to be the fallback.
+Players choose the language from the globe punch in the home screen's top-right
+corner, which opens the list of shipped locales; it calls `setLocale()`, the
+only writer of the remembered locale.
+State stores a `wordId`, never a translated string, so switching mid-game is
+safe.
 
 Every user-facing string lives in the locale files. Nothing in the components
 contains display text.

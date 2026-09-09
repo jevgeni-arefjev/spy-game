@@ -1,0 +1,136 @@
+/**
+ * A round punch and the little printed list it opens.
+ *
+ * The punch is cut from insert stock like the spy stepper's buttons; the list
+ * is a card of the same insert, and the language in play is the one row
+ * punched out of it. Nothing here is brass but the pip: the lid already
+ * carries its one foil piece at the thumb.
+ */
+.picker {
+  position: relative;
+}
+
+.punch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--size-touch-target);
+  height: var(--size-touch-target);
+  padding: var(--space-0);
+  border: 0;
+  border-bottom: var(--board-thickness) solid var(--color-panel-edge);
+  border-radius: var(--radius-circle);
+  background-color: var(--color-panel-raised);
+  color: var(--color-text);
+  box-shadow: var(--shadow-piece);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--duration-press) var(--ease-press),
+    border-bottom-width var(--duration-press) var(--ease-press),
+    box-shadow var(--duration-press) var(--ease-press);
+}
+
+.punch:active {
+  transform: translateY(var(--press-travel));
+  border-bottom-width: var(--board-thickness-pressed);
+  box-shadow: var(--shadow-piece-pressed);
+}
+
+/* The meridians are printed on the piece, not stamped: paper, not foil. */
+.globe {
+  display: block;
+  width: var(--space-6);
+  height: var(--space-6);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--border-width-thick);
+  stroke-linecap: round;
+}
+
+/* The list, lifted off the lid the way the setup insert is lifted off the
+   board, and re-declaring the die-line pair for the rows punched from it. */
+.menu {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  right: var(--space-0);
+  z-index: var(--z-popover);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: var(--size-language-menu);
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  border-bottom: var(--border-width-rule) solid var(--color-panel-edge);
+  background-color: var(--color-panel);
+  box-shadow: var(--shadow-insert);
+  --cut: var(--color-cut-line-insert);
+  --muted: var(--color-text-dim);
+}
+
+.option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: var(--size-touch-target);
+  padding-inline: var(--space-3);
+  border: 0;
+  border-radius: var(--radius-lg);
+  background-color: transparent;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+  color: var(--color-text-muted);
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--duration-press) var(--ease-press),
+    box-shadow var(--duration-press) var(--ease-press);
+}
+
+/* Not in play: the row still attached to the sheet, scored but not pushed out. */
+.option:not(.chosen)::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: var(--border-width-thick) solid var(--color-panel-sunk);
+  border-radius: var(--radius-lg);
+  pointer-events: none;
+}
+
+/* The pip the die leaves in a punched row. It holds its place on every row so
+   the language names line up whichever one is out of the sheet. */
+.pip {
+  flex: none;
+  width: var(--size-pip);
+  height: var(--size-pip);
+  border-radius: var(--radius-circle);
+}
+
+.chosen .pip {
+  background-color: var(--color-foil);
+}
+
+/* The language in play: the row punched free, with its thickness showing and
+   the brass pip the die left in it. */
+.chosen {
+  background-color: var(--color-panel-raised);
+  border-bottom: var(--board-thickness) solid var(--color-panel-edge);
+  box-shadow: var(--shadow-piece);
+  color: var(--color-text);
+}
+
+.option:active {
+  transform: translateY(var(--press-travel));
+}
+
+.chosen:active {
+  border-bottom-width: var(--board-thickness-pressed);
+  box-shadow: var(--shadow-piece-pressed);
+}

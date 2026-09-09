@@ -9,14 +9,20 @@
 .title {
   position: relative;
   display: inline-block;
+  /* One line, fitted to the block by `useFitToWidth`: a wordmark that broke
+     across two lines would not be the same mark. */
+  white-space: nowrap;
   line-height: var(--line-height-tight);
   color: var(--color-text);
 }
 
+/* Full width even though the title inside it is not, because the block is what
+   the fit measures against. */
 .block {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  width: 100%;
 }
 
 /* The brass rule stamped under the wordmark, the width of a foil block. */

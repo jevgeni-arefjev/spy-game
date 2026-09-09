@@ -2,16 +2,21 @@ import { useTranslation } from 'react-i18next'
 import spyToken from '../assets/spy-token.webp'
 import { Button } from '../components/Button'
 import { FoilTitle } from '../components/FoilTitle'
+import { LanguagePicker } from '../components/LanguagePicker'
 import { Screen } from '../components/Screen'
 import { useGame } from '../game/useGame'
 import styles from './HomeScreen.module.css'
 
 export function HomeScreen() {
   const { t } = useTranslation()
-  const { state, dispatch } = useGame()
+  const { dispatch } = useGame()
 
   return (
     <Screen surface="lid" wide>
+      <div className={styles.corner}>
+        <LanguagePicker />
+      </div>
+
       <div className={styles.middle}>
         <svg className={styles.token} viewBox="0 0 200 200" aria-hidden="true">
           <defs>
@@ -33,7 +38,7 @@ export function HomeScreen() {
         </svg>
 
         <FoilTitle className={styles.title}>{t('app.title')}</FoilTitle>
-        <p className={styles.tagline}>{t('app.tagline', { count: state.spyCount })}</p>
+        <p className={styles.tagline}>{t('app.tagline')}</p>
       </div>
 
       <Button size="lg" fullWidth onClick={() => dispatch({ type: 'game/open' })}>

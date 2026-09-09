@@ -8,5 +8,7 @@
   "active": "Active",
   "relaxing": "Relaxing",
   "fast": "Fast",
-  "slow": "Slow"
+  "slow": "Slow",
+  "team": "Team",
+  "solo": "Solo"
 }

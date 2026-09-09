@@ -1,10 +1,13 @@
 {
   "app": {
     "title": "Spy",
-    "tagline_one": "One phone. One spy.",
-    "tagline_other": "One phone. {{count}} spies."
+    "tagline": "Work hard. Spy hard."
   },
   "back": "Back",
+  "language": {
+    "label": "Language",
+    "name": "English"
+  },
   "home": {
     "play": "Play Spy"
   },
