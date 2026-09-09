@@ -1,0 +1,566 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-09T17:32:54Z",
+  "title": "Design System: Spy",
+  "extensions": {
+    "colorMeta": {
+      "foil": {
+        "role": "primary",
+        "displayName": "Brass Foil",
+        "canonical": "#e8b34a",
+        "tonalRamp": [
+          "#241a06",
+          "#4a350d",
+          "#6f4f14",
+          "#94691b",
+          "#b98d33",
+          "#e8b34a",
+          "#f0c877",
+          "#f7dda6"
+        ]
+      },
+      "foil-dim": {
+        "role": "primary",
+        "displayName": "Unlit Brass",
+        "canonical": "#b98d33",
+        "tonalRamp": [
+          "#1d1608",
+          "#3a2b10",
+          "#574118",
+          "#745620",
+          "#916c28",
+          "#b98d33",
+          "#cfad63",
+          "#e4cd9b"
+        ]
+      },
+      "foil-edge": {
+        "role": "primary",
+        "displayName": "Brass Die Edge",
+        "canonical": "#a97a20",
+        "tonalRamp": [
+          "#1b1305",
+          "#35270a",
+          "#503a0f",
+          "#6a4e15",
+          "#8f671b",
+          "#a97a20",
+          "#c99c4d",
+          "#e0c288"
+        ]
+      },
+      "ember": {
+        "role": "secondary",
+        "displayName": "Ember",
+        "canonical": "#e0503c",
+        "tonalRamp": [
+          "#2d0f09",
+          "#511b11",
+          "#75281a",
+          "#992f22",
+          "#c04030",
+          "#e0503c",
+          "#ff7d69",
+          "#ffb0a2"
+        ]
+      },
+      "ember-lit": {
+        "role": "secondary",
+        "displayName": "Lit Ember",
+        "canonical": "#ff7d69",
+        "tonalRamp": [
+          "#33150f",
+          "#5b241b",
+          "#833327",
+          "#a94334",
+          "#d15a48",
+          "#ff7d69",
+          "#ffa294",
+          "#ffc9c1"
+        ]
+      },
+      "ember-edge": {
+        "role": "secondary",
+        "displayName": "Ember Die Edge",
+        "canonical": "#a5321f",
+        "tonalRamp": [
+          "#210a06",
+          "#3d130b",
+          "#5a1c10",
+          "#761f14",
+          "#8e2919",
+          "#a5321f",
+          "#c8604b",
+          "#e69c8d"
+        ]
+      },
+      "token": {
+        "role": "tertiary",
+        "displayName": "Punched Violet",
+        "canonical": "#6b46a8",
+        "tonalRamp": [
+          "#150d21",
+          "#241636",
+          "#33204d",
+          "#472c72",
+          "#5a3a8d",
+          "#6b46a8",
+          "#9376c4",
+          "#bda9dd"
+        ]
+      },
+      "token-edge": {
+        "role": "tertiary",
+        "displayName": "Violet Die Edge",
+        "canonical": "#472c72",
+        "tonalRamp": [
+          "#0e0917",
+          "#1b1130",
+          "#28194a",
+          "#372364",
+          "#472c72",
+          "#5f3d95",
+          "#8768b5",
+          "#b39ed4"
+        ]
+      },
+      "lid": {
+        "role": "neutral",
+        "displayName": "Lid Aubergine",
+        "canonical": "#241238",
+        "tonalRamp": [
+          "#0a0512",
+          "#100719",
+          "#150c22",
+          "#1a0d29",
+          "#241238",
+          "#33204d",
+          "#3e2a5c",
+          "#6b46a8"
+        ]
+      },
+      "lid-deep": {
+        "role": "neutral",
+        "displayName": "Deep Lid",
+        "canonical": "#1a0d29",
+        "tonalRamp": [
+          "#080410",
+          "#0d0618",
+          "#120920",
+          "#1a0d29",
+          "#241238",
+          "#2e1846",
+          "#3e2a5c",
+          "#553a7a"
+        ]
+      },
+      "board": {
+        "role": "neutral",
+        "displayName": "Punchboard",
+        "canonical": "#150c22",
+        "tonalRamp": [
+          "#060309",
+          "#0a0512",
+          "#100719",
+          "#150c22",
+          "#1d1230",
+          "#241636",
+          "#33204d",
+          "#3e2a5c"
+        ]
+      },
+      "board-edge": {
+        "role": "neutral",
+        "displayName": "Board Edge",
+        "canonical": "#0a0512",
+        "tonalRamp": [
+          "#040208",
+          "#0a0512",
+          "#100719",
+          "#150c22",
+          "#1a0d29",
+          "#241238",
+          "#33204d",
+          "#472c72"
+        ]
+      },
+      "panel": {
+        "role": "neutral",
+        "displayName": "Insert Plum",
+        "canonical": "#33204d",
+        "tonalRamp": [
+          "#0d0815",
+          "#150c22",
+          "#1d1230",
+          "#241636",
+          "#33204d",
+          "#3e2a5c",
+          "#553a7a",
+          "#7b60a4"
+        ]
+      },
+      "panel-raised": {
+        "role": "neutral",
+        "displayName": "Raised Insert",
+        "canonical": "#3e2a5c",
+        "tonalRamp": [
+          "#100a18",
+          "#1a1028",
+          "#241636",
+          "#33204d",
+          "#3e2a5c",
+          "#4f3775",
+          "#6d4f9c",
+          "#9b83c2"
+        ]
+      },
+      "panel-sunk": {
+        "role": "neutral",
+        "displayName": "Sunk Insert",
+        "canonical": "#241636",
+        "tonalRamp": [
+          "#090510",
+          "#0f0819",
+          "#150c22",
+          "#1d1230",
+          "#241636",
+          "#33204d",
+          "#3e2a5c",
+          "#6b46a8"
+        ]
+      },
+      "panel-edge": {
+        "role": "neutral",
+        "displayName": "Insert Edge",
+        "canonical": "#1d1230",
+        "tonalRamp": [
+          "#080410",
+          "#0d0719",
+          "#130b25",
+          "#1d1230",
+          "#241636",
+          "#33204d",
+          "#472c72",
+          "#6b46a8"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "#f2eaf7",
+        "tonalRamp": [
+          "#2a2130",
+          "#3f3448",
+          "#584a62",
+          "#77687f",
+          "#a08bb8",
+          "#c3aed8",
+          "#dccbeb",
+          "#f2eaf7"
+        ]
+      },
+      "paper-muted": {
+        "role": "neutral",
+        "displayName": "Muted Paper",
+        "canonical": "#c3aed8",
+        "tonalRamp": [
+          "#241a2c",
+          "#372a42",
+          "#4c3c59",
+          "#645172",
+          "#82698f",
+          "#a08bb8",
+          "#c3aed8",
+          "#e2d6ee"
+        ]
+      },
+      "paper-dim": {
+        "role": "neutral",
+        "displayName": "Dim Paper",
+        "canonical": "#a08bb8",
+        "tonalRamp": [
+          "#1d1526",
+          "#2e2239",
+          "#41314d",
+          "#564363",
+          "#6f597b",
+          "#8a7199",
+          "#a08bb8",
+          "#c8b9da"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The wordmark and 'Time's up' on the lid. Always stamped a second time in brass, 5px out of register."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "A screen's own title on the insert, the name on a card's plate, and the word or hint on a revealed face."
+      },
+      "title": {
+        "displayName": "Piece label",
+        "purpose": "The label on a die-cut piece. Drops to 600 at 1.0625rem on the smaller md piece."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Subtitles, hints, empty states. One or two balanced lines, never a paragraph."
+      },
+      "label": {
+        "displayName": "Printed label",
+        "purpose": "Uppercase printed labels: INCLUDED, PLAYERS, TIME LEFT, PLAYER 3 OF 6, YOUR WORD."
+      }
+    },
+    "shadows": [
+      {
+        "name": "piece",
+        "value": "2px 6px 13px rgb(0 0 0 / 55%)",
+        "purpose": "A punched piece lying on the sheet."
+      },
+      {
+        "name": "piece-pressed",
+        "value": "1px 3px 7px rgb(0 0 0 / 45%)",
+        "purpose": "The same piece sunk into the sheet, and the resting shadow of a small tile or stepper punch."
+      },
+      {
+        "name": "insert",
+        "value": "2px 7px 18px rgb(0 0 0 / 55%)",
+        "purpose": "The printed insert lifted off the punchboard."
+      },
+      {
+        "name": "panel",
+        "value": "3px 10px 22px rgb(0 0 0 / 62%)",
+        "purpose": "The handoff panel, the heaviest printed piece in the app."
+      },
+      {
+        "name": "token",
+        "value": "3px 12px 24px rgb(0 0 0 / 62%)",
+        "purpose": "Under the clock token's board edge."
+      },
+      {
+        "name": "drop-shadow-mark",
+        "value": "drop-shadow(3px 8px 12px rgb(0 0 0 / 62%))",
+        "purpose": "The box-art token on home and the mark on ended, which need their silhouette rather than their box."
+      },
+      {
+        "name": "drop-shadow-peek",
+        "value": "drop-shadow(3px 7px 10px rgb(0 0 0 / 62%))",
+        "purpose": "The spy leaning on the handoff panel's top edge."
+      },
+      {
+        "name": "drop-shadow-card",
+        "value": "drop-shadow(3px 10px 16px rgb(0 0 0 / 62%))",
+        "purpose": "The role card, so the shadow follows the flipping face."
+      },
+      {
+        "name": "drop-shadow-punch",
+        "value": "drop-shadow(2px 3px 3px rgb(0 0 0 / 55%))",
+        "purpose": "A punched topic disc, sitting on its row."
+      },
+      {
+        "name": "vignette",
+        "value": "radial-gradient(118% 74% at 50% 28%, transparent 44%, rgb(6 2 12 / 38%) 100%)",
+        "purpose": "Sits above every screen at z-index 3 so the frame reads as a lit object, not a page."
+      }
+    ],
+    "motion": [
+      {
+        "name": "duration-press",
+        "value": "120ms",
+        "purpose": "A piece sinking into the sheet and coming back."
+      },
+      {
+        "name": "duration-flip",
+        "value": "550ms",
+        "purpose": "The role card's single 180 degree flip."
+      },
+      {
+        "name": "duration-tick",
+        "value": "1s",
+        "purpose": "One second of the countdown ring's glide."
+      },
+      {
+        "name": "ease-press",
+        "value": "ease-out",
+        "purpose": "Press and release."
+      },
+      {
+        "name": "ease-flip",
+        "value": "cubic-bezier(0.2, 0.85, 0.25, 1)",
+        "purpose": "The card flip: fast out of the gate, settled at the end."
+      },
+      {
+        "name": "ease-linear",
+        "value": "linear",
+        "purpose": "The countdown ring, which must not accelerate."
+      },
+      {
+        "name": "press-travel",
+        "value": "2px",
+        "purpose": "How far a piece sinks; its bottom edge collapses from 4px to 2px over the same 120ms."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "column-cap",
+        "value": "24.5rem",
+        "purpose": "The single content column's max width. There are no other breakpoints: the layout is one column at every size, centred on the full-bleed sheet."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Piece",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single brass action at the thumb, on every screen.",
+      "html": "<button class=\"ds-piece ds-piece-primary\">Play Spy</button>",
+      "css": ".ds-piece { display: inline-flex; align-items: center; justify-content: center; width: 100%; min-height: 3.75rem; padding-inline: 1.25rem; border: 0; border-bottom: 4px solid var(--color-panel-edge, #1d1230); border-radius: 0.875rem; background-color: var(--color-panel-raised, #3e2a5c); color: var(--color-text, #f2eaf7); font-family: 'Rubik Variable', system-ui, sans-serif; font-size: 1.25rem; font-weight: 700; line-height: 1; letter-spacing: 0.005em; box-shadow: 2px 6px 13px rgb(0 0 0 / 55%); cursor: pointer; transition: transform 120ms ease-out, border-bottom-width 120ms ease-out, box-shadow 120ms ease-out; } .ds-piece-primary { background-color: var(--color-foil, #e8b34a); border-bottom-color: var(--color-foil-edge, #a97a20); color: var(--color-ink, #1a0d29); } .ds-piece:active { transform: translateY(2px); border-bottom-width: 2px; box-shadow: 1px 3px 7px rgb(0 0 0 / 45%); } .ds-piece:focus-visible { outline: 3px solid var(--color-foil, #e8b34a); outline-offset: 3px; }"
+    },
+    {
+      "name": "Unpunched Piece (disabled)",
+      "kind": "button",
+      "refersTo": "button-disabled",
+      "description": "Disabled is not a dimmed button: it is a piece still attached to the sheet, drawn as the die line it would have been cut along.",
+      "html": "<button class=\"ds-piece ds-piece-cut\" disabled>Got it</button>",
+      "css": ".ds-piece-cut { display: inline-flex; align-items: center; justify-content: center; width: 100%; min-height: 3.75rem; padding-inline: 1.25rem; border: 2px dashed rgb(232 179 74 / 50%); border-radius: 0.875rem; background-color: transparent; color: var(--color-text-muted, #c3aed8); font-family: 'Rubik Variable', system-ui, sans-serif; font-size: 1.25rem; font-weight: 700; line-height: 1; box-shadow: none; cursor: default; }"
+    },
+    {
+      "name": "Ghost Piece",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "A scored line rather than a punched piece. The 'Back' action on the setup screens.",
+      "html": "<button class=\"ds-piece-ghost\">Back</button>",
+      "css": ".ds-piece-ghost { display: inline-flex; align-items: center; justify-content: center; width: 100%; min-height: 2.875rem; padding-inline: 1.25rem; border: 2px solid var(--color-foil-dim, #b98d33); border-radius: 0.875rem; background-color: transparent; color: var(--color-text, #f2eaf7); font-family: 'Rubik Variable', system-ui, sans-serif; font-size: 1.0625rem; font-weight: 600; line-height: 1; box-shadow: none; cursor: pointer; transition: transform 120ms ease-out; } .ds-piece-ghost:active { transform: translateY(2px); } .ds-piece-ghost:focus-visible { outline: 3px solid var(--color-foil, #e8b34a); outline-offset: 3px; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input-text",
+      "description": "Recessed into the insert it sits in, with an ember caret.",
+      "html": "<input class=\"ds-field\" type=\"text\" placeholder=\"Add a player\">",
+      "css": ".ds-field { width: 100%; height: 3rem; padding-inline: 0.75rem; border: 2px solid rgb(195 174 216 / 45%); border-radius: 0.625rem; background-color: var(--color-panel-edge, #1d1230); color: var(--color-text, #f2eaf7); font-family: 'Rubik Variable', system-ui, sans-serif; font-size: 1rem; font-weight: 500; line-height: 1; caret-color: var(--color-ember-lit, #ff7d69); } .ds-field::placeholder { color: var(--color-text-dim, #a08bb8); font-weight: 400; } .ds-field:focus-visible { outline: 3px solid var(--color-foil, #e8b34a); outline-offset: 3px; }"
+    },
+    {
+      "name": "Player Tile",
+      "kind": "chip",
+      "refersTo": "chip-player",
+      "description": "A roster name, punched from the insert, with its own remove punch.",
+      "html": "<span class=\"ds-tile\"><span class=\"ds-tile-name\">Priya</span><button class=\"ds-tile-remove\" aria-label=\"Remove Priya\"><svg viewBox=\"0 0 14 14\" width=\"14\" height=\"14\" aria-hidden=\"true\"><path d=\"M2 2l10 10M12 2L2 12\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\"/></svg></button></span>",
+      "css": ".ds-tile { display: inline-flex; align-items: stretch; height: 2.75rem; border-radius: 0.5625rem; border-bottom: 4px solid var(--color-panel-edge, #1d1230); background-color: var(--color-panel-raised, #3e2a5c); box-shadow: 1px 3px 7px rgb(0 0 0 / 45%); overflow: hidden; } .ds-tile-name { display: flex; align-items: center; padding-inline: 0.75rem 0.25rem; font-family: 'Rubik Variable', system-ui, sans-serif; font-size: 1rem; font-weight: 600; line-height: 1; color: var(--color-text, #f2eaf7); } .ds-tile-remove { display: inline-flex; align-items: center; justify-content: center; width: 2rem; padding: 0; border: 0; background: none; color: var(--color-text-muted, #c3aed8); cursor: pointer; } .ds-tile-remove:hover { color: var(--color-ember-lit, #ff7d69); } .ds-tile-remove:focus-visible { outline: 3px solid var(--color-foil, #e8b34a); outline-offset: 3px; }"
+    },
+    {
+      "name": "Topic Punch",
+      "kind": "custom",
+      "refersTo": "insert",
+      "description": "A topic row. Included is a token punched free and lying on the insert; excluded is the scored hole it left. Both states ship in one SVG and CSS chooses.",
+      "html": "<div class=\"ds-topics\"><button class=\"ds-topic\" aria-pressed=\"true\"><svg class=\"ds-punch\" viewBox=\"0 0 42 42\" aria-hidden=\"true\"><circle class=\"ds-cut\" cx=\"21\" cy=\"21\" r=\"18\" stroke-width=\"2\" stroke-dasharray=\"5 4\"/><g class=\"ds-punched\"><circle cx=\"21\" cy=\"21\" r=\"18\" fill=\"#6b46a8\"/><circle cx=\"21\" cy=\"21\" r=\"11\" fill=\"none\" stroke=\"#e8b34a\" stroke-width=\"2.4\"/><circle cx=\"21\" cy=\"21\" r=\"4\" fill=\"#e8b34a\"/></g></svg><span>Travel</span></button><button class=\"ds-topic\" aria-pressed=\"false\"><svg class=\"ds-punch\" viewBox=\"0 0 42 42\" aria-hidden=\"true\"><circle class=\"ds-cut\" cx=\"21\" cy=\"21\" r=\"18\" stroke-width=\"2\" stroke-dasharray=\"5 4\"/><g class=\"ds-punched\"><circle cx=\"21\" cy=\"21\" r=\"18\" fill=\"#6b46a8\"/><circle cx=\"21\" cy=\"21\" r=\"11\" fill=\"none\" stroke=\"#e8b34a\" stroke-width=\"2.4\"/><circle cx=\"21\" cy=\"21\" r=\"4\" fill=\"#e8b34a\"/></g></svg><span>Professions</span></button></div>",
+      "css": ".ds-topics { display: flex; flex-direction: column; gap: 0.5rem; padding: 1.25rem; border-radius: 0.625rem; background-color: var(--color-panel, #33204d); box-shadow: 2px 7px 18px rgb(0 0 0 / 55%); } .ds-topic { position: relative; display: flex; align-items: center; gap: 0.75rem; width: 100%; min-height: 3.375rem; padding: 0 0.75rem 0 0.5rem; border: 0; border-radius: 0.75rem; background-color: transparent; font-family: 'Rubik Variable', system-ui, sans-serif; font-size: 1.0625rem; font-weight: 600; color: var(--color-text-muted, #c3aed8); text-align: left; cursor: pointer; transition: transform 120ms ease-out, box-shadow 120ms ease-out; } .ds-topic[aria-pressed=\"false\"]::before { content: ''; position: absolute; inset: 0; border: 2px solid var(--color-panel-sunk, #241636); border-radius: 0.75rem; pointer-events: none; } .ds-topic[aria-pressed=\"true\"] { background-color: var(--color-panel-raised, #3e2a5c); border-bottom: 4px solid var(--color-panel-edge, #1d1230); box-shadow: 2px 6px 13px rgb(0 0 0 / 55%); color: var(--color-text, #f2eaf7); } .ds-topic[aria-pressed=\"true\"]:active { transform: translateY(2px); border-bottom-width: 2px; box-shadow: 1px 3px 7px rgb(0 0 0 / 45%); } .ds-topic:focus-visible { outline: 3px solid var(--color-foil, #e8b34a); outline-offset: 3px; } .ds-punch { display: block; flex: none; width: 2.625rem; height: 2.625rem; } .ds-cut { fill: var(--color-panel-sunk, #241636); stroke: rgb(232 179 74 / 50%); } .ds-punched { display: none; } .ds-topic[aria-pressed=\"true\"] .ds-cut { display: none; } .ds-topic[aria-pressed=\"true\"] .ds-punched { display: block; } .ds-topic[aria-pressed=\"true\"] .ds-punch { filter: drop-shadow(2px 3px 3px rgb(0 0 0 / 55%)); }"
+    },
+    {
+      "name": "Role Card (back)",
+      "kind": "card",
+      "refersTo": "card-back",
+      "description": "The face-down card: the box's lozenge repeat, a lid trim, an inset foil rule, and the player's name on a foil-ruled plate.",
+      "html": "<div class=\"ds-card-back\"><span class=\"ds-plate\"><span class=\"ds-plate-name\">Priya</span><span class=\"ds-plate-tap\">Tap to reveal</span></span></div>",
+      "css": ".ds-card-back { display: flex; align-items: center; justify-content: center; width: 18.5rem; aspect-ratio: 296 / 408; border-radius: 1rem; border: 9px solid var(--color-lid, #241238); background-color: var(--color-lid, #241238); background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23241238'/%3E%3Cpath d='M20 7 L29 20 L20 33 L11 20 Z' fill='none' stroke='%23e8b34a' stroke-width='2'/%3E%3Ccircle cx='0' cy='0' r='3' fill='%23e8b34a'/%3E%3Ccircle cx='40' cy='0' r='3' fill='%23e8b34a'/%3E%3Ccircle cx='0' cy='40' r='3' fill='%23e8b34a'/%3E%3Ccircle cx='40' cy='40' r='3' fill='%23e8b34a'/%3E%3C/svg%3E\"); background-size: 40px 40px; background-clip: padding-box; box-shadow: inset 0 0 0 2px var(--color-foil, #e8b34a); filter: drop-shadow(3px 10px 16px rgb(0 0 0 / 62%)); } .ds-plate { padding: 1rem 1.25rem; border: 3px solid var(--color-foil, #e8b34a); border-radius: 0.625rem; background-color: var(--color-panel, #33204d); text-align: center; } .ds-plate-name { display: block; font-family: 'Rammetto One', 'Rubik Variable', system-ui, sans-serif; font-weight: 800; font-synthesis: none; font-size: 1.875rem; line-height: 1.05; color: var(--color-foil, #e8b34a); } .ds-plate-tap { display: block; margin-top: 0.75rem; font-family: 'Rubik Variable', system-ui, sans-serif; font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.02em; color: var(--color-text-muted, #c3aed8); }"
+    },
+    {
+      "name": "Role Card (spy face)",
+      "kind": "card",
+      "refersTo": "card-face-spy",
+      "description": "The one ember surface in the app. Every mark on it is deep-lid ink, never paper.",
+      "html": "<div class=\"ds-card-spy\"><span class=\"ds-card-kind\">You are the spy</span><span class=\"ds-card-big\">Hint: Slow</span></div>",
+      "css": ".ds-card-spy { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 18.5rem; aspect-ratio: 296 / 408; padding: 1.5rem 1.25rem; border-radius: 1rem; background-color: var(--color-ember, #e0503c); filter: drop-shadow(3px 10px 16px rgb(0 0 0 / 62%)); } .ds-card-spy::before { content: ''; position: absolute; inset: 9px; border: 3px solid var(--color-ink, #1a0d29); border-radius: 0.5625rem; pointer-events: none; } .ds-card-kind { margin-bottom: 1rem; font-family: 'Rubik Variable', system-ui, sans-serif; font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-ink, #1a0d29); } .ds-card-big { font-family: 'Rammetto One', 'Rubik Variable', system-ui, sans-serif; font-weight: 800; font-synthesis: none; font-size: 2.125rem; line-height: 1.2; text-align: center; color: var(--color-ink, #1a0d29); }"
+    },
+    {
+      "name": "Clock Token",
+      "kind": "custom",
+      "refersTo": "card-back",
+      "description": "The signature piece: a punched token whose brass rim ring burns down clockwise from twelve o'clock.",
+      "html": "<div class=\"ds-clock\"><div class=\"ds-clock-edge\"></div><div class=\"ds-clock-face\"><p class=\"ds-clock-label\">Time left</p><p class=\"ds-clock-time\">03:47</p></div><svg class=\"ds-clock-ring\" viewBox=\"0 0 244 244\" aria-hidden=\"true\"><circle class=\"ds-ring-track\" cx=\"122\" cy=\"122\" r=\"105\"/><circle class=\"ds-ring-arc\" cx=\"122\" cy=\"122\" r=\"105\" stroke-dasharray=\"659.7\" stroke-dashoffset=\"-158.3\"/></svg></div>",
+      "css": ".ds-clock { position: relative; width: 15.25rem; height: 15.25rem; } .ds-clock-edge { position: absolute; inset: 0.5rem; border-radius: 50%; background-color: var(--color-panel-edge, #1d1230); transform: translateY(6px); box-shadow: 3px 12px 24px rgb(0 0 0 / 62%); } .ds-clock-face { position: absolute; inset: 0.75rem; border-radius: 50%; background-color: var(--color-panel, #33204d); display: flex; flex-direction: column; align-items: center; justify-content: center; } .ds-clock-label { margin: 0 0 0.75rem; font-family: 'Rubik Variable', system-ui, sans-serif; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-text-muted, #c3aed8); } .ds-clock-time { margin: 0; font-family: 'Rammetto One', 'Rubik Variable', system-ui, sans-serif; font-weight: 800; font-synthesis: none; font-size: 2.875rem; line-height: 1; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; color: var(--color-foil, #e8b34a); } .ds-clock-ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); } .ds-clock-ring circle { fill: none; stroke-width: 7; } .ds-ring-track { stroke: rgb(232 179 74 / 15%); } .ds-ring-arc { stroke: var(--color-foil, #e8b34a); stroke-linecap: round; transition: stroke-dashoffset 1s linear; }"
+    },
+    {
+      "name": "Printed Insert",
+      "kind": "card",
+      "refersTo": "insert",
+      "description": "The setup screens' surface, lifted off the punchboard. It re-declares the die-line context for every piece punched from it.",
+      "html": "<div class=\"ds-insert\"><h1 class=\"ds-insert-title\">Topics</h1><p class=\"ds-insert-sub\">Pick which sets of words can come up. Keep at least one.</p><div class=\"ds-count\"><span class=\"ds-count-label\">Included</span><span class=\"ds-count-value\">3 / 5</span></div></div>",
+      "css": ".ds-insert { display: flex; flex-direction: column; padding: 1.25rem; border-radius: 0.625rem; border-bottom: 3px solid var(--color-panel-edge, #1d1230); background-color: var(--color-panel, #33204d); box-shadow: 2px 7px 18px rgb(0 0 0 / 55%); } .ds-insert-title { margin: 0; font-family: 'Rammetto One', 'Rubik Variable', system-ui, sans-serif; font-weight: 800; font-synthesis: none; font-size: 1.875rem; line-height: 1.05; color: var(--color-text, #f2eaf7); } .ds-insert-sub { margin: 0.5rem 0 0; font-family: 'Rubik Variable', system-ui, sans-serif; font-size: 0.90625rem; line-height: 1.45; color: var(--color-text-muted, #c3aed8); } .ds-count { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; margin-top: 0.75rem; padding-top: 0.5rem; border-top: 2px solid var(--color-panel-sunk, #241636); } .ds-count-label { font-family: 'Rubik Variable', system-ui, sans-serif; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-text-muted, #c3aed8); } .ds-count-value { font-family: 'Rammetto One', 'Rubik Variable', system-ui, sans-serif; font-weight: 800; font-synthesis: none; font-size: 1.1875rem; line-height: 1; color: var(--color-foil, #e8b34a); font-variant-numeric: tabular-nums; word-spacing: 0.16em; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Parlour After Dark",
+    "overview": "The wallpaper is the world; the box is what is open on the table in front of it. Spy is played on one phone passed around a room after dinner, and the screen is dressed as that room: a photographed aubergine sheet carrying a brass vine of blossoms and tulips, lit warmly and falling off toward the edges, with a deluxe board-game box printed on top of it. The lid of that box is home, discussion and the end of the round. The punchboard inside it is where the setup and the reveal happen.\n\nNothing on screen is a rectangle with a fill. Every interactive surface is a piece die-cut from board - it has thickness, it casts a shadow down and to the right, and it sinks into the sheet when pressed - or it is the dashed die line marking a piece that was never punched out. Depth is not decoration here; it is the entire grammar of what can be touched.\n\nThe world is committed to a single dark setting. There is no light theme and no prefers-color-scheme block: a lit version of this would be a different product, not a different setting. The anti-reference is the flat dark app - a near-black ground with a saturated accent and floating rounded rectangles - which is precisely what the box, the foil and the weave exist to refuse.",
+    "keyCharacteristics": [
+      "One photographed sheet under two washes carries every screen; there is no second background.",
+      "Brass hot foil is the only primary action colour, and the only accent mass.",
+      "Board thickness (4px) and a real light direction, never a centred glow.",
+      "Display type is stamped twice, five pixels out of register, the way a foil press lands.",
+      "Ember appears as a surface exactly once in the whole app: the spy's card."
+    ],
+    "rules": [
+      {
+        "name": "The One Metal Rule",
+        "body": "Brass is the only primary action colour and the only accent mass. If a screen has two brass pieces, one of them is wrong.",
+        "section": "colors"
+      },
+      {
+        "name": "The Ember Reserve Rule",
+        "body": "Ember is a surface exactly once in the app - the spy's card - and ink everywhere else it appears. Using it for a button, a badge, or a highlight spends the reveal.",
+        "section": "colors"
+      },
+      {
+        "name": "The Contextual Die Line Rule",
+        "body": "An unpunched piece reads --cut and --muted from the surface it sits on, never from itself. On the lid and the board that pair is brass-at-half and muted paper; on the lifted insert it is paper-at-45% and dim paper. A piece that hardcodes its own disabled colours will be wrong on one of the two.",
+        "section": "colors"
+      },
+      {
+        "name": "The Second Impression Rule",
+        "body": "A display title on the lid is stamped a second time in brass, offset 5px down and right, drawn from data-text on a ::before behind the live text. The visible string stays one text node, so selection and screen readers are unaffected. This is the wordmark treatment; it does not apply to insert titles.",
+        "section": "typography"
+      },
+      {
+        "name": "The One-Weight Display Rule",
+        "body": "Display type asks for weight 800 with font-synthesis: none. Rammetto ships a single 400 and renders it unchanged; Cyrillic, which Rammetto does not cover, falls through to Rubik's variable axis at 800. Neither face is ever faux-bolded. Known gap: the Russian locale therefore does not get the display face at all. Sourcing or commissioning a Cyrillic-covering display face is open work.",
+        "section": "typography"
+      },
+      {
+        "name": "The Thumb Rule",
+        "body": "Every screen's primary action is the last element in the column, full width, at 3.75rem. Nothing is ever placed below it.",
+        "section": "layout"
+      },
+      {
+        "name": "The Punched-Or-Not Rule",
+        "body": "An interactive surface is either a piece punched from the board - 4px bottom edge, offset shadow, sinks 2px when pressed - or the dashed die line it would have been cut along. There is no third state, and \"disabled\" is always the second one.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Light Direction Rule",
+        "body": "Every shadow in the system offsets down and to the right. A shadow with no offset is decoration and does not ship.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do draw every interactive surface as a punched piece or a die line - the Punched-Or-Not Rule. A new control inherits its thickness, its press and its disabled treatment from Button, not from scratch.",
+      "Do put every colour, size, radius, shadow and duration in src/styles/tokens.css. Component CSS contains no hex value, no font stack and no bare pixel value. The two exceptions are public/favicon.svg and src/assets/card-back.svg, which are standalone assets and cannot read the page's custom properties.",
+      "Do let an unpunched piece read --cut and --muted from its surface, so it is correct on the lid, on the board and on the insert.",
+      "Do theme the browser's own surfaces: text selection (brass on ink), the caret (lit ember), the roster scrollbar, and the focus ring. A default outline is a visible failure in this world.",
+      "Do reserve height for any text that swaps in place, at 1.125rem, so nothing under it moves.",
+      "Do set every live count in the display face, in brass, with tabular numerals.",
+      "Do self-host any new face and scope it with unicode-range. Nothing is fetched from a font CDN."
+    ],
+    "donts": [
+      "Don't add a light theme or a prefers-color-scheme block. The world is one committed dark setting, and color-scheme: dark is declared once on :root.",
+      "Don't use ember as a surface anywhere but the spy's card, or brass for anything but the single primary action and the accent marks listed under Colors.",
+      "Don't ship a shadow without an offset, or a glow instead of a shadow.",
+      "Don't put two brass pieces on one screen.",
+      "Don't tile the wallpaper. It is a photograph, laid down once at cover; tiling it produces a seam the drawn version was built to avoid.",
+      "Don't introduce a hairline divider, a pill radius, or a card-of-icon-plus-heading-plus-text grid. Structure comes from the insert, the rack and the pieces.",
+      "Don't apply the Second Impression treatment to anything but a lid wordmark.",
+      "Don't put an XML comment containing -- inside an SVG asset; it makes the file invalid XML and a strict parser drops the whole tile with no error."
+    ]
+  }
+}

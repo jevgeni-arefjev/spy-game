@@ -3,39 +3,50 @@
  * styles, canvas work, a `<meta name="theme-color">` update, animation code.
  *
  * Values are `var(--token)` references, not literals, so the CSS file stays
- * the only definition and themes keep working.
+ * the only definition and a future theme keeps working.
  *
- * Keep this in sync with `tokens.css`; the names match one for one.
+ * Keep this in sync with `tokens.css`; the names match one for one. The single
+ * exception is `ring`, at the bottom, which carries real numbers — see its own
+ * note for why.
  */
 
 export const color = {
   bg: 'var(--color-bg)',
-  bgGradientTop: 'var(--color-bg-gradient-top)',
-  surface: 'var(--color-surface)',
-  surfaceMuted: 'var(--color-surface-muted)',
-  border: 'var(--color-border)',
-  borderStrong: 'var(--color-border-strong)',
+  lid: 'var(--color-lid)',
+  lidDeep: 'var(--color-lid-deep)',
+  board: 'var(--color-board)',
+  boardEdge: 'var(--color-board-edge)',
+  panel: 'var(--color-panel)',
+  panelRaised: 'var(--color-panel-raised)',
+  panelEdge: 'var(--color-panel-edge)',
+  panelSunk: 'var(--color-panel-sunk)',
+  token: 'var(--color-token)',
+  tokenEdge: 'var(--color-token-edge)',
+  foil: 'var(--color-foil)',
+  foilDim: 'var(--color-foil-dim)',
+  foilEdge: 'var(--color-foil-edge)',
+  ember: 'var(--color-ember)',
+  emberEdge: 'var(--color-ember-edge)',
+  emberLit: 'var(--color-ember-lit)',
+  ink: 'var(--color-ink)',
   text: 'var(--color-text)',
   textMuted: 'var(--color-text-muted)',
-  textInverse: 'var(--color-text-inverse)',
-  accent: 'var(--color-accent)',
-  accentStrong: 'var(--color-accent-strong)',
-  accentSoft: 'var(--color-accent-soft)',
-  accentContrast: 'var(--color-accent-contrast)',
-  danger: 'var(--color-danger)',
-  dangerStrong: 'var(--color-danger-strong)',
-  dangerContrast: 'var(--color-danger-contrast)',
-  spy: 'var(--color-spy)',
-  spySurface: 'var(--color-spy-surface)',
-  spyText: 'var(--color-spy-text)',
-  cardBack: 'var(--color-card-back)',
-  cardBackPattern: 'var(--color-card-back-pattern)',
-  cardBackText: 'var(--color-card-back-text)',
-  cardFace: 'var(--color-card-face)',
+  textDim: 'var(--color-text-dim)',
   focusRing: 'var(--color-focus-ring)',
-  scrim: 'var(--color-scrim)',
+  selection: 'var(--color-selection)',
+  caret: 'var(--color-caret)',
+  cutLine: 'var(--color-cut-line)',
+  cutLineInsert: 'var(--color-cut-line-insert)',
+  ringTrack: 'var(--color-ring-track)',
+  vignette: 'var(--color-vignette)',
   shadow: 'var(--color-shadow)',
   shadowStrong: 'var(--color-shadow-strong)',
+  shadowDeep: 'var(--color-shadow-deep)',
+} as const
+
+export const wash = {
+  lid: 'var(--wash-lid)',
+  board: 'var(--wash-board)',
 } as const
 
 export const space = {
@@ -46,6 +57,7 @@ export const space = {
   4: 'var(--space-4)',
   5: 'var(--space-5)',
   6: 'var(--space-6)',
+  7: 'var(--space-7)',
   8: 'var(--space-8)',
   10: 'var(--space-10)',
   12: 'var(--space-12)',
@@ -58,21 +70,25 @@ export const radius = {
   md: 'var(--radius-md)',
   lg: 'var(--radius-lg)',
   xl: 'var(--radius-xl)',
-  pill: 'var(--radius-pill)',
+  '2xl': 'var(--radius-2xl)',
+  circle: 'var(--radius-circle)',
 } as const
 
 export const borderWidth = {
   hairline: 'var(--border-width-hairline)',
   thick: 'var(--border-width-thick)',
+  rule: 'var(--border-width-rule)',
+  boardThickness: 'var(--board-thickness)',
+  boardThicknessPressed: 'var(--board-thickness-pressed)',
 } as const
 
 export const fontFamily = {
   base: 'var(--font-family-base)',
   display: 'var(--font-family-display)',
-  numeric: 'var(--font-family-numeric)',
 } as const
 
 export const fontSize = {
+  '2xs': 'var(--font-size-2xs)',
   xs: 'var(--font-size-xs)',
   sm: 'var(--font-size-sm)',
   md: 'var(--font-size-md)',
@@ -82,13 +98,18 @@ export const fontSize = {
   '3xl': 'var(--font-size-3xl)',
   '4xl': 'var(--font-size-4xl)',
   '5xl': 'var(--font-size-5xl)',
+  '6xl': 'var(--font-size-6xl)',
+  '7xl': 'var(--font-size-7xl)',
+  '8xl': 'var(--font-size-8xl)',
+  '9xl': 'var(--font-size-9xl)',
+  '10xl': 'var(--font-size-10xl)',
 } as const
 
 export const lineHeight = {
+  flat: 'var(--line-height-flat)',
   tight: 'var(--line-height-tight)',
   snug: 'var(--line-height-snug)',
   normal: 'var(--line-height-normal)',
-  relaxed: 'var(--line-height-relaxed)',
 } as const
 
 export const fontWeight = {
@@ -96,65 +117,99 @@ export const fontWeight = {
   medium: 'var(--font-weight-medium)',
   semibold: 'var(--font-weight-semibold)',
   bold: 'var(--font-weight-bold)',
+  display: 'var(--font-weight-display)',
 } as const
 
 export const letterSpacing = {
   tight: 'var(--letter-spacing-tight)',
   normal: 'var(--letter-spacing-normal)',
-  wide: 'var(--letter-spacing-wide)',
-} as const
-
-export const opacity = {
-  disabled: 'var(--opacity-disabled)',
-  subtle: 'var(--opacity-subtle)',
-  soft: 'var(--opacity-soft)',
+  piece: 'var(--letter-spacing-piece)',
+  loose: 'var(--letter-spacing-loose)',
+  progress: 'var(--letter-spacing-progress)',
+  label: 'var(--letter-spacing-label)',
+  clock: 'var(--letter-spacing-clock)',
 } as const
 
 export const shadow = {
   none: 'var(--shadow-none)',
-  sm: 'var(--shadow-sm)',
-  md: 'var(--shadow-md)',
-  lg: 'var(--shadow-lg)',
+  piece: 'var(--shadow-piece)',
+  piecePressed: 'var(--shadow-piece-pressed)',
+  insert: 'var(--shadow-insert)',
+  panel: 'var(--shadow-panel)',
+  token: 'var(--shadow-token)',
+} as const
+
+export const dropShadow = {
+  mark: 'var(--drop-shadow-mark)',
+  peek: 'var(--drop-shadow-peek)',
+  card: 'var(--drop-shadow-card)',
+  punch: 'var(--drop-shadow-punch)',
 } as const
 
 export const zIndex = {
+  stock: 'var(--z-stock)',
   base: 'var(--z-base)',
-  raised: 'var(--z-raised)',
-  card: 'var(--z-card)',
-  overlay: 'var(--z-overlay)',
-  toast: 'var(--z-toast)',
+  content: 'var(--z-content)',
+  vignette: 'var(--z-vignette)',
 } as const
 
 export const duration = {
-  instant: 'var(--duration-instant)',
-  fast: 'var(--duration-fast)',
-  base: 'var(--duration-base)',
-  slow: 'var(--duration-slow)',
+  press: 'var(--duration-press)',
   flip: 'var(--duration-flip)',
-} as const
-
-export const scale = {
-  press: 'var(--scale-press)',
-  pressCard: 'var(--scale-press-card)',
+  tick: 'var(--duration-tick)',
 } as const
 
 export const easing = {
-  standard: 'var(--ease-standard)',
-  out: 'var(--ease-out)',
-  in: 'var(--ease-in)',
+  press: 'var(--ease-press)',
+  flip: 'var(--ease-flip)',
+  linear: 'var(--ease-linear)',
 } as const
 
 export const layout = {
   maxWidth: 'var(--layout-max-width)',
   gutter: 'var(--layout-gutter)',
+  gutterWide: 'var(--layout-gutter-wide)',
+  padTop: 'var(--layout-pad-top)',
+  padBottom: 'var(--layout-pad-bottom)',
   touchTarget: 'var(--size-touch-target)',
-  cardMaxWidth: 'var(--size-card-max-width)',
+  pieceLg: 'var(--size-piece-lg)',
+  pieceMd: 'var(--size-piece-md)',
+  field: 'var(--size-field)',
+  punch: 'var(--size-punch)',
+  topicRow: 'var(--size-topic-row)',
+  addButton: 'var(--size-add-button)',
+  stepperValue: 'var(--size-stepper-value)',
+  rackMin: 'var(--size-rack-min)',
+  lineReserved: 'var(--size-line-reserved)',
+  foilRule: 'var(--size-foil-rule)',
+  measureHint: 'var(--size-measure-hint)',
+  measureSub: 'var(--size-measure-sub)',
+  homeMark: 'var(--size-home-mark)',
+  endedMark: 'var(--size-ended-mark)',
+  peek: 'var(--size-peek)',
+  clockToken: 'var(--size-clock-token)',
+  cardWidth: 'var(--size-card-width)',
   cardAspectRatio: 'var(--card-aspect-ratio)',
   cardPerspective: 'var(--card-perspective)',
 } as const
 
+/**
+ * The countdown ring's geometry, in the units of its own `viewBox` rather than
+ * in page pixels.
+ *
+ * This is the one set of real numbers here: `<Countdown>` has to compute the
+ * arc's circumference to drive `stroke-dashoffset`, and SVG's `r` is not
+ * dependable as a CSS property across browsers. The stroke *is* a token
+ * (`--ring-stroke`), because that one is applied from CSS.
+ */
+export const ring = {
+  size: 244,
+  radius: 105,
+} as const
+
 export const tokens = {
   color,
+  wash,
   space,
   radius,
   borderWidth,
@@ -163,13 +218,13 @@ export const tokens = {
   lineHeight,
   fontWeight,
   letterSpacing,
-  opacity,
   shadow,
+  dropShadow,
   zIndex,
   duration,
-  scale,
   easing,
   layout,
+  ring,
 } as const
 
 export type Tokens = typeof tokens

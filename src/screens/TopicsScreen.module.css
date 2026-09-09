@@ -1,51 +1,128 @@
-.header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
+/*
+ * Stroke widths and dash patterns are set as attributes in the TSX: they are
+ * measured in the punch's own 42-unit viewBox, not in page pixels, so they are
+ * geometry rather than a design token.
+ */
 
-.title {
-  font-size: var(--font-size-4xl);
-}
-
-.subtitle {
-  font-size: var(--font-size-md);
-  color: var(--color-text-muted);
-  text-wrap: balance;
+/**
+ * Topics is a sheet of punch-outs. An included topic is a token punched free
+ * and lying on the insert with its thickness showing; an excluded one is the
+ * hole it left, scored but never pushed out.
+ */
+.count {
+  margin-top: var(--space-3);
 }
 
 .list {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-}
-
-.heading {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-3);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: var(--letter-spacing-wide);
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-}
-
-.count {
-  font-family: var(--font-family-numeric);
-  font-variant-numeric: tabular-nums;
-}
-
-.options {
-  display: flex;
-  flex-direction: column;
+  justify-content: space-evenly;
   gap: var(--space-2);
+  margin-top: var(--space-3);
 }
 
-.footer {
+.topic {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: var(--size-topic-row);
+  padding: var(--space-0) var(--space-3) var(--space-0) var(--space-2);
+  border: 0;
+  border-radius: var(--radius-lg);
+  background-color: transparent;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+  color: var(--color-text-muted);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--duration-press) var(--ease-press),
+    box-shadow var(--duration-press) var(--ease-press);
+}
+
+/* Excluded: the die line only. */
+.topic[aria-pressed='false']::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: var(--border-width-thick) solid var(--color-panel-sunk);
+  border-radius: var(--radius-lg);
+  pointer-events: none;
+}
+
+/* Included: punched out, with board thickness under it. */
+.topic[aria-pressed='true'] {
+  background-color: var(--color-panel-raised);
+  border-bottom: var(--board-thickness) solid var(--color-panel-edge);
+  box-shadow: var(--shadow-piece);
+  color: var(--color-text);
+}
+
+.topic[aria-pressed='true']:not(:disabled):active {
+  transform: translateY(var(--press-travel));
+  border-bottom-width: var(--board-thickness-pressed);
+  box-shadow: var(--shadow-piece-pressed);
+}
+
+/* The last included topic cannot be turned off, so it does not lift. */
+.topic:disabled {
+  cursor: default;
+  box-shadow: var(--shadow-piece-pressed);
+}
+
+.name {
+  flex: 1;
+}
+
+.punch {
+  display: block;
+  flex: none;
+  width: var(--size-punch);
+  height: var(--size-punch);
+}
+
+.topic[aria-pressed='true'] .punch {
+  filter: var(--drop-shadow-punch);
+}
+
+.cutLine {
+  fill: var(--color-panel-sunk);
+  stroke: var(--color-cut-line);
+}
+
+.punched {
+  display: none;
+}
+
+.topic[aria-pressed='true'] .cutLine {
+  display: none;
+}
+
+.topic[aria-pressed='true'] .punched {
+  display: block;
+}
+
+.disc {
+  fill: var(--color-token);
+}
+
+.discRing {
+  fill: none;
+  stroke: var(--color-foil);
+}
+
+.discPip {
+  fill: var(--color-foil);
+}
+
+.actions {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  margin-block-start: auto;
+  margin-top: var(--space-4);
 }

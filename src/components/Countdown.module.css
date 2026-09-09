@@ -1,12 +1,80 @@
-.clock {
-  display: block;
-  font-family: var(--font-family-numeric);
-  font-size: var(--font-size-5xl);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-tight);
-  letter-spacing: var(--letter-spacing-tight);
-  /* Fixed-width digits so the layout never jitters between seconds. */
+/**
+ * The signature piece: the clock as a punched token with a brass ring printed
+ * just inside its rim. The ring is whole at 5:00; the gap opens at twelve
+ * o'clock and grows clockwise as the round burns down.
+ */
+.token {
+  position: relative;
+  width: var(--size-clock-token);
+  height: var(--size-clock-token);
+  margin-inline: auto;
+}
+
+/* The board the token was punched from is thicker than the face it shows. */
+.edge {
+  position: absolute;
+  inset: var(--space-2);
+  border-radius: var(--radius-circle);
+  background-color: var(--color-panel-edge);
+  transform: translateY(var(--token-lift));
+  box-shadow: var(--shadow-token);
+}
+
+.face {
+  position: absolute;
+  inset: var(--space-3);
+  border-radius: var(--radius-circle);
+  background-color: var(--color-panel);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* Start the arc at twelve o'clock instead of three. */
+  transform: rotate(-90deg);
+}
+
+.ring circle {
+  fill: none;
+  stroke-width: var(--ring-stroke);
+}
+
+.track {
+  stroke: var(--color-ring-track);
+}
+
+.arc {
+  stroke: var(--color-foil);
+  stroke-linecap: round;
+  /* One second of glide per second of round, so the ring never stutters. */
+  transition: stroke-dashoffset var(--duration-tick) var(--ease-linear);
+}
+
+.label {
+  margin-bottom: var(--space-3);
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-flat);
+  letter-spacing: var(--letter-spacing-clock);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.time {
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-display);
+  font-synthesis: none;
+  font-size: var(--font-size-8xl);
+  line-height: var(--line-height-flat);
+  letter-spacing: var(--letter-spacing-loose);
+  color: var(--color-foil);
+  /* Fixed-width digits so the token never jitters between seconds. */
   font-variant-numeric: tabular-nums;
   font-feature-settings: 'tnum';
-  color: var(--color-text);
 }

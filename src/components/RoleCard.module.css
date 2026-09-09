@@ -1,20 +1,33 @@
+/**
+ * The card, printed on both sides.
+ *
+ * The back is the box's own lozenge repeat, bordered in lid stock and ruled in
+ * foil, with a plate carrying the player's name. The civilian face is the
+ * insert stock; the spy face is the one place ember appears as a surface.
+ *
+ * Flipping is a 3D rotation of the inner element only, so it animates a single
+ * transform and neither face is ever composited over the other.
+ */
+.wrap {
+  display: flex;
+  justify-content: center;
+  perspective: var(--card-perspective);
+}
+
 .card {
-  display: block;
-  width: 100%;
-  max-width: var(--size-card-max-width);
-  margin-inline: auto;
+  width: min(var(--size-card-width), 100%);
   aspect-ratio: var(--card-aspect-ratio);
   padding: var(--space-0);
-  border: none;
+  border: 0;
   background: none;
-  perspective: var(--card-perspective);
+  border-radius: var(--radius-2xl);
   cursor: pointer;
   /* The card is the one surface people paw at — no text selection, no zoom. */
   user-select: none;
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
-  z-index: var(--z-card);
+  filter: var(--drop-shadow-card);
 }
 
 .card:disabled {
@@ -27,11 +40,7 @@
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
-  transition: transform var(--duration-flip) var(--ease-out);
-}
-
-.card:active:not(:disabled) .inner {
-  transform: scale(var(--scale-press-card));
+  transition: transform var(--duration-flip) var(--ease-flip);
 }
 
 .revealed .inner {
@@ -45,100 +54,113 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-3);
-  padding: var(--space-6);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-2xl);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  text-align: center;
   overflow: hidden;
 }
 
+/* The repeat is a standalone asset, so like `public/favicon.svg` it cannot
+   read the page's custom properties and carries its own copy of the lid and
+   foil values. Keep it free of XML comments: a `--` inside one makes the file
+   invalid XML and a strict parser drops the whole tile silently. */
 .back {
-  background-color: var(--color-card-back);
-  background-image: repeating-linear-gradient(
-    45deg,
-    var(--color-card-back-pattern) var(--space-0),
-    var(--color-card-back-pattern) var(--space-1),
-    transparent var(--space-1),
-    transparent var(--space-3)
-  );
-  color: var(--color-card-back-text);
+  background-color: var(--color-lid);
+  background-image: url('../assets/card-back.svg');
+  background-size: var(--card-back-tile) var(--card-back-tile);
+  background-position: center;
+  background-clip: padding-box;
+  border: var(--card-trim) solid var(--color-lid);
+  box-shadow: inset 0 0 0 var(--border-width-thick) var(--color-foil);
 }
 
-.backName {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
+/* The name plate, foil-ruled, the way a piece is labelled on the sheet. */
+.plate {
+  padding: var(--space-4) var(--space-5) var(--space-4);
+  border: var(--border-width-rule) solid var(--color-foil);
+  border-radius: var(--radius-md);
+  background-color: var(--color-panel);
+  text-align: center;
+}
+
+.name {
+  display: block;
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-display);
+  font-synthesis: none;
+  font-size: var(--font-size-6xl);
   line-height: var(--line-height-tight);
-  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-foil);
   overflow-wrap: anywhere;
 }
 
-.backHint {
-  font-size: var(--font-size-sm);
+/* Names are up to 24 characters. Display type this wide cannot reflow inside
+   the plate, so the plate steps the name down instead of breaking it apart. */
+.nameMedium {
+  font-size: var(--font-size-5xl);
+}
+
+.nameLong {
+  font-size: var(--font-size-2xl);
+}
+
+.tap {
+  display: block;
+  margin-top: var(--space-3);
+  font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-spacing-wide);
-  text-transform: uppercase;
-  opacity: var(--opacity-subtle);
+  line-height: var(--line-height-flat);
+  letter-spacing: var(--letter-spacing-loose);
+  color: var(--color-text-muted);
 }
 
 .front {
   transform: rotateY(180deg);
-  background-color: var(--color-card-face);
-  border: var(--border-width-hairline) solid var(--color-border);
-  color: var(--color-text);
+  padding: var(--space-6) var(--space-5);
+  background-color: var(--color-panel);
+}
+
+/* The rule printed inside the trim, on both faces. */
+.front::before {
+  content: '';
+  position: absolute;
+  inset: var(--card-trim);
+  border-radius: var(--radius-sm);
+  border: var(--border-width-rule) solid var(--rule, var(--color-foil));
+  pointer-events: none;
 }
 
 .spyFace {
-  background-color: var(--color-spy-surface);
-  border-color: var(--color-spy);
-  color: var(--color-spy-text);
+  background-color: var(--color-ember);
+  --rule: var(--color-ink);
 }
 
-.frontLabel {
-  font-size: var(--font-size-sm);
+.kind {
+  margin-bottom: var(--space-4);
+  font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
-  letter-spacing: var(--letter-spacing-wide);
+  line-height: var(--line-height-flat);
+  letter-spacing: var(--letter-spacing-label);
   text-transform: uppercase;
+  text-align: center;
   color: var(--color-text-muted);
 }
 
-.spyFace .frontLabel {
-  font-size: var(--font-size-2xl);
-  letter-spacing: var(--letter-spacing-tight);
-  text-transform: none;
-  color: var(--color-spy);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-tight);
+.spyFace .kind {
+  color: var(--color-ink);
 }
 
-.word {
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-tight);
-  letter-spacing: var(--letter-spacing-tight);
-  overflow-wrap: anywhere;
+.big {
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-display);
+  font-synthesis: none;
+  font-size: var(--font-size-7xl);
+  line-height: var(--line-height-snug);
+  text-align: center;
+  color: var(--color-text);
+  overflow-wrap: break-word;
 }
 
-.frontHint {
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-normal);
-  color: var(--color-text-muted);
-}
-
-.spyFace .frontHint {
-  color: var(--color-spy-text);
-  opacity: var(--opacity-soft);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .card:active:not(:disabled) .inner {
-    transform: none;
-  }
-
-  .revealed .inner {
-    /* Still flipped, just without the sweep. */
-    transform: rotateY(180deg);
-  }
+.spyFace .big {
+  color: var(--color-ink);
 }

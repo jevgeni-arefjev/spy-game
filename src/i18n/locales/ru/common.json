@@ -51,7 +51,6 @@
   "reveal": {
     "progress": "Игрок {{current}} из {{total}}",
     "passTo": "Передайте телефон игроку {{name}}",
-    "passHint": "",
     "confirm": "Я — {{name}}",
     "cardLabel": "Карта игрока {{name}} — нажмите, чтобы открыть",
     "cardName": "{{name}}",

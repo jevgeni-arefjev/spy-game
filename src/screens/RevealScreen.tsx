@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import spyPeek from '../assets/spy-peek.webp'
 import { Button } from '../components/Button'
 import { RoleCard } from '../components/RoleCard'
 import { Screen } from '../components/Screen'
@@ -24,7 +25,7 @@ export function RevealScreen() {
   const revealed = isCardStep && revealedFor === player.id
 
   return (
-    <Screen centered>
+    <Screen surface="board" wide>
       <p className={styles.progress}>
         {t('reveal.progress', {
           current: state.revealIndex + 1,
@@ -34,35 +35,40 @@ export function RevealScreen() {
 
       {isCardStep ? (
         <>
-          <RoleCard
-            playerName={player.name}
-            isSpy={state.spyIds.includes(player.id)}
-            wordId={state.wordId}
-            spyCount={state.spyCount}
-            revealed={revealed}
-            onReveal={() => setRevealedFor(player.id)}
-          />
-
-          <div className={styles.actions}>
+          <div className={styles.middle}>
+            <RoleCard
+              playerName={player.name}
+              isSpy={state.spyIds.includes(player.id)}
+              wordId={state.wordId}
+              spyCount={state.spyCount}
+              revealed={revealed}
+              onReveal={() => setRevealedFor(player.id)}
+            />
             <p className={styles.hint}>
               {revealed ? t('reveal.keepItSecret') : t('reveal.tapToReveal')}
             </p>
-            <Button
-              size="lg"
-              fullWidth
-              disabled={!revealed}
-              onClick={() => dispatch({ type: 'reveal/done', now: Date.now() })}
-            >
-              {t('reveal.gotIt')}
-            </Button>
           </div>
+
+          <Button
+            size="lg"
+            fullWidth
+            disabled={!revealed}
+            onClick={() => dispatch({ type: 'reveal/done', now: Date.now() })}
+          >
+            {t('reveal.gotIt')}
+          </Button>
         </>
       ) : (
-        <div className={styles.handoff}>
-          <h1 className={styles.passTo}>
-            {t('reveal.passTo', { name: player.name })}
-          </h1>
-          <p className={styles.hint}>{t('reveal.passHint')}</p>
+        <>
+          <div className={styles.middle}>
+            <div className={styles.panel}>
+              <img className={styles.peek} src={spyPeek} alt="" width="451" height="456" />
+              <h1 className={styles.passTo}>
+                {t('reveal.passTo', { name: player.name })}
+              </h1>
+            </div>
+          </div>
+
           <Button
             size="lg"
             fullWidth
@@ -70,7 +76,7 @@ export function RevealScreen() {
           >
             {t('reveal.confirm', { name: player.name })}
           </Button>
-        </div>
+        </>
       )}
     </Screen>
   )

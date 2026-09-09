@@ -1,29 +1,64 @@
+/**
+ * The pass-and-tap step. Two sub-screens share the progress line and the brass
+ * piece at the thumb; between them sits either the handoff panel or the card.
+ */
 .progress {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
-  letter-spacing: var(--letter-spacing-wide);
+  line-height: var(--line-height-flat);
+  letter-spacing: var(--letter-spacing-progress);
   text-transform: uppercase;
+  text-align: center;
   color: var(--color-text-muted);
 }
 
-.handoff,
-.actions {
+.middle {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: var(--space-4);
-  width: 100%;
+  justify-content: center;
+  gap: var(--space-5);
+}
+
+/* The printed insert that names who is next. */
+.panel {
+  position: relative;
+  padding: var(--space-8) var(--space-5) var(--space-10);
+  border-radius: var(--radius-lg);
+  border-bottom: var(--board-thickness) solid var(--color-panel-edge);
+  background-color: var(--color-panel);
+  box-shadow: var(--shadow-panel);
+  text-align: center;
+}
+
+/* The spy leans on the panel's top edge, left of the fold: a character resting
+   on the printed insert rather than art printed onto it. */
+.peek {
+  position: absolute;
+  left: var(--space-1);
+  bottom: calc(100% - var(--space-5));
+  width: var(--size-peek);
+  height: auto;
+  display: block;
+  filter: var(--drop-shadow-peek);
 }
 
 .passTo {
-  font-size: var(--font-size-3xl);
-  text-wrap: balance;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-6xl);
+  font-weight: var(--font-weight-display);
+  line-height: var(--line-height-snug);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-text);
   overflow-wrap: anywhere;
 }
 
+/* Reserved height: the hint swaps text the moment the card turns over. */
 .hint {
+  min-height: var(--space-5);
   font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--space-5);
+  text-align: center;
   color: var(--color-text-muted);
-  /* Held steady so swapping the hint text never nudges the button. */
-  min-height: var(--font-size-xl);
 }

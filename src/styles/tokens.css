@@ -1,5 +1,5 @@
 /**
- * The single source of visual truth.
+ * The single source of visual truth for the Night Lid world.
  *
  * Nothing outside this file may contain a raw hex colour, a magic pixel value
  * or a font stack. Components reference `var(--token-name)` only.
@@ -9,77 +9,98 @@
  *   2. `--color-*`   — semantic roles built from the ramps. This is what
  *                      components use, and the only layer a theme overrides.
  *   3. everything else — spacing, type, radii, shadows, motion, layout.
+ *
+ * There is one theme. Spy is a deluxe board game played after dark in the room
+ * the box lives in, and the box is one printed object: an aubergine lid, brass
+ * hot foil, a near-black punchboard. A light mode would be a different product,
+ * not a different setting, so this file carries no `prefers-color-scheme`
+ * block — see DESIGN.md.
  */
 
 :root {
+  color-scheme: dark;
+
   /* ── 1. Raw palette ─────────────────────────────────────────────── */
-  --palette-white: #ffffff;
-  --palette-black: #000000;
 
-  --palette-slate-50: #f7f8fb;
-  --palette-slate-100: #eef0f5;
-  --palette-slate-200: #dde1ea;
-  --palette-slate-300: #bcc3d2;
-  --palette-slate-400: #8d97ac;
-  --palette-slate-500: #667089;
-  --palette-slate-600: #4d566c;
-  --palette-slate-700: #3a4256;
-  --palette-slate-800: #232a3a;
-  --palette-slate-900: #161c28;
-  --palette-slate-950: #0c1018;
+  /* Box stock, lid through board edge. */
+  --palette-plum-600: #241238;
+  --palette-plum-700: #1a0d29;
+  --palette-plum-800: #150c22;
+  --palette-plum-900: #100719;
+  --palette-plum-950: #0a0512;
 
-  --palette-indigo-200: #c7d0fe;
-  --palette-indigo-300: #a5b4fc;
-  --palette-indigo-400: #818cf8;
-  --palette-indigo-500: #5b63e8;
-  --palette-indigo-600: #4a4fd4;
-  --palette-indigo-700: #3b3fae;
+  /* Punched token stock and the printed insert lifted off the board. */
+  --palette-violet-500: #6b46a8;
+  --palette-violet-600: #472c72;
+  --palette-violet-700: #3e2a5c;
+  --palette-violet-800: #33204d;
+  --palette-violet-900: #241636;
+  --palette-violet-950: #1d1230;
 
-  --palette-amber-200: #fde68a;
-  --palette-amber-300: #fcd34d;
-  --palette-amber-400: #fbbf24;
-  --palette-amber-500: #e39a0c;
+  /* Hot-stamped brass foil, its die edge, and its unlit tone. */
+  --palette-brass-400: #e8b34a;
+  --palette-brass-500: #b98d33;
+  --palette-brass-600: #a97a20;
 
-  --palette-red-300: #fca5a5;
-  --palette-red-400: #f87171;
-  --palette-red-500: #dc4446;
-  --palette-red-600: #bf3033;
+  /* Ember: the spy's card, the caret, error ink. Never a surface elsewhere. */
+  --palette-ember-300: #ff7d69;
+  --palette-ember-500: #e0503c;
+  --palette-ember-700: #a5321f;
 
-  /* ── 2. Semantic colours — light theme ──────────────────────────── */
-  --color-bg: var(--palette-slate-100);
-  --color-bg-gradient-top: var(--palette-slate-50);
-  --color-surface: var(--palette-white);
-  --color-surface-muted: var(--palette-slate-100);
-  --color-border: var(--palette-slate-200);
-  --color-border-strong: var(--palette-slate-300);
+  /* Paper: what is printed on the stock. */
+  --palette-paper-100: #f2eaf7;
+  --palette-paper-300: #c3aed8;
+  --palette-paper-400: #a08bb8;
 
-  --color-text: var(--palette-slate-900);
-  --color-text-muted: var(--palette-slate-500);
-  --color-text-inverse: var(--palette-white);
+  /* ── 2. Semantic colours ────────────────────────────────────────── */
 
-  --color-accent: var(--palette-indigo-500);
-  --color-accent-strong: var(--palette-indigo-600);
-  --color-accent-soft: var(--palette-indigo-200);
-  --color-accent-contrast: var(--palette-white);
+  /* Grounds. `--color-bg` is the one the browser chrome is told about. */
+  --color-bg: var(--palette-plum-600);
+  --color-lid: var(--palette-plum-600);
+  --color-lid-deep: var(--palette-plum-700);
+  --color-board: var(--palette-plum-800);
+  --color-board-edge: var(--palette-plum-950);
 
-  --color-danger: var(--palette-red-500);
-  --color-danger-strong: var(--palette-red-600);
-  --color-danger-contrast: var(--palette-white);
+  /* The printed insert and the pieces die-cut from it. */
+  --color-panel: var(--palette-violet-800);
+  --color-panel-raised: var(--palette-violet-700);
+  --color-panel-edge: var(--palette-violet-950);
+  --color-panel-sunk: var(--palette-violet-900);
+  --color-token: var(--palette-violet-500);
+  --color-token-edge: var(--palette-violet-600);
 
-  /* The spy's card gets its own role so a theme can restyle it alone. */
-  --color-spy: var(--palette-amber-500);
-  --color-spy-surface: var(--palette-slate-900);
-  --color-spy-text: var(--palette-amber-300);
+  /* Brass is the single accent mass and the only primary action colour. */
+  --color-foil: var(--palette-brass-400);
+  --color-foil-dim: var(--palette-brass-500);
+  --color-foil-edge: var(--palette-brass-600);
 
-  --color-card-back: var(--palette-slate-800);
-  --color-card-back-pattern: var(--palette-slate-700);
-  --color-card-back-text: var(--palette-slate-100);
-  --color-card-face: var(--palette-white);
+  --color-ember: var(--palette-ember-500);
+  --color-ember-edge: var(--palette-ember-700);
+  --color-ember-lit: var(--palette-ember-300);
 
-  --color-focus-ring: var(--palette-indigo-500);
-  --color-scrim: rgb(12 16 24 / 55%);
-  --color-shadow: rgb(22 28 40 / 12%);
-  --color-shadow-strong: rgb(22 28 40 / 22%);
+  /* Ink is what sits on brass; paper is what sits on plum. */
+  --color-ink: var(--palette-plum-700);
+  --color-text: var(--palette-paper-100);
+  --color-text-muted: var(--palette-paper-300);
+  --color-text-dim: var(--palette-paper-400);
+
+  --color-focus-ring: var(--palette-brass-400);
+  --color-selection: var(--palette-brass-400);
+  --color-caret: var(--palette-ember-300);
+
+  /* A cut line is a piece that was never punched out of the sheet. */
+  --color-cut-line: rgb(232 179 74 / 50%);
+  --color-cut-line-insert: rgb(195 174 216 / 45%);
+
+  /* Light falls off toward the edges of a photographed object. */
+  --color-vignette: rgb(6 2 12 / 38%);
+  --color-shadow: rgb(0 0 0 / 45%);
+  --color-shadow-strong: rgb(0 0 0 / 55%);
+  --color-shadow-deep: rgb(0 0 0 / 62%);
+
+  /* The two washes that put one printed sheet on two surfaces. */
+  --wash-lid: rgb(26 13 41 / 20%);
+  --wash-board: rgb(10 5 18 / 52%);
 
   /* ── 3a. Spacing scale ──────────────────────────────────────────── */
   --space-0: 0rem;
@@ -89,135 +110,151 @@
   --space-4: 1rem;
   --space-5: 1.25rem;
   --space-6: 1.5rem;
+  --space-7: 1.75rem;
   --space-8: 2rem;
   --space-10: 2.5rem;
   --space-12: 3rem;
   --space-16: 4rem;
 
   /* ── 3b. Radii and borders ──────────────────────────────────────── */
-  --radius-xs: 0.25rem;
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
-  --radius-pill: 62.5rem;
+  --radius-xs: 0.3125rem;
+  --radius-sm: 0.5625rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 0.875rem;
+  --radius-2xl: 1rem;
+  --radius-circle: 50%;
 
   --border-width-hairline: 1px;
   --border-width-thick: 2px;
+  --border-width-rule: 3px;
+  /* The thickness of die-cut board, and what it collapses to when pressed. */
+  --board-thickness: 4px;
+  --board-thickness-pressed: 2px;
   --focus-ring-width: 3px;
-  --focus-ring-offset: 2px;
+  --focus-ring-offset: 3px;
 
   /* ── 3c. Typography ─────────────────────────────────────────────── */
-  --font-family-base: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
-    Arial, sans-serif;
-  --font-family-display: var(--font-family-base);
-  --font-family-numeric: ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, Consolas,
-    'Liberation Mono', monospace;
+  --font-family-base: 'Rubik Variable', system-ui, -apple-system, 'Segoe UI',
+    Roboto, Helvetica, Arial, sans-serif;
+  /* Rammetto is Latin-only; Cyrillic falls through to Rubik at weight 800. */
+  --font-family-display: 'Rammetto One', 'Rubik Variable', system-ui,
+    'Trebuchet MS', Verdana, sans-serif;
 
-  --font-size-xs: 0.75rem;
+  --font-size-2xs: 0.75rem;
+  --font-size-xs: 0.8125rem;
   --font-size-sm: 0.875rem;
-  --font-size-md: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.375rem;
-  --font-size-2xl: 1.75rem;
-  --font-size-3xl: 2.25rem;
-  --font-size-4xl: 3rem;
-  --font-size-5xl: 3.75rem;
+  --font-size-md: 0.90625rem;
+  --font-size-lg: 0.9375rem;
+  --font-size-xl: 1rem;
+  --font-size-2xl: 1.0625rem;
+  --font-size-3xl: 1.1875rem;
+  --font-size-4xl: 1.25rem;
+  --font-size-5xl: 1.375rem;
+  --font-size-6xl: 1.875rem;
+  --font-size-7xl: 2.125rem;
+  --font-size-8xl: 2.875rem;
+  --font-size-9xl: 3.75rem;
+  --font-size-10xl: 7rem;
 
-  --line-height-tight: 1.1;
-  --line-height-snug: 1.3;
-  --line-height-normal: 1.5;
-  --line-height-relaxed: 1.65;
+  --line-height-flat: 1;
+  --line-height-tight: 1.05;
+  --line-height-snug: 1.2;
+  --line-height-normal: 1.45;
 
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
+  --font-weight-display: 800;
 
-  --letter-spacing-tight: -0.02em;
+  --letter-spacing-tight: -0.01em;
   --letter-spacing-normal: 0em;
-  --letter-spacing-wide: 0.08em;
+  --letter-spacing-piece: 0.005em;
+  --letter-spacing-loose: 0.02em;
+  --letter-spacing-progress: 0.13em;
+  --letter-spacing-label: 0.14em;
+  --letter-spacing-clock: 0.18em;
+  /* Tabular counts read as printed when the slash gets room around it. */
+  --word-spacing-count: 0.16em;
 
-  /* ── 3d. Opacity ────────────────────────────────────────────────── */
-  --opacity-disabled: 0.45;
-  --opacity-subtle: 0.75;
-  --opacity-soft: 0.8;
-
-  /* ── 3e. Elevation ──────────────────────────────────────────────── */
+  /* ── 3d. Elevation ──────────────────────────────────────────────── */
+  /* A piece lit from the upper left casts to the lower right; every shadow
+     therefore carries a real offset, never a centred halo. */
   --shadow-none: none;
-  --shadow-sm: 0 1px 2px var(--color-shadow);
-  --shadow-md: 0 4px 12px var(--color-shadow);
-  --shadow-lg: 0 12px 32px var(--color-shadow-strong);
+  --shadow-piece: 2px 6px 13px var(--color-shadow-strong);
+  --shadow-piece-pressed: 1px 3px 7px var(--color-shadow);
+  --shadow-insert: 2px 7px 18px var(--color-shadow-strong);
+  --shadow-panel: 3px 10px 22px var(--color-shadow-deep);
+  --shadow-token: 3px 12px 24px var(--color-shadow-deep);
+  --drop-shadow-mark: drop-shadow(3px 8px 12px var(--color-shadow-deep));
+  --drop-shadow-peek: drop-shadow(3px 7px 10px var(--color-shadow-deep));
+  --drop-shadow-card: drop-shadow(3px 10px 16px var(--color-shadow-deep));
+  --drop-shadow-punch: drop-shadow(2px 3px 3px var(--color-shadow-strong));
 
-  /* ── 3f. Layers ─────────────────────────────────────────────────── */
+  /* ── 3e. Layers ─────────────────────────────────────────────────── */
+  /* The printed stock sits inside the surface, under every piece on it. */
+  --z-stock: -1;
   --z-base: 0;
-  --z-raised: 1;
-  --z-card: 10;
-  --z-overlay: 100;
-  --z-toast: 1000;
+  --z-content: 1;
+  --z-vignette: 3;
 
-  /* ── 3g. Motion ─────────────────────────────────────────────────── */
-  --duration-instant: 80ms;
-  --duration-fast: 140ms;
-  --duration-base: 220ms;
-  --duration-slow: 340ms;
-  --duration-flip: 520ms;
+  /* ── 3f. Motion ─────────────────────────────────────────────────── */
+  --duration-press: 120ms;
+  --duration-flip: 550ms;
+  --duration-tick: 1s;
 
-  --scale-press: 0.97;
-  --scale-press-card: 0.98;
+  --press-travel: 2px;
+  /* How far a punched token's board edge shows below its face. */
+  --token-lift: 6px;
+  /* How far the second foil impression misses register by. */
+  --foil-offset: 5px;
 
-  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-press: ease-out;
+  --ease-flip: cubic-bezier(0.2, 0.85, 0.25, 1);
+  --ease-linear: linear;
 
-  /* ── 3h. Layout ─────────────────────────────────────────────────── */
-  --layout-max-width: 30rem;
-  --layout-gutter: var(--space-5);
-  --size-touch-target: 2.75rem; /* 44px at a 16px root — minimum tap size */
-  --size-card-max-width: 19rem;
-  --card-aspect-ratio: 3 / 4;
-  --card-perspective: 75rem;
-}
+  /* ── 3g. Layout ─────────────────────────────────────────────────── */
+  /* The world was drawn for a 360px phone; this caps it on anything wider
+     without ever stretching the printed sheet. */
+  --layout-max-width: 24.5rem;
+  --layout-gutter: 1rem;
+  --layout-gutter-wide: 1.5rem;
+  --layout-pad-top: 1.5rem;
+  --layout-pad-bottom: 1.75rem;
 
-/**
- * Dark theme. Only the semantic layer is redefined — a future theme (or a
- * user-selectable one driven by a `[data-theme]` attribute) needs exactly
- * one block like this and nothing else.
- */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: var(--palette-slate-950);
-    --color-bg-gradient-top: var(--palette-slate-900);
-    --color-surface: var(--palette-slate-900);
-    --color-surface-muted: var(--palette-slate-800);
-    --color-border: var(--palette-slate-800);
-    --color-border-strong: var(--palette-slate-700);
+  --size-touch-target: 2.75rem;
+  --size-piece-lg: 3.75rem;
+  --size-piece-md: 2.875rem;
+  --size-field: 3rem;
+  --size-punch: 2.625rem;
+  --size-topic-row: 3.375rem;
+  --size-add-button: 4.875rem;
+  --size-stepper-value: 1.625rem;
+  --size-rack-min: 8.25rem;
+  /* Reserved height for text that swaps in place, so nothing under it moves. */
+  --size-line-reserved: 1.125rem;
+  /* The brass rule stamped under a display title. */
+  --size-foil-rule: 4rem;
+  /* Measures for the two balanced one-line paragraphs in the world. */
+  --size-measure-hint: 17.5rem;
+  --size-measure-sub: 18.25rem;
 
-    --color-text: var(--palette-slate-50);
-    --color-text-muted: var(--palette-slate-400);
-    --color-text-inverse: var(--palette-slate-950);
+  --size-home-mark: 13rem;
+  --size-ended-mark: 10.375rem;
+  --size-peek: 9.375rem;
+  --size-clock-token: 15.25rem;
+  --size-card-width: 18.5rem;
+  --card-aspect-ratio: 296 / 408;
+  --card-back-tile: 40px;
+  /* The unprinted trim between a card's edge and its printed rule. */
+  --card-trim: 9px;
+  --card-perspective: 68.75rem;
 
-    --color-accent: var(--palette-indigo-400);
-    --color-accent-strong: var(--palette-indigo-300);
-    --color-accent-soft: var(--palette-indigo-700);
-    --color-accent-contrast: var(--palette-slate-950);
-
-    --color-danger: var(--palette-red-400);
-    --color-danger-strong: var(--palette-red-300);
-    --color-danger-contrast: var(--palette-slate-950);
-
-    --color-spy: var(--palette-amber-400);
-    --color-spy-surface: var(--palette-slate-800);
-    --color-spy-text: var(--palette-amber-200);
-
-    --color-card-back: var(--palette-slate-800);
-    --color-card-back-pattern: var(--palette-slate-700);
-    --color-card-back-text: var(--palette-slate-100);
-    --color-card-face: var(--palette-slate-800);
-
-    --color-focus-ring: var(--palette-indigo-400);
-    --color-scrim: rgb(0 0 0 / 65%);
-    --color-shadow: rgb(0 0 0 / 40%);
-    --color-shadow-strong: rgb(0 0 0 / 55%);
-  }
+  /* The countdown ring. Its stroke is a CSS property; the geometry it is
+     stroked around lives in `tokens.ts` as `ring`, because the arc's
+     circumference has to be computed in JS and SVG's `r` is not reliably a
+     CSS property across browsers. */
+  --ring-stroke: 7;
+  --color-ring-track: rgb(232 179 74 / 15%);
 }

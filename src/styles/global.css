@@ -1,3 +1,4 @@
+@import './fonts.css';
 @import './tokens.css';
 
 *,
@@ -7,8 +8,8 @@
 }
 
 html {
-  /* Fill the visual viewport without the iOS 100vh overshoot. */
   height: 100%;
+  background-color: var(--color-board-edge);
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
@@ -16,16 +17,11 @@ html {
 body {
   margin: 0;
   min-height: 100dvh;
-  background-color: var(--color-bg);
-  background-image: linear-gradient(
-    to bottom,
-    var(--color-bg-gradient-top),
-    var(--color-bg)
-  );
-  background-attachment: fixed;
+  /* The board edge is what shows past the printed sheet on a wide window. */
+  background-color: var(--color-board-edge);
   color: var(--color-text);
   font-family: var(--font-family-base);
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-xl);
   font-weight: var(--font-weight-regular);
   line-height: var(--line-height-normal);
   -webkit-font-smoothing: antialiased;
@@ -48,13 +44,22 @@ p {
   margin: var(--space-0);
 }
 
+/**
+ * Display type. Rammetto One ships one weight, so asking for 800 selects it
+ * unchanged while Cyrillic — which Rammetto does not cover — lands on Rubik's
+ * variable axis at 800. Synthesis is off so the browser never fakes a bold
+ * out of the display face.
+ */
 h1,
 h2,
 h3 {
   font-family: var(--font-family-display);
+  font-weight: var(--font-weight-display);
+  font-synthesis-weight: none;
+  font-synthesis: none;
   line-height: var(--line-height-tight);
-  letter-spacing: var(--letter-spacing-tight);
-  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-normal);
+  color: var(--color-text);
 }
 
 ul {
@@ -73,6 +78,12 @@ button {
   touch-action: manipulation;
 }
 
+/* Surfaces the browser draws for us still belong to the box. */
+::selection {
+  background-color: var(--color-selection);
+  color: var(--color-ink);
+}
+
 :focus-visible {
   outline: var(--focus-ring-width) solid var(--color-focus-ring);
   outline-offset: var(--focus-ring-offset);
@@ -82,14 +93,14 @@ button {
   outline: none;
 }
 
-/* Anyone who asks for less motion gets none of the flourishes. */
+/* Anyone who asks for less motion gets the state change and none of the sweep. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
-    animation-duration: var(--duration-instant) !important;
+    animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: var(--duration-instant) !important;
+    transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
 }

@@ -1,69 +1,99 @@
-.button {
+/**
+ * A piece, die-cut from board.
+ *
+ * It has real thickness — a 4px bottom edge in the stock's own darker tone —
+ * and pressing it sinks the piece into the sheet rather than scaling it. A
+ * disabled piece is one that was never punched out: no face, no thickness, no
+ * shadow, just the dashed die line it would have been cut along.
+ */
+.piece {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
   min-height: var(--size-touch-target);
-  min-width: var(--size-touch-target);
   padding-inline: var(--space-5);
-  border: var(--border-width-hairline) solid transparent;
-  border-radius: var(--radius-md);
+  border: 0;
+  border-bottom: var(--board-thickness) solid var(--edge, var(--color-panel-edge));
+  border-radius: var(--radius-xl);
+  background-color: var(--face, var(--color-panel-raised));
+  color: var(--label, var(--color-text));
   font-family: var(--font-family-base);
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-snug);
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-flat);
+  letter-spacing: var(--letter-spacing-piece);
   text-align: center;
+  box-shadow: var(--shadow-piece);
   cursor: pointer;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
   transition:
-    transform var(--duration-fast) var(--ease-standard),
-    opacity var(--duration-fast) var(--ease-standard);
+    transform var(--duration-press) var(--ease-press),
+    border-bottom-width var(--duration-press) var(--ease-press),
+    box-shadow var(--duration-press) var(--ease-press);
 }
 
-.button:active:not(:disabled) {
-  transform: scale(var(--scale-press));
+.piece:active:not(:disabled) {
+  transform: translateY(var(--press-travel));
+  border-bottom-width: var(--board-thickness-pressed);
+  box-shadow: var(--shadow-piece-pressed);
 }
 
-.button:disabled {
-  cursor: not-allowed;
-  opacity: var(--opacity-disabled);
-}
-
-.md {
-  padding-block: var(--space-2);
-}
-
-.lg {
-  min-height: calc(var(--size-touch-target) + var(--space-3));
-  padding-block: var(--space-3);
-  font-size: var(--font-size-lg);
-  border-radius: var(--radius-lg);
+.piece:disabled {
+  background-color: transparent;
+  border: var(--border-width-thick) dashed var(--cut, var(--color-cut-line));
+  color: var(--muted, var(--color-text-muted));
+  box-shadow: var(--shadow-none);
+  transform: none;
+  cursor: default;
 }
 
 .fullWidth {
   width: 100%;
 }
 
+.lg {
+  min-height: var(--size-piece-lg);
+}
+
+.md {
+  min-height: var(--size-piece-md);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Brass foil is the only primary action colour in the world. */
 .primary {
-  background-color: var(--color-accent);
-  color: var(--color-accent-contrast);
-  box-shadow: var(--shadow-sm);
+  --face: var(--color-foil);
+  --edge: var(--color-foil-edge);
+  --label: var(--color-ink);
 }
 
-.secondary {
-  background-color: var(--color-surface);
-  border-color: var(--color-border-strong);
-  color: var(--color-text);
-  box-shadow: var(--shadow-sm);
+.panel {
+  --face: var(--color-panel-raised);
+  --edge: var(--color-panel-edge);
+  --label: var(--color-text);
 }
 
+/* Board face, foil lettering: a piece that acts without claiming the screen. */
+.quiet {
+  --face: var(--color-panel-raised);
+  --edge: var(--color-panel-edge);
+  --label: var(--color-foil);
+}
+
+/* Not punched at all — a line scored into the sheet. */
 .ghost {
   background-color: transparent;
-  color: var(--color-text-muted);
+  border: var(--border-width-thick) solid var(--color-foil-dim);
+  color: var(--color-text);
+  box-shadow: var(--shadow-none);
 }
 
-.danger {
-  background-color: transparent;
-  border-color: var(--color-danger);
-  color: var(--color-danger);
+.ghost:active:not(:disabled) {
+  transform: translateY(var(--press-travel));
+  border-bottom-width: var(--board-thickness-pressed);
+  box-shadow: var(--shadow-none);
 }

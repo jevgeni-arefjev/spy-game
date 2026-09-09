@@ -32,41 +32,54 @@ export function RoleCard({
   const { t } = useTranslation()
   const hintId = hintIdForWord(wordId)
 
-  return (
-    <button
-      type="button"
-      className={cx(styles.card, revealed && styles.revealed)}
-      onClick={onReveal}
-      disabled={revealed}
-      aria-label={t('reveal.cardLabel', { name: playerName })}
-    >
-      <span className={styles.inner}>
-        <span className={cx(styles.face, styles.back)}>
-          <span className={styles.backName}>{playerName}</span>
-          <span className={styles.backHint}>{t('reveal.tapToReveal')}</span>
-        </span>
+  // What the name plate can hold at each display size, measured in Rammetto's
+  // own width. Names longer than the first step step down rather than break.
+  const nameSize =
+    playerName.length > 17
+      ? styles.nameLong
+      : playerName.length > 12
+        ? styles.nameMedium
+        : undefined
 
-        <span className={cx(styles.face, styles.front, isSpy && styles.spyFace)}>
-          {isSpy ? (
-            <>
-              <span className={styles.frontLabel}>{t('role.spy.title')}</span>
-              {hintId !== null && (
-                <span className={styles.frontHint}>
-                  {t('role.spy.hint', {
-                    count: spyCount,
-                    adjective: t(hintId, { ns: 'hints' }),
-                  })}
-                </span>
-              )}
-            </>
-          ) : (
-            <>
-              <span className={styles.frontLabel}>{t('role.civilian.title')}</span>
-              <span className={styles.word}>{t(wordId, { ns: 'words' })}</span>
-            </>
-          )}
+  return (
+    <div className={styles.wrap}>
+      <button
+        type="button"
+        className={cx(styles.card, revealed && styles.revealed)}
+        onClick={onReveal}
+        disabled={revealed}
+        aria-label={t('reveal.cardLabel', { name: playerName })}
+      >
+        <span className={styles.inner}>
+          <span className={cx(styles.face, styles.back)}>
+            <span className={styles.plate}>
+              <span className={cx(styles.name, nameSize)}>{playerName}</span>
+              <span className={styles.tap}>{t('reveal.tapToReveal')}</span>
+            </span>
+          </span>
+
+          <span className={cx(styles.face, styles.front, isSpy && styles.spyFace)}>
+            {isSpy ? (
+              <>
+                <span className={styles.kind}>{t('role.spy.title')}</span>
+                {hintId !== null && (
+                  <span className={styles.big}>
+                    {t('role.spy.hint', {
+                      count: spyCount,
+                      adjective: t(hintId, { ns: 'hints' }),
+                    })}
+                  </span>
+                )}
+              </>
+            ) : (
+              <>
+                <span className={styles.kind}>{t('role.civilian.title')}</span>
+                <span className={styles.big}>{t(wordId, { ns: 'words' })}</span>
+              </>
+            )}
+          </span>
         </span>
-      </span>
-    </button>
+      </button>
+    </div>
   )
 }

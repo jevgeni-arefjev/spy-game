@@ -1,24 +1,45 @@
-.headline {
+/**
+ * The lid. Box art top-right, the title hot-stamped under it, and the single
+ * brass piece at the thumb.
+ */
+.middle {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  margin-block: auto;
+  justify-content: center;
+  align-items: flex-start;
+  padding-left: var(--space-1);
+}
+
+/* The spy, die-cut as a token: a disc of lid stock, the portrait clipped to
+   the punch, and the brass ring the die left behind. */
+.token {
+  display: block;
+  align-self: flex-end;
+  width: var(--size-home-mark);
+  height: var(--size-home-mark);
+  margin-block-end: var(--space-7);
+  filter: var(--drop-shadow-mark);
+}
+
+.tokenDisc {
+  fill: var(--color-lid-deep);
+}
+
+.tokenRing {
+  fill: none;
+  stroke: var(--color-foil);
+  stroke-width: var(--border-width-rule);
 }
 
 .title {
-  font-size: var(--font-size-4xl);
+  font-size: var(--font-size-10xl);
+  letter-spacing: var(--letter-spacing-tight);
 }
 
 .tagline {
-  font-size: var(--font-size-md);
-  color: var(--color-text-muted);
-  text-wrap: balance;
-}
-
-.actions {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  width: 100%;
-  margin-block-start: auto;
+  margin-top: var(--space-6);
+  font-size: var(--font-size-4xl);
+  line-height: var(--line-height-snug);
+  color: var(--color-text);
 }

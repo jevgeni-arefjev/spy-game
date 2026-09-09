@@ -1,11 +1,19 @@
+<!--
+  The die-cut token, at 32px: lid stock, a brass punch ring, and the lozenge
+  the card backs are printed with. A standalone SVG cannot read the page's
+  custom properties, so this file and `src/assets/card-back.svg` are the only
+  two places outside `tokens.css` that carry a hex value.
+-->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="7" fill="#232a3a" />
+  <rect width="32" height="32" rx="7" fill="#241238" />
+  <circle cx="16" cy="16" r="12" fill="#1a0d29" />
+  <circle cx="16" cy="16" r="12" fill="none" stroke="#e8b34a" stroke-width="2" />
   <path
-    d="M4 15.5c3.4-4.6 7.4-6.9 12-6.9s8.6 2.3 12 6.9c-3.4 4.6-7.4 6.9-12 6.9S7.4 20.1 4 15.5Z"
+    d="M16 8.5 L21.5 16 L16 23.5 L10.5 16 Z"
     fill="none"
-    stroke="#e39a0c"
-    stroke-width="2.2"
+    stroke="#e8b34a"
+    stroke-width="2"
     stroke-linejoin="round"
   />
-  <circle cx="16" cy="15.5" r="3.4" fill="#e39a0c" />
+  <circle cx="16" cy="16" r="2.4" fill="#e8b34a" />
 </svg>

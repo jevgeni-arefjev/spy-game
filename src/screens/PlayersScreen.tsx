@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../components/Button'
+import { CountRow } from '../components/CountRow'
+import { Insert } from '../components/Insert'
 import { Screen } from '../components/Screen'
 import {
   MAX_PLAYERS,
@@ -15,6 +17,49 @@ import { canStart } from '../game/reducer'
 import { createRoundSetup } from '../game/round'
 import { useGame } from '../game/useGame'
 import styles from './PlayersScreen.module.css'
+
+/** The three drawn marks this screen needs, all one stroke weight. */
+function MinusIcon() {
+  return (
+    <svg viewBox="0 0 18 18" aria-hidden="true">
+      <path
+        d="M3 9h12"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
+function PlusIcon() {
+  return (
+    <svg viewBox="0 0 18 18" aria-hidden="true">
+      <path
+        d="M3 9h12M9 3v12"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
+function RemoveIcon() {
+  return (
+    <svg viewBox="0 0 14 14" aria-hidden="true">
+      <path
+        d="M2 2l10 10M12 2L2 12"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
 
 export function PlayersScreen() {
   const { t } = useTranslation()
@@ -56,19 +101,15 @@ export function PlayersScreen() {
   }
 
   return (
-    <Screen>
-      <header className={styles.header}>
-        <h1 className={styles.title}>{t('players.title')}</h1>
-        <p className={styles.subtitle}>
-          {t('players.subtitle', { count: state.spyCount })}
-        </p>
-      </header>
-
-      <form className={styles.form} onSubmit={handleSubmit} noValidate>
-        <label className={styles.srOnly} htmlFor="player-name">
-          {t('players.nameLabel')}
-        </label>
-        <div className={styles.inputRow}>
+    <Screen surface="board">
+      <Insert
+        title={t('players.title')}
+        subtitle={t('players.subtitle', { count: state.spyCount })}
+      >
+        <form className={styles.addRow} onSubmit={handleSubmit} noValidate>
+          <label className={styles.srOnly} htmlFor="player-name">
+            {t('players.nameLabel')}
+          </label>
           <input
             id="player-name"
             className={styles.input}
@@ -85,85 +126,92 @@ export function PlayersScreen() {
             spellCheck={false}
             enterKeyHint="done"
           />
-          <Button type="submit" disabled={players.length >= MAX_PLAYERS}>
+          <Button
+            type="submit"
+            variant="quiet"
+            className={styles.addButton}
+            disabled={players.length >= MAX_PLAYERS}
+          >
             {t('players.addPlayer')}
           </Button>
-        </div>
+        </form>
+
         <p className={styles.error} role="alert">
           {error === null ? '' : t(`players.errors.${error}`, { count: MAX_PLAYERS })}
         </p>
-      </form>
 
-      <div className={styles.spies}>
-        <span id="spy-count-label" className={styles.spiesLabel}>
-          {t('players.spyCountLabel')}
-        </span>
-        <div
-          className={styles.stepper}
-          role="group"
-          aria-labelledby="spy-count-label"
-        >
-          <Button
-            variant="secondary"
-            aria-label={t('players.fewerSpies')}
-            disabled={state.spyCount <= 1}
-            onClick={() =>
-              dispatch({ type: 'spyCount/set', value: state.spyCount - 1 })
-            }
-          >
-            <span aria-hidden="true">&minus;</span>
-          </Button>
-          <span className={styles.stepperValue} aria-live="polite">
-            {state.spyCount}
+        <div className={styles.spies} role="group" aria-labelledby="spy-count-label">
+          <span id="spy-count-label" className={styles.spiesLabel}>
+            {t('players.spyCountLabel')}
           </span>
-          <Button
-            variant="secondary"
-            aria-label={t('players.moreSpies')}
-            disabled={state.spyCount >= players.length}
-            onClick={() =>
-              dispatch({ type: 'spyCount/set', value: state.spyCount + 1 })
-            }
-          >
-            <span aria-hidden="true">+</span>
-          </Button>
+          <span className={styles.stepper}>
+            <button
+              type="button"
+              className={styles.step}
+              aria-label={t('players.fewerSpies')}
+              disabled={state.spyCount <= 1}
+              onClick={() =>
+                dispatch({ type: 'spyCount/set', value: state.spyCount - 1 })
+              }
+            >
+              <MinusIcon />
+            </button>
+            <span className={styles.stepValue} aria-live="polite">
+              {state.spyCount}
+            </span>
+            <button
+              type="button"
+              className={styles.step}
+              aria-label={t('players.moreSpies')}
+              disabled={state.spyCount >= players.length}
+              onClick={() =>
+                dispatch({ type: 'spyCount/set', value: state.spyCount + 1 })
+              }
+            >
+              <PlusIcon />
+            </button>
+          </span>
         </div>
-      </div>
 
-      <section className={styles.roster}>
-        <h2 className={styles.rosterHeading}>
-          <span>{t('players.playersHeading')}</span>
-          <span className={styles.count}>
-            {t('players.playerCount', { current: players.length, max: MAX_PLAYERS })}
-          </span>
-        </h2>
+        <CountRow
+          className={styles.count}
+          label={t('players.playersHeading')}
+          value={t('players.playerCount', {
+            current: players.length,
+            max: MAX_PLAYERS,
+          })}
+        />
 
-        {players.length === 0 ? (
-          <p className={styles.empty}>{t('players.emptyRoster')}</p>
-        ) : (
-          <ul className={styles.list}>
-            {players.map((player) => (
-              <li key={player.id} className={styles.item}>
-                <span className={styles.playerName}>{player.name}</span>
-                <button
-                  type="button"
-                  className={styles.remove}
-                  onClick={() => dispatch({ type: 'player/remove', id: player.id })}
-                  aria-label={t('players.removePlayer', { name: player.name })}
-                >
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+        <div className={styles.rack}>
+          {players.length === 0 ? (
+            <p className={styles.empty}>{t('players.emptyRoster')}</p>
+          ) : (
+            <ul className={styles.tiles}>
+              {players.map((player) => (
+                <li key={player.id} className={styles.tile}>
+                  <span className={styles.playerName}>{player.name}</span>
+                  <button
+                    type="button"
+                    className={styles.remove}
+                    onClick={() => dispatch({ type: 'player/remove', id: player.id })}
+                    aria-label={t('players.removePlayer', { name: player.name })}
+                  >
+                    <RemoveIcon />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
-      <footer className={styles.footer}>
         <p className={styles.hint}>
           {ready
             ? t('players.spyHint', { count: state.spyCount })
             : t('players.needMore', { count: missing })}
         </p>
+      </Insert>
+
+      <div className={styles.actions}>
         <Button size="lg" fullWidth disabled={!ready} onClick={handleStart}>
           {t('players.start')}
         </Button>
@@ -174,7 +222,7 @@ export function PlayersScreen() {
         >
           {t('back')}
         </Button>
-      </footer>
+      </div>
     </Screen>
   )
 }

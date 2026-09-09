@@ -43,7 +43,6 @@
   "reveal": {
     "progress": "Player {{current}} of {{total}}",
     "passTo": "Pass the phone to {{name}}",
-    "passHint": "",
     "confirm": "I'm {{name}}",
     "cardLabel": "{{name}}'s card — tap to reveal",
     "cardName": "{{name}}",

@@ -7,6 +7,12 @@ it out while everyone else tries to spot them. Five minutes on the clock, then
 
 Built on React + TypeScript + Vite. No router, no state library, no UI kit.
 
+The visual world is **Night Lid / Wallpaper**: a deluxe board-game box, printed
+on a photographed aubergine wallpaper sheet and stamped in brass foil, played
+after dark. It is documented in [DESIGN.md](DESIGN.md), which is the reference
+for anything visual. It began as the `v6-5/` mockup; `v1/` through `v6-5/` are
+kept as the record of that exploration and are no longer maintained.
+
 ## Running it
 
 ```shell
@@ -39,7 +45,7 @@ decides what renders.
 
 The topic selection and the roster are remembered and stay editable between
 games; neither button wipes them. The whole session is written to
-`localStorage` under `spy:session:v3`, so reloading mid-reveal or mid-timer
+`localStorage` under `spy:session:v4`, so reloading mid-reveal or mid-timer
 puts the group back exactly where they were. The timer stores an absolute
 deadline rather than counting ticks, so backgrounding the browser or locking
 the phone doesn't lose time.
@@ -81,6 +87,10 @@ word for a group playing again.
 
 ## Editing the theme
 
+[DESIGN.md](DESIGN.md) is the design system: the palette with its roles, the
+type hierarchy, the elevation grammar and the named rules a new screen has to
+hold to. Read it before changing anything visual.
+
 Everything visual lives in [`src/styles/tokens.css`](src/styles/tokens.css), in
 two layers:
 
@@ -88,19 +98,31 @@ two layers:
 - `--color-*`, plus the spacing, type, radius, shadow, motion and layout scales
   — the semantic layer components actually use.
 
-To restyle the app, override the semantic layer. Dark mode is exactly that: one
-`@media (prefers-color-scheme: dark)` block at the bottom of the file
-redefining `--color-*` and nothing else. A user-selectable theme would be the
-same block keyed on `[data-theme="…"]`.
+There is one theme. The world is a box played in a dim room, so the file
+declares `color-scheme: dark` once and carries no `prefers-color-scheme` block;
+a light mode would be a different product, not a different setting. A
+user-selectable variant would be one block keyed on `[data-theme="…"]`
+redefining the semantic layer and nothing else.
 
 [`src/styles/tokens.ts`](src/styles/tokens.ts) mirrors the same names as typed
 `var()` references for the rare places JavaScript needs a token; keep the two
 files in step.
 
 Component styles are CSS Modules sitting next to their component, and they
-contain no raw hex colours, pixel values or font stacks. The one exception is
-`public/favicon.svg`, which is a standalone asset and can't read the page's
-custom properties.
+contain no raw hex colours, pixel values or font stacks. The exceptions are
+`public/favicon.svg` and `src/assets/card-back.svg`, which are standalone assets
+and can't read the page's custom properties.
+
+The two faces — Rammetto One for display, Rubik for everything read — are
+self-hosted from `@fontsource` packages and declared in
+[`src/styles/fonts.css`](src/styles/fonts.css). Nothing is fetched from a font
+CDN: the app has to work offline after first load and from `file://` inside the
+planned native shell. Rammetto is Latin-only, so Cyrillic display strings fall
+through to Rubik at weight 800 with font synthesis off.
+
+The raster assets — the wallpaper sheet and the three spy poses — are WebP files
+in `src/assets/`, imported so Vite hashes and emits them. Their sources are the
+full-size PNGs in `assets/` at the repo root.
 
 ## Tuning the rules
 
@@ -118,8 +140,14 @@ again".
 
 ## Bundle size
 
-Gzipped production build: **72.1 kB** total (68.1 kB JS, 3.6 kB CSS, 0.4 kB
-HTML). Splitting it out to measure: ~43.1 kB React, ~19.4 kB
-i18next + react-i18next, ~6.7 kB of this app's own code.
+Gzipped production build: **81.3 kB** of text (74.6 kB JS, 6.2 kB CSS, 0.5 kB
+HTML). Splitting the JS out to measure: ~43.1 kB React, ~19.4 kB
+i18next + react-i18next, the rest this app's own code.
+
+On top of that sit the assets the design world needs, which are cached
+separately and are not re-downloaded between rounds: ~117 kB of self-hosted
+WebFonts (Latin and Cyrillic subsets, loaded only as a locale needs them) and
+~220 kB of WebP artwork, of which the 135 kB wallpaper sheet is the single
+largest file in the build.
 
 `npm run build` prints these figures on every build.

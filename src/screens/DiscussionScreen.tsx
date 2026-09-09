@@ -21,25 +21,21 @@ export function DiscussionScreen() {
   }
 
   return (
-    <Screen centered>
+    <Screen surface="lid" wide>
       <h1 className={styles.title}>{t('discussion.title')}</h1>
 
-      <div className={styles.clockBlock}>
-        <p className={styles.label}>
-          {timer.running ? t('discussion.timeLeft') : t('discussion.paused')}
-        </p>
+      <div className={styles.middle}>
         <Countdown timer={timer} onExpire={handleExpire} />
+        <p className={styles.hint}>{t('discussion.hint', { count: state.spyCount })}</p>
       </div>
 
-      <p className={styles.hint}>{t('discussion.hint', { count: state.spyCount })}</p>
-
       <div className={styles.actions}>
-        <Button size="lg" fullWidth variant="secondary" onClick={toggle}>
+        <Button size="lg" fullWidth onClick={toggle}>
           {timer.running ? t('discussion.pause') : t('discussion.resume')}
         </Button>
         <Button
           fullWidth
-          variant="danger"
+          variant="panel"
           onClick={() => dispatch({ type: 'round/end' })}
         >
           {t('discussion.endRound')}

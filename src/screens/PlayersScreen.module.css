@@ -1,137 +1,88 @@
-.header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
+/**
+ * Players. The roster is a rack of name tiles sunk into the insert; the spy
+ * count is a pair of round punches either side of a foil numeral.
+ */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
-.title {
-  font-size: var(--font-size-4xl);
-}
-
-.subtitle {
-  font-size: var(--font-size-md);
-  color: var(--color-text-muted);
-  text-wrap: balance;
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.inputRow {
+.addRow {
   display: flex;
   gap: var(--space-2);
+  margin-top: var(--space-3);
 }
 
 .input {
   flex: 1;
-  min-width: var(--space-0);
-  min-height: var(--size-touch-target);
-  padding-inline: var(--space-4);
-  border: var(--border-width-hairline) solid var(--color-border-strong);
+  min-width: 0;
+  height: var(--size-field);
+  padding-inline: var(--space-3);
+  border: var(--border-width-thick) solid var(--color-cut-line-insert);
   border-radius: var(--radius-md);
-  background-color: var(--color-surface);
-  font-size: var(--font-size-md);
+  background-color: var(--color-panel-edge);
+  color: var(--color-text);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-flat);
+  /* The caret is a browser surface; it belongs to the world too. */
+  caret-color: var(--color-caret);
 }
 
 .input::placeholder {
-  color: var(--color-text-muted);
+  color: var(--color-text-dim);
+  font-weight: var(--font-weight-regular);
 }
 
-/* Reserved line: showing an error must not shove the roster down. */
+.addButton {
+  flex: none;
+  width: var(--size-add-button);
+  min-height: var(--size-field);
+  padding-inline: var(--space-0);
+  font-size: var(--font-size-2xl);
+}
+
+/* Reserved height: the error appears and disappears without moving the rack. */
 .error {
-  min-height: var(--font-size-2xl);
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-snug);
-  color: var(--color-danger);
+  min-height: var(--size-line-reserved);
+  margin-top: var(--space-1);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--size-line-reserved);
+  color: var(--color-ember-lit);
 }
 
 .spies {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
 }
 
 .spiesLabel {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
-  letter-spacing: var(--letter-spacing-wide);
-  text-transform: uppercase;
-  color: var(--color-text-muted);
+  line-height: var(--line-height-flat);
+  color: var(--color-text);
 }
 
-/* Full-width row: the +/- buttons keep their touch-target width, the value
-   fills the middle, so the whole control lines up with the name input row. */
 .stepper {
   display: flex;
   align-items: center;
   gap: var(--space-2);
 }
 
-.stepperValue {
-  flex: 1;
-  text-align: center;
-  font-family: var(--font-family-numeric);
-  font-variant-numeric: tabular-nums;
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-}
-
-.roster {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.rosterHeading {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-3);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: var(--letter-spacing-wide);
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-}
-
-.count {
-  font-family: var(--font-family-numeric);
-  font-variant-numeric: tabular-nums;
-}
-
-.empty {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-}
-
-.list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  padding-inline: var(--space-4) var(--space-2);
-  min-height: var(--size-touch-target);
-  border: var(--border-width-hairline) solid var(--color-border);
-  border-radius: var(--radius-md);
-  background-color: var(--color-surface);
-  box-shadow: var(--shadow-sm);
-}
-
-.playerName {
-  font-weight: var(--font-weight-medium);
-  overflow-wrap: anywhere;
-}
-
-.remove {
+/* A round punch. Same die logic as every other piece: thickness when it can be
+   pressed, a dashed cut line when it cannot. */
+.step {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -139,41 +90,161 @@
   width: var(--size-touch-target);
   height: var(--size-touch-target);
   padding: var(--space-0);
-  border: none;
+  border: 0;
+  border-bottom: var(--board-thickness) solid var(--color-panel-edge);
+  border-radius: var(--radius-circle);
+  background-color: var(--color-panel-raised);
+  color: var(--color-text);
+  box-shadow: var(--shadow-piece-pressed);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--duration-press) var(--ease-press),
+    border-bottom-width var(--duration-press) var(--ease-press),
+    box-shadow var(--duration-press) var(--ease-press);
+}
+
+.step:active:not(:disabled) {
+  transform: translateY(var(--press-travel));
+  border-bottom-width: var(--board-thickness-pressed);
+  box-shadow: var(--shadow-none);
+}
+
+.step:disabled {
+  background-color: transparent;
+  border: var(--border-width-thick) dashed var(--cut);
+  color: var(--muted);
+  box-shadow: var(--shadow-none);
+  cursor: default;
+}
+
+.step svg {
+  display: block;
+  width: var(--space-5);
+  height: var(--space-5);
+}
+
+.stepValue {
+  min-width: var(--size-stepper-value);
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-display);
+  font-synthesis: none;
+  font-size: var(--font-size-5xl);
+  line-height: var(--line-height-flat);
+  text-align: center;
+  color: var(--color-foil);
+  font-variant-numeric: tabular-nums;
+}
+
+.count {
+  margin-top: var(--space-3);
+}
+
+/* The rack the name tiles sit in, sunk into the insert. */
+.rack {
+  flex: 1;
+  min-height: var(--size-rack-min);
+  margin-top: var(--space-2);
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  border-top: var(--border-width-rule) solid var(--color-board-edge);
+  background-color: var(--color-panel-sunk);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-token) var(--color-board-edge);
+}
+
+.rack::-webkit-scrollbar {
+  width: var(--space-2);
+}
+
+.rack::-webkit-scrollbar-track {
+  background-color: var(--color-board-edge);
+  border-radius: var(--radius-xs);
+}
+
+.rack::-webkit-scrollbar-thumb {
+  background-color: var(--color-token);
+  border-radius: var(--radius-xs);
+}
+
+.tiles {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: var(--space-2);
+}
+
+.tile {
+  display: flex;
+  max-width: 100%;
+  align-items: stretch;
+  height: var(--size-touch-target);
   border-radius: var(--radius-sm);
+  border-bottom: var(--board-thickness) solid var(--color-panel-edge);
+  background-color: var(--color-panel-raised);
+  box-shadow: var(--shadow-piece-pressed);
+  overflow: hidden;
+}
+
+.playerName {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding-inline: var(--space-3) var(--space-1);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-flat);
+  color: var(--color-text);
+}
+
+.remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--space-8);
+  padding: var(--space-0);
+  border: 0;
   background: none;
   color: var(--color-text-muted);
-  font-size: var(--font-size-xl);
-  line-height: var(--line-height-tight);
   cursor: pointer;
-  transition: color var(--duration-fast) var(--ease-standard);
 }
 
 .remove:hover {
-  color: var(--color-danger);
+  color: var(--color-ember-lit);
 }
 
-.footer {
+.remove svg {
+  display: block;
+  width: var(--space-4);
+  height: var(--space-4);
+}
+
+.empty {
+  padding-inline: var(--space-1);
+  font-size: var(--font-size-sm);
+  line-height: var(--size-touch-target);
+  color: var(--color-text-muted);
+}
+
+/* Reserved height, like the error line: the hint swaps text in place. */
+.hint {
+  flex: none;
+  min-height: var(--size-line-reserved);
+  margin-top: var(--space-2);
+  font-size: var(--font-size-sm);
+  line-height: var(--size-line-reserved);
+  color: var(--color-text-muted);
+}
+
+.actions {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  margin-block-start: auto;
-}
-
-.hint {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-  text-align: center;
-}
-
-.srOnly {
-  position: absolute;
-  width: var(--border-width-hairline);
-  height: var(--border-width-hairline);
-  padding: var(--space-0);
-  margin: calc(var(--border-width-hairline) * -1);
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
+  margin-top: var(--space-4);
 }

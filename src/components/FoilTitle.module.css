@@ -1,0 +1,39 @@
+/**
+ * Hot foil, stamped twice.
+ *
+ * The brass impression sits 5px off the white one, the way a second pass on a
+ * foil press lands slightly out of register. It is drawn from `data-text` on a
+ * `::before` behind the real text, so the visible string is still one text
+ * node for a screen reader and for selection.
+ */
+.title {
+  position: relative;
+  display: inline-block;
+  line-height: var(--line-height-tight);
+  color: var(--color-text);
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* The brass rule stamped under the wordmark, the width of a foil block. */
+.rule {
+  width: var(--size-foil-rule);
+  height: var(--space-2);
+  margin-top: var(--space-5);
+  border-radius: var(--radius-xs);
+  background-color: var(--color-foil);
+}
+
+.title::before {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(var(--foil-offset), var(--foil-offset));
+  color: var(--color-foil);
+  z-index: var(--z-stock);
+}

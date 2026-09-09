@@ -1,25 +1,100 @@
+/**
+ * The box, as a surface.
+ *
+ * Every phase paints onto one of two printed grounds: the lid (home,
+ * discussion, ended) or the punchboard (topics, players, reveal). Both are the
+ * same photographed aubergine sheet under a different wash, so the two never
+ * drift apart and there is only one copy of the artwork.
+ */
 .screen {
+  position: relative;
+  isolation: isolate;
   flex: 1;
   display: flex;
   justify-content: center;
   width: 100%;
   min-height: 100dvh;
-  padding-block: calc(var(--space-6) + env(safe-area-inset-top))
-    calc(var(--space-6) + env(safe-area-inset-bottom));
+}
+
+/**
+ * The printed stock, laid down once at `cover` rather than tiled: a phone is
+ * taller than it is wide and so is the sheet, so the crop never shows a seam
+ * and the repeat inside the photograph does the work a CSS tile would have —
+ * with the paper's own weave and fall-off, which no flat pattern carries.
+ *
+ * `--wash` is the only thing that differs between the two surfaces.
+ */
+.screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-stock);
+  pointer-events: none;
+  background-image: linear-gradient(var(--wash), var(--wash)),
+    url('../assets/wallpaper.webp');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+/* Light falls off toward the edges, the way it does on an object. */
+.screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-vignette);
+  pointer-events: none;
+  background: radial-gradient(
+    118% 74% at 50% 28%,
+    transparent 44%,
+    var(--color-vignette) 100%
+  );
+}
+
+/**
+ * `--cut` and `--muted` are the contextual pair every unpunched piece reads:
+ * the colour of a die line and of the label printed inside it. They change
+ * when a piece sits on the lifted insert instead of on the box stock, which is
+ * why they are inherited rather than fixed on the piece itself.
+ */
+.lid {
+  background-color: var(--color-lid);
+  --wash: var(--wash-lid);
+  --cut: var(--color-cut-line);
+  --muted: var(--color-text-muted);
+}
+
+/* The play surfaces sit a full stop below the lid: this is the inside of the
+   box, not its cover. */
+.board {
+  background-color: var(--color-board);
+  --wash: var(--wash-board);
+  --cut: var(--color-cut-line);
+  --muted: var(--color-text-muted);
+}
+
+.content {
+  position: relative;
+  z-index: var(--z-content);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: var(--layout-max-width);
+  /* Pinned to the viewport rather than allowed to grow past it: the action at
+     the thumb is never pushed below the fold, and a roster too long for the
+     screen scrolls inside its own rack. If even the minimum layout will not
+     fit — a very short window — this column scrolls rather than clipping. */
+  height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  padding-block: calc(var(--layout-pad-top) + env(safe-area-inset-top))
+    calc(var(--layout-pad-bottom) + env(safe-area-inset-bottom));
   padding-inline: calc(var(--layout-gutter) + env(safe-area-inset-left))
     calc(var(--layout-gutter) + env(safe-area-inset-right));
 }
 
-.content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
-  width: 100%;
-  max-width: var(--layout-max-width);
-}
-
-.centered {
-  justify-content: center;
-  text-align: center;
-  align-items: center;
+/* Screens with no insert to hold the margin take the wider gutter themselves. */
+.wide {
+  padding-inline: calc(var(--layout-gutter-wide) + env(safe-area-inset-left))
+    calc(var(--layout-gutter-wide) + env(safe-area-inset-right));
 }

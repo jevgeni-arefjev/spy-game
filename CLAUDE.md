@@ -19,6 +19,15 @@ Built on the Vite + React + TypeScript boilerplate that was already here. See
 [README.md](README.md) for how to run it and how to add locales, words and
 themes.
 
+The visual world is **Night Lid / Wallpaper** and it is the project's design,
+not a mockup: a deluxe board-game box printed on a photographed aubergine
+wallpaper sheet and stamped in brass foil, played after dark. It is documented
+in [DESIGN.md](DESIGN.md), which is normative for anything visual — read it
+before touching a colour, a size, a shadow or a component. The approved comp it
+was ported from is [`v6-5/`](v6-5/DIRECTION.md). `v1/` … `v6-5/` and
+`tools/compare` are the record of the exploration that chose it; they are no
+longer maintained and must not be edited to match the app.
+
 ## Commands
 
 ```shell
@@ -39,13 +48,18 @@ environment with no jsdom.
 
 ```
 src/
+  assets/        wallpaper.webp, the three spy poses, card-back.svg
   game/          domain: config, types, reducer, topics, words, persistence, context
   lib/           storage.ts, classNames.ts, themeColor.ts — no React, no game rules
-  components/    reusable UI: Screen, Button, RoleCard, Countdown
+  components/    reusable UI: Screen, Button, Insert, CountRow, FoilTitle,
+                 RoleCard, Countdown
   screens/       one per phase: Home, Topics, Players, Reveal, Discussion, Ended
   i18n/          i18next setup + locales/<locale>/<namespace>.json
-  styles/        tokens.css (the visual source of truth), tokens.ts, global.css
+  styles/        tokens.css (the visual source of truth), fonts.css, tokens.ts,
+                 global.css
 ```
+
+Full-size PNG sources for the WebP assets live in `assets/` at the repo root.
 
 Each component has its `.module.css` next to it. Imports are relative; there
 are no path aliases.
@@ -129,11 +143,36 @@ adjective as its only clue. Adding a topic is a `TOPICS` entry plus a
 `topics.json` line plus its `words.json` and `hints.json` lines — no other code.
 
 **All visual constants live in `src/styles/tokens.css`**, split into a raw
-`--palette-*` ramp and a semantic `--color-*` layer. Only the semantic layer is
-overridden by a theme, which is why the dark mode block is short. Component CSS
-contains no hex colours, pixel values or font stacks — `public/favicon.svg` is
-the sole exception, since a standalone SVG asset can't read the page's custom
-properties.
+`--palette-*` ramp and a semantic `--color-*` layer. Component CSS contains no
+hex colours, pixel values or font stacks — `public/favicon.svg` and
+`src/assets/card-back.svg` are the only exceptions, since a standalone SVG asset
+can't read the page's custom properties. (Keep XML comments out of those two:
+a `--` inside one makes the file invalid XML and a strict parser drops it
+silently.)
+
+**There is one theme, on purpose.** The world is a printed box in a dim room, so
+`tokens.css` declares `color-scheme: dark` once and carries no
+`prefers-color-scheme` block. A light mode would be a different product, not a
+different setting. Do not add one without the owner's sign-off.
+
+**Depth is the grammar of what can be touched.** Every interactive surface is a
+piece die-cut from board — a 4px bottom edge in the stock's darker tone, an
+offset shadow, a 2px sink on press — or the dashed die line of a piece that was
+never punched out, which is what "disabled" means everywhere in this app. A new
+control inherits all of that from `Button`; it does not restyle it. DESIGN.md
+carries this and the rest as named rules.
+
+**Both faces are self-hosted.** Rammetto One (display) and Rubik (text) ship
+from `@fontsource` packages via `src/styles/fonts.css`, subset with
+`unicode-range`. Nothing may be fetched from a font CDN: the app has to run
+offline after first load and from `file://` inside the planned Capacitor shell.
+Rammetto has no Cyrillic, so display type asks for weight 800 with
+`font-synthesis: none` and Russian falls through to Rubik's variable axis.
+
+**The content column is pinned to `100dvh`, not grown past it.** `Screen` caps
+it at `24.5rem` and gives it its own `overflow-y`, so a twelve-player roster
+scrolls inside its own rack instead of pushing the primary action below the
+fold. The primary action is always the last element in the column.
 
 **The spy count is runtime state, set on the Players screen.** `spyCount` lives
 on `GameState`; `config.ts` only exports `DEFAULT_SPY_COUNT` (the value a fresh
@@ -151,6 +190,13 @@ again" and "Exit", like the roster and topics.
 
 ## Gotchas
 
+- `<Countdown>` owns the whole clock token — label, digits and the burning-down
+  brass ring — because it is the only component that re-renders per tick. The
+  ring's `stroke-dashoffset` is **negative**, which is what makes the gap open
+  at twelve o'clock and grow clockwise; a positive one eats the ring the other
+  way round. Its geometry is the one set of real numbers in `tokens.ts` (`ring`),
+  because the circumference has to be computed in JS and SVG's `r` is not
+  dependable as a CSS property.
 - `<Countdown>`'s `onExpire` must be referentially stable, or the tick effect
   re-subscribes every render. `DiscussionScreen` wraps it in `useCallback`.
 - Interpolating with a variable named `count` triggers i18next pluralisation.
@@ -158,8 +204,15 @@ again" and "Exit", like the roster and topics.
   `players.needMore` and `players.spyHint` do want them and carry `_one`/`_other`.
 - CSS uses `100dvh`, not `100vh`, and pads with `env(safe-area-inset-*)`;
   `index.html` sets `viewport-fit=cover` to make that meaningful.
-- Text that swaps in place (the reveal hint, the setup error line) has a
-  reserved `min-height` so nothing shifts underneath it.
+- Text that swaps in place (the reveal hint, the setup error line, the roster
+  hint) has a reserved `min-height` (`--size-line-reserved`) so nothing shifts
+  underneath it.
+- A piece that is disabled reads `--cut` and `--muted` from the surface it sits
+  on, not from itself: `Screen` sets one pair for the lid and the board, and
+  `Insert` overrides them for pieces punched from the lifted insert.
+- Player names go up to 24 characters. The card's name plate steps through three
+  display sizes rather than breaking a name mid-word, and a roster tile
+  ellipsizes.
 - Whether a card is currently face-up is intentionally *not* persisted.
   Reloading on the card step restores that player's card face-down; they tap
   again. Persisting it would mean a reload could expose a role to whoever is
@@ -183,6 +236,12 @@ Issues and specs are tracked as GitHub issues via the `gh` CLI in
 The five canonical triage roles, each label string equal to its name:
 `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`.
 See `docs/agents/triage-labels.md`.
+
+### Design system
+
+`DESIGN.md` at the repo root plus `.impeccable/design.json`, written by
+`/impeccable document`. Surface briefs live in `.impeccable/surfaces/`; the
+app's own is `src-app-tsx.md`.
 
 ### Domain docs
 
