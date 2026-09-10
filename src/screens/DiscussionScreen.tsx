@@ -26,7 +26,7 @@ export function DiscussionScreen() {
 
       <div className={styles.middle}>
         <Countdown timer={timer} onExpire={handleExpire} />
-        <p className={styles.hint}>{t('discussion.hint', { count: state.spyCount })}</p>
+        <p className={styles.hint}>{t('discussion.hint')}</p>
       </div>
 
       <div className={styles.actions}>

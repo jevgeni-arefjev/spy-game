@@ -8,16 +8,14 @@ import styles from './EndedScreen.module.css'
 
 export function EndedScreen() {
   const { t } = useTranslation()
-  const { state, dispatch } = useGame()
+  const { dispatch } = useGame()
 
   return (
     <Screen surface="lid" wide>
       <div className={styles.middle}>
         <img className={styles.mark} src={spyglass} alt="" width="499" height="504" />
         <FoilTitle className={styles.title}>{t('ended.title')}</FoilTitle>
-        <p className={styles.subtitle}>
-          {t('ended.subtitle', { count: state.spyCount })}
-        </p>
+        <p className={styles.subtitle}>{t('ended.subtitle')}</p>
       </div>
 
       <div className={styles.actions}>

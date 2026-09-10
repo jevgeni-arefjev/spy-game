@@ -70,13 +70,11 @@
     "pause": "Pause",
     "resume": "Resume",
     "endRound": "End round",
-    "hint_one": "Take turns describing the word. Find the spy.",
-    "hint_other": "Take turns describing the word. Find the spies."
+    "hint": "Take turns describing the word. Find the spy."
   },
   "ended": {
     "title": "Time's up",
-    "subtitle_one": "Decide together who the spy was.",
-    "subtitle_other": "Decide together who the spies were.",
+    "subtitle": "Decide together who the spy was.",
     "playAgain": "Play again",
     "exit": "Exit"
   }
