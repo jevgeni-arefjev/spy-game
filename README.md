@@ -43,6 +43,9 @@ decides what renders.
 5. **Discussion** — a five-minute countdown with pause/resume and "End round".
 6. **Ended** — "Play again" (back to the topics screen) or "Exit" (back home).
 
+[docs/architecture.md](docs/architecture.md) explains why the machine, the
+timer, persistence and the i18n layer are built the way they are.
+
 The topic selection and the roster are remembered and stay editable between
 games; neither button wipes them. The whole session is written to
 `localStorage` under `spy:session:v4`, so reloading mid-reveal or mid-timer
