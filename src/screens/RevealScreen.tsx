@@ -40,7 +40,6 @@ export function RevealScreen() {
               playerName={player.name}
               isSpy={state.spyIds.includes(player.id)}
               wordId={state.wordId}
-              spyCount={state.spyCount}
               revealed={revealed}
               onReveal={() => setRevealedFor(player.id)}
             />

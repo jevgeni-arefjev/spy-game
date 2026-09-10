@@ -65,10 +65,7 @@
     },
     "spy": {
       "title": "Вы — шпион",
-      "hint_one": "Подсказка: {{adjective}}",
-      "hint_few": "Подсказка: {{adjective}} — другие игроки тоже шпионы.",
-      "hint_many": "Подсказка: {{adjective}} — другие игроки тоже шпионы.",
-      "hint_other": "Подсказка: {{adjective}} — другие игроки тоже шпионы."
+      "hint": "Подсказка: {{adjective}}"
     }
   },
   "discussion": {

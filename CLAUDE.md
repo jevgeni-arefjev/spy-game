@@ -221,9 +221,16 @@ that arrived too high. The state models the spies as a set (`spyIds: string[]`),
 `createRoundSetup(players, topicIds, prevWord, spyCount)` draws exactly that
 many with `pickSample`, and every screen asks `spyIds.includes(id)`. The
 `_one`/`_other` plural strings (`players.subtitle`, `discussion.hint`,
-`ended.subtitle`, `role.spy.hint`) are selected by passing
-`{ count: state.spyCount }` at the call site. `spyCount` is kept across "Play
-again" and "Exit", like the roster and topics.
+`ended.subtitle`) are selected by passing `{ count: state.spyCount }` at the
+call site. `spyCount` is kept across "Play again" and "Exit", like the roster
+and topics.
+
+**A spy's card never says how many spies there are.** `role.spy.hint` is a
+single, non-plural string and `RoleCard` takes no `spyCount`: with two spies
+the card is byte-for-byte what it is with one. Knowing an ally exists - let
+alone that one does not - is information the round is supposed to withhold, and
+the count is already public on the Players and Discussion screens. Do not
+reintroduce a plural here.
 
 ## Gotchas
 

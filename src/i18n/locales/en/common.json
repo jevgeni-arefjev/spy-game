@@ -59,8 +59,7 @@
     },
     "spy": {
       "title": "You are the spy",
-      "hint_one": "Hint: {{adjective}}",
-      "hint_other": "Hint: {{adjective}} — other players are spies too."
+      "hint": "Hint: {{adjective}}"
     }
   },
   "discussion": {

@@ -11,8 +11,6 @@ type RoleCardProps = {
    * their hint adjective is derived from it.
    */
   wordId: string
-  /** Spies this round — drives the "other players are spies too" plural. */
-  spyCount: number
   revealed: boolean
   onReveal: () => void
 }
@@ -25,7 +23,6 @@ export function RoleCard({
   playerName,
   isSpy,
   wordId,
-  spyCount,
   revealed,
   onReveal,
 }: RoleCardProps) {
@@ -65,7 +62,6 @@ export function RoleCard({
                 {hintId !== null && (
                   <span className={styles.big}>
                     {t('role.spy.hint', {
-                      count: spyCount,
                       adjective: t(hintId, { ns: 'hints' }),
                     })}
                   </span>
