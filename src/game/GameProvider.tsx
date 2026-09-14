@@ -23,7 +23,9 @@ const TRANSITION_START_TIMEOUT_MS = 200
 const TRANSITION_COMMIT_TIMEOUT_MS = 300
 
 export function GameProvider({ children }: GameProviderProps) {
-  const [state, dispatch] = useReducer(reducer, null, loadState)
+  // Wrapped, not passed by reference: React hands the init function its third
+  // argument, and `loadState` takes the current time.
+  const [state, dispatch] = useReducer(reducer, null, () => loadState())
 
   const pendingState = useRef(state)
   pendingState.current = state

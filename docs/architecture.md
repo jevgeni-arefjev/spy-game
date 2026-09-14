@@ -44,7 +44,14 @@ Stored state is validated, never repaired.
 `parseStoredState()` in `src/game/persistence.ts` checks the version, the shape *and* cross-field consistency: `topicIds` is a non-empty set of known ids; `spyCount` is an integer `1 … MAX_PLAYERS`; in a live round (`reveal`/`discussion`/`ended`) every spy id is in the roster, `spyIds.length` equals `spyCount`, and the word id is known; before the round starts `spyIds` is empty and `wordId` is null or a known "last word" memo; `revealIndex` is in range while revealing.
 A pre-round `spyCount` above the roster is *not* rejected — the Players screen clamps it on load.
 Anything else off is discarded and the app boots clean.
-Changing the state shape means bumping `STATE_VERSION` and `STORAGE_KEY`'s suffix — currently `v4`.
+Changing the state shape means bumping `STATE_VERSION` and `STORAGE_KEY`'s suffix — currently `v5`.
+
+Stored state also expires, on two clocks rather than one.
+What sits in storage is an envelope — `{ savedAt, state }` — and `parseStoredSession()` reads its age against both lifetimes in `config.ts`.
+Past `ROUND_TTL_MS` (30 minutes) the round itself is dropped and only the setup comes back: roster, topics and spy count, on the home screen with no spies, no word and a fresh timer.
+Past `SETUP_TTL_MS` (3 days) nothing comes back at all and the app boots clean.
+The timestamp is the envelope's rather than a field on `GameState`, so the reducer still never has to know a clock exists, and because every write stamps it afresh, playing a game restarts both lifetimes.
+A `savedAt` in the future means the clock moved and there is no honest age to compute, so the session is discarded rather than guessed at — the same stance as any other malformed blob.
 
 Writes are debounced ~200ms, with a flush on `pagehide` and `visibilitychange` — a backgrounded mobile browser may never run the timeout.
 

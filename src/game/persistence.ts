@@ -1,4 +1,10 @@
-import { MAX_PLAYERS, STATE_VERSION, STORAGE_KEY } from './config'
+import {
+  MAX_PLAYERS,
+  ROUND_TTL_MS,
+  SETUP_TTL_MS,
+  STATE_VERSION,
+  STORAGE_KEY,
+} from './config'
 import { initialState } from './reducer'
 import { isKnownTopicId } from './topics'
 import { isKnownWordId } from './words'
@@ -76,9 +82,10 @@ function parseTimer(value: unknown): TimerState | null {
 
 /**
  * Turn an unknown stored blob into a `GameState`, or null if anything at all
- * is off. Version mismatches, corrupt shapes and internally inconsistent
- * sessions are all discarded rather than repaired — a stale party game is
- * worth far less than a boot that never crashes.
+ * is off. Shape only - how long that state is still worth honouring is
+ * `parseStoredSession`'s job. Version mismatches, corrupt shapes and
+ * internally inconsistent sessions are all discarded rather than repaired - a
+ * stale party game is worth far less than a boot that never crashes.
  */
 export function parseStoredState(value: unknown): GameState | null {
   if (!isRecord(value)) return null
@@ -151,11 +158,59 @@ export function parseStoredState(value: unknown): GameState | null {
   }
 }
 
-/** Read the persisted session, falling back to a clean slate. */
-export function loadState(): GameState {
-  return parseStoredState(storage.get(STORAGE_KEY)) ?? initialState
+/**
+ * What actually sits in storage: the state plus the wall-clock instant it was
+ * written. The timestamp is the envelope's, not the state's, so the reducer
+ * never has to know a clock exists.
+ */
+type StoredSession = {
+  savedAt: number
+  state: GameState
 }
 
-export function saveState(state: GameState): void {
-  storage.set(STORAGE_KEY, state)
+/** Everything the next game reuses, stripped of the round that produced it. */
+function setupOnly(state: GameState): GameState {
+  return {
+    ...initialState,
+    players: state.players,
+    topicIds: state.topicIds,
+    spyCount: state.spyCount,
+  }
+}
+
+/**
+ * Apply the two lifetimes to a stored envelope.
+ *
+ * A round is worth resuming for `ROUND_TTL_MS`; past that the group has
+ * dispersed, and whoever picks the phone up must not be handed someone else's
+ * card. The roster, topics and spy count are worth far more and outlive it by
+ * `SETUP_TTL_MS`, counted from the last write - so every game played pushes
+ * that expiry out again.
+ *
+ * A `savedAt` in the future means the clock moved, and there is no honest age
+ * to compute: the session is discarded rather than guessed at.
+ */
+export function parseStoredSession(value: unknown, now: number): GameState | null {
+  if (!isRecord(value)) return null
+
+  const { savedAt } = value
+  if (typeof savedAt !== 'number' || !Number.isFinite(savedAt)) return null
+
+  const state = parseStoredState(value.state)
+  if (state === null) return null
+
+  const age = now - savedAt
+  if (age < 0 || age > SETUP_TTL_MS) return null
+  if (age > ROUND_TTL_MS) return setupOnly(state)
+  return state
+}
+
+/** Read the persisted session, falling back to a clean slate. */
+export function loadState(now: number = Date.now()): GameState {
+  return parseStoredSession(storage.get(STORAGE_KEY), now) ?? initialState
+}
+
+export function saveState(state: GameState, now: number = Date.now()): void {
+  const session: StoredSession = { savedAt: now, state }
+  storage.set(STORAGE_KEY, session)
 }

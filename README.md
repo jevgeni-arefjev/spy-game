@@ -48,10 +48,14 @@ timer, persistence and the i18n layer are built the way they are.
 
 The topic selection and the roster are remembered and stay editable between
 games; neither button wipes them. The whole session is written to
-`localStorage` under `spy:session:v4`, so reloading mid-reveal or mid-timer
+`localStorage` under `spy:session:v5`, so reloading mid-reveal or mid-timer
 puts the group back exactly where they were. The timer stores an absolute
 deadline rather than counting ticks, so backgrounding the browser or locking
 the phone doesn't lose time.
+
+What is stored expires on two clocks, both counted from the last write.
+A live round is resumable for 30 minutes (`ROUND_TTL_MS`): come back later and the app boots home rather than handing a stale role to whoever picked the phone up.
+The roster, topic selection and spy count last 3 days (`SETUP_TTL_MS`), and every write pushes that out again, so a group that keeps playing keeps its setup.
 
 ## Adding a locale
 
@@ -136,9 +140,10 @@ full-size PNGs in `assets/` at the repo root.
 ## Tuning the rules
 
 [`src/game/config.ts`](src/game/config.ts) holds `DEFAULT_SPY_COUNT`,
-`DISCUSSION_SECONDS`, `MIN_PLAYERS`, `MAX_PLAYERS` and the storage key. Changing
-the persisted shape means bumping `STATE_VERSION` — old sessions are then
-discarded on boot rather than migrated.
+`DISCUSSION_SECONDS`, `MIN_PLAYERS`, `MAX_PLAYERS`, the two lifetimes
+(`ROUND_TTL_MS`, `SETUP_TTL_MS`) and the storage key. Changing the persisted
+shape means bumping `STATE_VERSION` — old sessions are then discarded on boot
+rather than migrated.
 
 The number of spies is chosen per game on the Players screen: a `[−] N [+]`
 stepper, clamped to `1 … player count`. `DEFAULT_SPY_COUNT` is only the value a

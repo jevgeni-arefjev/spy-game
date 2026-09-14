@@ -83,7 +83,11 @@ Each is explained in [docs/architecture.md](docs/architecture.md).
 - **Stored state is validated, never repaired.** `parseStoredState()`
   (`src/game/persistence.ts`) checks version, shape *and* cross-field
   consistency; anything off is discarded and the app boots clean. A shape change
-  means bumping `STATE_VERSION` and `STORAGE_KEY`'s suffix (currently `v4`).
+  means bumping `STATE_VERSION` and `STORAGE_KEY`'s suffix (currently `v5`).
+- **Stored state expires on two clocks.** Storage holds `{ savedAt, state }`;
+  `parseStoredSession()` drops the round past `ROUND_TTL_MS` (30 min, keeping
+  only roster/topics/spy count on `home`) and everything past `SETUP_TTL_MS`
+  (3 days). Every write restamps `savedAt`, so playing restarts both.
 - **Whether a card is face-up is not persisted.** A reload must not expose a
   role to whoever is holding the phone.
 - **Every user-facing string goes through `t()`.** State stores `wordId` and

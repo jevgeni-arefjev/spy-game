@@ -1,9 +1,11 @@
 import { afterEach, describe, it, expect, vi } from 'vitest'
-import { loadState, parseStoredState, saveState } from './persistence'
+import { loadState, parseStoredSession, parseStoredState, saveState } from './persistence'
 import { initialState } from './reducer'
 import {
   DEFAULT_SPY_COUNT,
   DISCUSSION_SECONDS,
+  ROUND_TTL_MS,
+  SETUP_TTL_MS,
   STATE_VERSION,
   STORAGE_KEY,
 } from './config'
@@ -315,6 +317,90 @@ describe('parseStoredState — cross-field consistency', () => {
   })
 })
 
+const SAVED_AT = 1_700_000_000_000
+
+/** The envelope as it sits in storage: a state plus when it was written. */
+function session(state: GameState, savedAt = SAVED_AT): Record<string, unknown> {
+  return { savedAt, state: wire(state) }
+}
+
+/** What survives once only the setup lifetime is left. */
+function setupOf(state: GameState): GameState {
+  return {
+    ...initialState,
+    players: state.players,
+    topicIds: state.topicIds,
+    spyCount: state.spyCount,
+  }
+}
+
+describe('parseStoredSession — the round lifetime', () => {
+  it('resumes a round saved moments ago', () => {
+    expect(parseStoredSession(session(validReveal), SAVED_AT + 1000)).toEqual(validReveal)
+  })
+
+  it('resumes a round right up to the last millisecond of its lifetime', () => {
+    expect(parseStoredSession(session(validReveal), SAVED_AT + ROUND_TTL_MS)).toEqual(
+      validReveal,
+    )
+  })
+
+  it('drops the round but keeps the setup once the round lifetime passes', () => {
+    for (const state of [validReveal, validDiscussion, validEnded]) {
+      const parsed = parseStoredSession(session(state), SAVED_AT + ROUND_TTL_MS + 1)
+      expect(parsed).toEqual(setupOf(state))
+      // No role, no word and no timer may survive the phone being put down.
+      expect(parsed?.phase).toBe('home')
+      expect(parsed?.spyIds).toEqual([])
+      expect(parsed?.wordId).toBeNull()
+    }
+  })
+
+  it('keeps the roster, topics and spy count that an expired round was using', () => {
+    const parsed = parseStoredSession(session(validReveal), SAVED_AT + ROUND_TTL_MS + 1)
+    expect(parsed?.players).toEqual(validReveal.players)
+    expect(parsed?.topicIds).toEqual(validReveal.topicIds)
+    expect(parsed?.spyCount).toBe(validReveal.spyCount)
+  })
+})
+
+describe('parseStoredSession — the setup lifetime', () => {
+  it('keeps the setup right up to the last millisecond of its lifetime', () => {
+    expect(parseStoredSession(session(validPlayers), SAVED_AT + SETUP_TTL_MS)).toEqual(
+      setupOf(validPlayers),
+    )
+  })
+
+  it('discards everything once the setup lifetime passes', () => {
+    for (const state of [validPlayers, validTopics, validReveal]) {
+      expect(parseStoredSession(session(state), SAVED_AT + SETUP_TTL_MS + 1)).toBeNull()
+    }
+  })
+})
+
+describe('parseStoredSession — rejects malformed envelopes', () => {
+  it('rejects a missing or non-numeric savedAt', () => {
+    for (const savedAt of [undefined, null, 'now', NaN, Infinity]) {
+      expect(
+        parseStoredSession({ savedAt, state: wire(validReveal) }, SAVED_AT),
+      ).toBeNull()
+    }
+  })
+
+  it('rejects a savedAt in the future, because the clock moved', () => {
+    expect(parseStoredSession(session(validReveal), SAVED_AT - 1)).toBeNull()
+  })
+
+  it('rejects a bare state that is not wrapped in an envelope', () => {
+    expect(parseStoredSession(wire(validReveal), SAVED_AT)).toBeNull()
+  })
+
+  it('rejects an envelope whose state is malformed', () => {
+    expect(parseStoredSession({ savedAt: SAVED_AT, state: { version: 999 } }, SAVED_AT))
+      .toBeNull()
+  })
+})
+
 describe('loadState / saveState', () => {
   const memory = new Map<string, string>()
 
@@ -333,8 +419,37 @@ describe('loadState / saveState', () => {
 
   it('loads a previously saved session', () => {
     useFakeStorage()
+    saveState(validDiscussion, SAVED_AT)
+    expect(loadState(SAVED_AT + 1000)).toEqual(validDiscussion)
+  })
+
+  it('loads a session saved and read with the real clock', () => {
+    useFakeStorage()
     saveState(validDiscussion)
     expect(loadState()).toEqual(validDiscussion)
+  })
+
+  it('boots home with the setup intact half an hour later', () => {
+    useFakeStorage()
+    saveState(validReveal, SAVED_AT)
+    expect(loadState(SAVED_AT + ROUND_TTL_MS + 1)).toEqual(setupOf(validReveal))
+  })
+
+  it('boots clean three days later', () => {
+    useFakeStorage()
+    saveState(validReveal, SAVED_AT)
+    expect(loadState(SAVED_AT + SETUP_TTL_MS + 1)).toEqual(initialState)
+  })
+
+  it('restarts the setup lifetime on every save', () => {
+    useFakeStorage()
+    saveState(validPlayers, SAVED_AT)
+    // Three days minus an hour later the group plays again, which rewrites the
+    // stored timestamp; another three days are then counted from there.
+    const secondSave = SAVED_AT + SETUP_TTL_MS - 60 * 60 * 1000
+    saveState(validPlayers, secondSave)
+    expect(loadState(SAVED_AT + SETUP_TTL_MS + 1000)).toEqual(setupOf(validPlayers))
+    expect(loadState(secondSave + SETUP_TTL_MS + 1)).toEqual(initialState)
   })
 
   it('falls back to initialState when storage is empty', () => {
